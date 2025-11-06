@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommandExecutor.h"
+#include "ClaudeTerminalSettings.h"
 #include "Engine/World.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
@@ -10,6 +11,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/Material.h"
+#include "Editor.h"
 
 FCommandExecutor::FCommandExecutor()
 {
@@ -52,6 +54,17 @@ bool FCommandExecutor::ProcessResponse(const FString& Response, UWorld* World, F
 	}
 	TSharedPtr<FJsonObject> Parameters = *ParametersPtr;
 
+	// Check if undo is enabled in settings
+	const UClaudeTerminalSettings* Settings = GetDefault<UClaudeTerminalSettings>();
+	bool bEnableUndo = Settings ? Settings->bEnableUndo : true;
+
+	// Begin undo transaction if enabled
+	FScopedTransaction* Transaction = nullptr;
+	if (bEnableUndo && GEditor)
+	{
+		Transaction = new FScopedTransaction(FText::FromString(FString::Printf(TEXT("Claude Command: %s"), *CommandType)));
+	}
+
 	// Route to appropriate handler
 	bool bSuccess = false;
 	if (CommandType == TEXT("spawn_actor"))
@@ -81,7 +94,17 @@ bool FCommandExecutor::ProcessResponse(const FString& Response, UWorld* World, F
 	else
 	{
 		OutExecutionLog = FString::Printf(TEXT("Error: Unknown command type '%s'."), *CommandType);
+		if (Transaction)
+		{
+			delete Transaction; // Cancel transaction on error
+		}
 		return false;
+	}
+
+	// Clean up transaction
+	if (Transaction)
+	{
+		delete Transaction; // Transaction is automatically committed when deleted
 	}
 
 	return bSuccess;

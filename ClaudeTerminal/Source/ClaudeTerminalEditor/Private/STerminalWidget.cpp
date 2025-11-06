@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "STerminalWidget.h"
+#include "ClaudeTerminalSettings.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
@@ -16,13 +17,7 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 	// Initialize backend components
 	APIClient = MakeShared<FClaudeAPIClient>();
 	CommandExecutor = MakeShared<FCommandExecutor>();
-
-	// Load API key from config
-	FString APIKey;
-	if (GConfig->GetString(TEXT("ClaudeTerminal"), TEXT("APIKey"), APIKey, GEditorPerProjectIni))
-	{
-		APIClient->SetAPIKey(APIKey);
-	}
+	SceneContextBuilder = MakeShared<FSceneContextBuilder>();
 
 	// Initialize state
 	CommandHistory.Empty();
@@ -144,12 +139,10 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 			SNew(STextBlock)
 			.Text_Lambda([this]() -> FText
 			{
-				FString APIKey;
-				GConfig->GetString(TEXT("ClaudeTerminal"), TEXT("APIKey"), APIKey, GEditorPerProjectIni);
-
-				if (APIKey.IsEmpty())
+				const UClaudeTerminalSettings* Settings = GetDefault<UClaudeTerminalSettings>();
+				if (!Settings || Settings->APIKey.IsEmpty())
 				{
-					return LOCTEXT("NoAPIKey", "⚠ No API Key configured. Go to Project Settings > Claude Terminal to set your API key.");
+					return LOCTEXT("NoAPIKey", "⚠ No API Key configured. Go to Project Settings > Plugins > Claude Terminal to set your API key.");
 				}
 				else
 				{
@@ -158,10 +151,8 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 			})
 			.ColorAndOpacity_Lambda([this]() -> FSlateColor
 			{
-				FString APIKey;
-				GConfig->GetString(TEXT("ClaudeTerminal"), TEXT("APIKey"), APIKey, GEditorPerProjectIni);
-
-				return APIKey.IsEmpty() ? FLinearColor::Red : FLinearColor::Green;
+				const UClaudeTerminalSettings* Settings = GetDefault<UClaudeTerminalSettings>();
+				return (!Settings || Settings->APIKey.IsEmpty()) ? FLinearColor::Red : FLinearColor::Green;
 			})
 			.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
 		]
@@ -191,12 +182,29 @@ FReply STerminalWidget::OnSendCommand()
 	// Clear input
 	InputTextBox->SetText(FText::GetEmpty());
 
+	// Build message with scene context if enabled
+	const UClaudeTerminalSettings* Settings = GetDefault<UClaudeTerminalSettings>();
+	FString MessageToSend = Command;
+
+	if (Settings && Settings->bAutoSendSceneContext && SceneContextBuilder.IsValid())
+	{
+		UWorld* World = GetEditorWorld();
+		if (World)
+		{
+			FString SceneContext = SceneContextBuilder->BuildContext(World, true, Settings->MaxContextActors);
+			if (!SceneContext.IsEmpty())
+			{
+				MessageToSend = SceneContext + TEXT("\nUser Request: ") + Command;
+			}
+		}
+	}
+
 	// Show "thinking" indicator
 	AppendOutput(TEXT("Claude is thinking...\n"), FLinearColor::Yellow);
 
 	// Send to Claude API
 	APIClient->SendMessage(
-		Command,
+		MessageToSend,
 		FClaudeAPIClient::FOnResponseReceived::CreateSP(this, &STerminalWidget::OnClaudeResponseReceived)
 	);
 

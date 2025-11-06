@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ClaudeAPIClient.h"
+#include "ClaudeTerminalSettings.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpResponse.h"
 #include "JsonUtilities.h"
@@ -69,9 +70,22 @@ void FClaudeAPIClient::ClearConversation()
 
 void FClaudeAPIClient::SendMessage(const FString& Message, FOnResponseReceived OnResponseReceived)
 {
-	if (APIKey.IsEmpty())
+	// Get settings
+	const UClaudeTerminalSettings* Settings = GetDefault<UClaudeTerminalSettings>();
+	if (!Settings)
 	{
-		OnResponseReceived.ExecuteIfBound(false, TEXT("Error: API Key not set. Please configure your Claude API key in Project Settings > Claude Terminal."));
+		OnResponseReceived.ExecuteIfBound(false, TEXT("Error: Could not load Claude Terminal settings."));
+		return;
+	}
+
+	// Use settings values or fallback to instance values
+	FString CurrentAPIKey = Settings->APIKey.IsEmpty() ? APIKey : Settings->APIKey;
+	FString CurrentEndpoint = Settings->APIEndpoint.IsEmpty() ? APIEndpoint : Settings->APIEndpoint;
+	FString CurrentModel = Settings->ModelName.IsEmpty() ? ModelName : Settings->ModelName;
+
+	if (CurrentAPIKey.IsEmpty())
+	{
+		OnResponseReceived.ExecuteIfBound(false, TEXT("Error: API Key not set. Please configure your Claude API key in Project Settings > Plugins > Claude Terminal."));
 		return;
 	}
 
@@ -80,6 +94,11 @@ void FClaudeAPIClient::SendMessage(const FString& Message, FOnResponseReceived O
 		OnResponseReceived.ExecuteIfBound(false, TEXT("Error: HTTP module not available."));
 		return;
 	}
+
+	// Update instance variables
+	APIKey = CurrentAPIKey;
+	APIEndpoint = CurrentEndpoint;
+	ModelName = CurrentModel;
 
 	// Create HTTP request
 	TSharedRef<IHttpRequest> Request = HttpModule->CreateRequest();

@@ -8,6 +8,7 @@
 #include "Widgets/Input/SEditableTextBox.h"
 #include "ClaudeAPIClient.h"
 #include "CommandExecutor.h"
+#include "SceneContextBuilder.h"
 
 /**
  * Slate widget for the Claude Terminal UI
@@ -33,6 +34,7 @@ private:
 	// Backend components
 	TSharedPtr<FClaudeAPIClient> APIClient;
 	TSharedPtr<FCommandExecutor> CommandExecutor;
+	TSharedPtr<FSceneContextBuilder> SceneContextBuilder;
 
 	// Terminal state
 	FText OutputText;
