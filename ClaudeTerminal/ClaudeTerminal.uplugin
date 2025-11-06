@@ -1,0 +1,39 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Claude AI Terminal",
+	"Description": "An AI-powered terminal for Unreal Engine 5 that integrates Claude to execute natural language commands and manipulate the game world",
+	"Category": "Editor",
+	"CreatedBy": "OnlyTheDead Team",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ClaudeTerminal",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "ClaudeTerminalEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "HTTP",
+			"Enabled": true
+		},
+		{
+			"Name": "Json",
+			"Enabled": true
+		}
+	]
+}
