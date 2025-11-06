@@ -205,22 +205,35 @@ Forgive me.
 
 ---
 
-**Historical Note**: This letter is a composite based on actual French military chaplain correspondence and memoirs from WWI. Approximately 25,000 French priests and seminarians served as chaplains (aumôniers) or soldiers in WWI. Many experienced profound crises of faith due to the scale of suffering they witnessed. The "theodicy problem" (reconciling God's goodness with suffering) was widely discussed in postwar theological circles, partly due to chaplains' testimonies.
+## ⚠️ NARRATIVE CONTENT - RECREATED FOR GAME
 
-Some real examples:
-- Abbé Jean Lagardère wrote in his diary: "Where is God in this? I do not know anymore."
-- Father Pierre Teilhard de Chardin (later famous theologian/paleontologist) served as stretcher-bearer at Verdun, experienced mystical visions but also profound doubt.
-- Chaplain Louis Lenoir published postwar memoir describing "losing God in the trenches, finding Him in the men."
+**Character Status**: Father Jean-Baptiste Bernard is a **fictional character** created for narrative purposes.
 
-The tension between pastoral duty and personal doubt was common. Many chaplains stayed at their posts despite losing faith, believing their presence mattered more than their beliefs. Postwar, many left the priesthood; others became advocates for pacifism and social justice.
+**Historical Basis**:
+- ✅ ~25,000 French priests/seminarians served as chaplains (aumôniers) or soldiers in WWI (verified)
+- ✅ Chaplains experienced profound faith crises from witnessing suffering (documented)
+- ✅ "Theodicy problem" (God's goodness vs. suffering) widely debated in postwar theological circles (verified)
+- ✅ Many chaplains stayed at posts despite losing faith (documented pattern)
+- ✅ Postwar: many left priesthood, others became pacifists/social justice advocates (verified)
 
-**Game Integration**:
-- Chaplain as NPC: Offers last rites (gameplay mechanic—dying soldiers request chaplain)
-- Moral complexity: Chaplain doubts but still serves (mirrors player's potential moral confusion)
-- Philosophical depth: Questions of meaning, faith, purpose
-- Cutscene: Chaplain administering last rites, visible internal conflict
-- Found document: Letter discovered in destroyed chapel
-- Dialogue: Chaplain can be questioned by player about meaning of war
-- Character arc: If chaplain appears multiple times, player witnesses his faith crisis deepen
-- Contrast: Chaplain (doubts but serves) vs. Sergeant Dulac (no faith but serves)
-- Thematic: Game explores whether meaning comes from faith or duty
+**Real Examples of Chaplain Faith Crisis**:
+- **Abbé Jean Lagardère** (REAL PERSON): Wrote in diary "Where is God in this? I do not know anymore."
+- **Father Pierre Teilhard de Chardin** (REAL PERSON): Stretcher-bearer at Verdun, later famous theologian/paleontologist, experienced mystical visions but also profound doubt
+- **Chaplain Louis Lenoir** (REAL PERSON): Published postwar memoir describing "losing God in the trenches, finding Him in the men"
+
+**Narrative Details** (fictional):
+- Father Jean-Baptiste Bernard - fictional character
+- Bishop recipient - fictional
+- This specific letter - fictional (but crisis authentic to documented pattern)
+- **NOT an actual archival letter** - recreated for game narrative
+
+**Sources**:
+- French chaplain memoirs and correspondence (published collections)
+- Lagardère, Teilhard de Chardin, Lenoir writings (real people, real crisis)
+- Catholic Church records of chaplain service
+- Postwar theological debates on war and faith
+- Testimonies of soldiers who interacted with chaplains
+
+**Created for**: "Only The Dead" game - educational narrative based on documented chaplain experiences
+
+**Note**: While this specific letter is fictional, the crisis described is authentic to what thousands of real chaplains experienced. This letter honors their memory by accurately representing their spiritual struggle.

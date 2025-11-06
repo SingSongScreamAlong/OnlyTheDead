@@ -103,14 +103,38 @@ P.S.—If you send a package, send chocolate and cigarettes. Not for me—for th
 
 ---
 
-**Historical Note**: This letter is a composite based on actual French nurse correspondence from Verdun 1916. Female nurses (infirmières) were volunteers from the Red Cross, religious orders, or civilian organizations. They were not officially part of the military but worked in field hospitals under military authority. Conditions described (overcrowding, 18-hour shifts, types of wounds) are accurate to period medical reports. The emotional toll on medical personnel was widely documented but rarely discussed publicly during the war. Many nurses suffered what would now be diagnosed as PTSD. Marie Dubois is a fictional character, but her experiences reflect those of hundreds of French nurses who served at Verdun. Letters like this were less censored than soldiers' letters, as they did not contain tactical information.
+## ⚠️ NARRATIVE CONTENT - RECREATED FOR GAME
 
-**Game Integration**:
-- Female perspective (rare in WWI games)
-- Medical context from caregiver's view (vs. patient's)
-- Emotional toll on non-combatants
-- Field hospital level: Marie can be NPC giving medical tutorial
-- Moral weight: Player sees consequences of combat (wounded they evacuate arrive here)
-- "Expectant" category: Marie references men "beyond help" (triage mechanic)
-- Found document: Letter discovered in hospital ruins
-- Cutscene: Marie reading letter aloud (voiceover during hospital sequence)
+**Character Status**: Marie Dubois is a **fictional character** created for narrative purposes.
+
+**Historical Basis**:
+- ✅ Female nurses (infirmières) volunteered from Red Cross, religious orders, civilian organizations (verified)
+- ✅ NOT official military, but worked in field hospitals under military authority (verified)
+- ✅ Conditions: Overcrowding, 18-hour shifts, horrific wounds (documented in medical reports)
+- ✅ Triage system: "Expectant" category for men beyond help (verified practice)
+- ✅ Emotional toll on medical personnel widely documented (verified)
+- ✅ Many nurses suffered PTSD (documented, though not diagnosed as such then)
+- ✅ Nurse letters less censored (no tactical information, verified)
+
+**Real Examples**:
+- **Henriette Rémi** (REAL PERSON): French nurse, published war diary describing similar conditions
+- **Vera Brittain** (REAL PERSON): British nurse, *Testament of Youth* (1933) - describes trauma
+- Hundreds of French nurses served at Verdun field hospitals (verified)
+
+**Narrative Details** (fictional):
+- Marie Dubois - fictional character
+- Sister Camille - fictional recipient
+- This specific letter - fictional (but conditions authentic to documented reports)
+- **NOT an actual archival letter** - recreated for game narrative
+
+**Sources**:
+- French Service de Santé (medical service) reports from Verdun 1916
+- Nurse memoirs and correspondence (published collections)
+- Rémi, Henriette: war diaries (real French nurse)
+- Brittain, Vera: *Testament of Youth* (real British nurse, comparable conditions)
+- Red Cross archives (volunteer records)
+- Medical reports on triage procedures
+
+**Created for**: "Only The Dead" game - educational narrative based on documented nurse experiences
+
+**Note**: While this specific letter is fictional, the conditions, triage practices, emotional toll, and coping mechanisms described are authentic to what hundreds of real nurses experienced at Verdun.

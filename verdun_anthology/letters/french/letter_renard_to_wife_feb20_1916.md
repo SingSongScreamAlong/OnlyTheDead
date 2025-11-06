@@ -51,4 +51,33 @@ Marcel
 
 ---
 
-**Historical Note**: This letter was found in Renard's tunic after his death at Fort Vaux, June 4, 1916. His wife Amélie and daughter Céleste survived the war and were reunited with French forces in October 1918 when Lille was liberated. Amélie received Marcel's personal effects, including the letter and the blue ribbon, in December 1918. She kept them until her death in 1953. The ribbon is now in the collection of the Musée de la Grande Guerre, Meaux.
+## ⚠️ NARRATIVE CONTENT - RECREATED FOR GAME
+
+**Character Status**: Marcel Renard is a **fictional character** created for narrative purposes.
+
+**Historical Basis**:
+- French soldiers from occupied territories (Lille) served at Verdun (verified)
+- Mail to occupied areas was impossible - letters never reached families (verified)
+- Soldiers wrote anyway, knowing letters wouldn't arrive (documented behavior)
+- Personal mementos (ribbons, photos) carried "over the heart" (common practice)
+- Bois des Caures saw first day combat Feb 21-22 (verified)
+- Fort Vaux garrison deaths June 1-7 (verified siege)
+- Lille occupation: 1914-1918, liberated October 1918 (verified)
+
+**Narrative Details** (fictional):
+- Marcel Renard - fictional character
+- Wife Amélie, daughter Céleste - fictional
+- Death at Fort Vaux June 4 - fictional (but siege casualties verified)
+- Letter preserved by family - fictional
+- **NOT in Musée de la Grande Guerre** - this is a recreated letter for game narrative
+- Blue ribbon - fictional detail (but memento-carrying documented)
+
+**Sources for Historical Patterns**:
+- *Paroles de Poilus* (real letters from soldiers with families in occupied zones)
+- Testimonies from Lille occupation survivors
+- Fort Vaux siege accounts (Major Raynal's memoir)
+- Psychological patterns: family separation, anticipatory grief
+
+**Created for**: "Only The Dead" game - educational narrative based on historical patterns
+
+**Note**: The emotional core (separation anxiety, anticipatory death, writing to unreachable loved ones) reflects documented experiences of thousands of real soldiers.

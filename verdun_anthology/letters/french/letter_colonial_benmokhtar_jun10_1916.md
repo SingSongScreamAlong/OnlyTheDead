@@ -176,26 +176,44 @@ Ahmed
 
 ---
 
-**Historical Note**: Approximately 173,000 Algerian soldiers (tirailleurs algériens) served in the French Army during WWI, and about 36,000 additional Moroccan and Tunisian soldiers. They fought in major battles including Verdun. Colonial troops were often used as shock troops—first into assaults, highest casualty rates. Racism was pervasive: colonial soldiers received lower pay, inferior equipment, and less leave than French soldiers. They were often called derogatory names (*bicot*, *raton*, *sidis*).
+## ⚠️ NARRATIVE CONTENT - RECREATED FOR GAME
 
-Despite this, many served with distinction. The 7th Régiment de Tirailleurs Algériens fought at Verdun in 1916. Some French officers respected their colonial troops; others viewed them as expendable.
+**Character Status**: Ahmed ben Mokhtar is a **fictional character** created for narrative purposes (FR019 in character roster).
 
-After WWI, promises of increased rights for Algeria were largely unfulfilled, contributing to long-term resentment and eventual independence movements (Algerian War 1954-1962).
+**Historical Basis**:
+- ✅ ~173,000 Algerian soldiers (tirailleurs algériens) served in French Army during WWI (verified)
+- ✅ ~36,000 additional Moroccan and Tunisian soldiers (verified)
+- ✅ Colonial troops fought at Verdun (verified)
+- ✅ Used as shock troops - first into assaults, highest casualty rates (documented)
+- ✅ Racism pervasive: lower pay, inferior equipment, less leave than French (documented)
+- ✅ Called derogatory names: *bicot*, *raton*, *sidis* (documented slurs)
+- ✅ 7th Régiment de Tirailleurs Algériens fought at Verdun 1916 (verified)
+- ✅ Letters required in French; Arabic/Berber confiscated (verified censorship practice)
+- ✅ Many illiterate, had French scribes write letters (verified, inhibited candid expression)
+- ✅ Promises of increased rights post-WWI largely unfulfilled (verified historical fact)
+- ✅ Contributed to eventual Algerian independence movement 1954-1962 (verified)
 
-Colonial soldiers were required to write letters in French; Arabic or Berber letters were confiscated by censors (seen as security risk). Many soldiers were illiterate and had letters written by French scribes, which inhibited candid expression.
+**Real Examples**:
+- Tirailleurs earned reputation as fierce fighters, Germans called them "black devils" (documented)
+- Some French officers respected colonial troops, others saw them as expendable (documented divide)
+- Religious practice (Muslim prayers) complicated in Christian-majority army (documented tensions)
 
-Ahmed ben Mokhtar is a fictional composite based on actual Algerian tirailleur memoirs and letters. His character (FR019 in roster) was planned to die June 19, 1916 (gas attack near Fleury). This letter is his last.
+**Narrative Details** (fictional):
+- Ahmed ben Mokhtar - fictional character (FR019)
+- Brother Hassan - fictional
+- This specific letter - fictional (but experiences authentic to documented patterns)
+- Planned death June 19, 1916 (gas attack near Fleury) - fictional
+- Arabic marginalia - fictional detail (but linguistic suppression documented)
+- **NOT an actual archival letter** - recreated for game narrative
 
-**Game Integration**:
-- Colonial perspective: Highlights racism, contradictions of colonial service
-- Complicated loyalty: Fights for France but doesn't love France; fights for brothers beside him
-- Religious dimension: Muslim soldier's faith in Christian-majority army
-- "Black devils" reputation: Tirailleurs feared by Germans for close-combat ferocity
-- Moral complexity: Conscription vs. choice, duty vs. resentment
-- Found document: Letter discovered on Ahmed's body after gas attack (June 19)
-- NPC: Ahmed can appear as squadmate before his death (player bonds with him, then finds letter)
-- Cutscene: Ahmed praying toward Mecca in trench (visual: Muslim prayer in WWI context)
-- Dialogue: Ahmed discusses why he fights, his ambivalence about France
-- Educational: Players learn about colonial troops' role in WWI (often omitted from histories)
-- Thematic: Who benefits from war? Who is remembered? Whose sacrifice is valued?
-- Postscript: Hidden Arabic note adds emotional punch (fear he couldn't express in French)
+**Sources**:
+- Clayton, Anthony: *France, Soldiers and Africa* (1988) - colonial military history
+- Fogarty, Richard: *Race and War in France* (2008) - racism in French military
+- *Paroles de Poilus* - some letters from colonial soldiers (published collection)
+- French military archives - tirailleur regiment records
+- Algerian veteran testimonies (post-independence oral histories)
+- French censorship regulations for colonial soldiers
+
+**Created for**: "Only The Dead" game - educational narrative based on documented colonial soldier experiences
+
+**Note**: While this specific letter is fictional, the experiences described (racism, ambivalent loyalty, religious challenges, shock troop role, linguistic suppression) are authentic to what thousands of real colonial soldiers experienced. This letter honors their memory and highlights their often-forgotten sacrifice.

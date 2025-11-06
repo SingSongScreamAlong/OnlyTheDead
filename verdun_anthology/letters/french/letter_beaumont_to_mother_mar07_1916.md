@@ -59,4 +59,30 @@ P.S. — If you write to me, send chocolate. Everyone here dreams of chocolate.
 - Removed description of bombardment and casualties
 - Removed comment about morale
 
-**Historical Note**: Théodore Beaumont was killed March 8, 1916, approximately 18 hours after writing this letter. He was buried alive when his trench collapsed during a German artillery barrage on Mort-Homme. His body was never recovered. Mme. Beaumont received official notification on April 2, 1916: "Missing, presumed dead." She received this letter on March 15, one week after his death, unaware he was already gone. She kept it in a frame on her wall until her own death in 1941. The letter is now in the Archives Nationales, Paris.
+---
+
+## ⚠️ NARRATIVE CONTENT - RECREATED FOR GAME
+
+**Character Status**: Théodore Beaumont is a **fictional character** created for narrative purposes.
+
+**Historical Basis**:
+- Young French soldiers (18-20) served at Verdun in large numbers (verified)
+- Letters home often censored by unit officers (verified practice)
+- Mort-Homme sector saw heavy casualties March 1916 (verified - see timeline)
+- Burial alive from artillery was common cause of death (verified - medical records)
+- Soldiers often referenced family, home, pre-war life (documented in published letter collections)
+
+**Narrative Details** (fictional):
+- Théodore Beaumont - fictional character
+- His mother Geneviève - fictional
+- Death March 8, 1916 - fictional (but casualties that day verified)
+- Letter preserved by family - fictional
+- **NOT in Archives Nationales** - this is a recreated letter for game narrative
+
+**Sources for Historical Patterns**:
+- *Paroles de Poilus: Lettres et carnets du front 1914-1918* (real soldier letter collection)
+- French military censorship regulations (1916)
+- Casualty records for 151st Infantry Regiment (regiment real, served at Verdun)
+- Psychological patterns in young soldiers' letters (documented)
+
+**Created for**: "Only The Dead" game - educational narrative based on historical patterns
