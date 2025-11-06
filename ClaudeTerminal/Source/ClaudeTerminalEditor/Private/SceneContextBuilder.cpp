@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SceneContextBuilder.h"
+#include "AssetCatalogSystem.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerStart.h"
@@ -21,7 +22,7 @@ FSceneContextBuilder::~FSceneContextBuilder()
 {
 }
 
-FString FSceneContextBuilder::BuildContext(UWorld* World, bool bIncludeSelection, int32 MaxActors)
+FString FSceneContextBuilder::BuildContext(UWorld* World, FAssetCatalogSystem* AssetCatalog, bool bIncludeSelection, int32 MaxActors)
 {
 	if (!World)
 	{
@@ -84,6 +85,14 @@ FString FSceneContextBuilder::BuildContext(UWorld* World, bool bIncludeSelection
 	}
 
 	Context.Append(FString::Printf(TEXT("\nTotal: %d actors in scene\n"), ActorCount));
+
+	// Asset catalog info (if provided)
+	if (AssetCatalog && AssetCatalog->IsCatalogReady())
+	{
+		Context.Append(TEXT("\n"));
+		Context.Append(AssetCatalog->GetCatalogSummary(false));
+	}
+
 	Context.Append(TEXT("===================\n\n"));
 
 	return Context;

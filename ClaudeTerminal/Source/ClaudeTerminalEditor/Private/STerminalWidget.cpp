@@ -16,13 +16,17 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 {
 	// Initialize backend components
 	APIClient = MakeShared<FClaudeAPIClient>();
-	CommandExecutor = MakeShared<FEditorCommandExecutor>();
+	CommandExecutor = MakeShared<FEnhancedCommandExecutor>();
 	SceneContextBuilder = MakeShared<FSceneContextBuilder>();
+
+	// Initialize enhanced executor
+	FString InitLog;
+	CommandExecutor->Initialize(InitLog);
 
 	// Initialize state
 	CommandHistory.Empty();
 	HistoryIndex = 0;
-	OutputText = LOCTEXT("WelcomeMessage", "Claude Terminal v1.0\nType your commands below. Claude will help you manipulate the UE5 world.\n\n");
+	OutputText = LOCTEXT("WelcomeMessage", "Claude Terminal v2.0 - Comprehensive NLP Controller\nNow with intelligent asset selection, semantic understanding, and complete UE5 control.\nType your commands below.\n\n");
 
 	ChildSlot
 	[
@@ -79,7 +83,7 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 				.Text(LOCTEXT("HelpButton", "Help"))
 				.OnClicked_Lambda([this]() -> FReply
 				{
-					AppendOutput(FEditorCommandExecutor::GetHelpText(), FLinearColor(0.7f, 1.0f, 0.7f));
+					AppendOutput(FEnhancedCommandExecutor::GetHelpText(), FLinearColor(0.7f, 1.0f, 0.7f));
 					return FReply::Handled();
 				})
 			]
@@ -202,9 +206,11 @@ FReply STerminalWidget::OnSendCommand()
 	if (Settings && Settings->bAutoSendSceneContext && SceneContextBuilder.IsValid())
 	{
 		UWorld* World = GetEditorWorld();
-		if (World)
+		if (World && CommandExecutor.IsValid())
 		{
-			FString SceneContext = SceneContextBuilder->BuildContext(World, true, Settings->MaxContextActors);
+			// Pass asset catalog to context builder for comprehensive context
+			FAssetCatalogSystem* AssetCatalog = CommandExecutor->GetAssetCatalog();
+			FString SceneContext = SceneContextBuilder->BuildContext(World, AssetCatalog, true, Settings->MaxContextActors);
 			if (!SceneContext.IsEmpty())
 			{
 				MessageToSend = SceneContext + TEXT("\nUser Request: ") + Command;

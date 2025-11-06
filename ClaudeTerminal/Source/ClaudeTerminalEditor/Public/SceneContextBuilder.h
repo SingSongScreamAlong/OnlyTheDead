@@ -6,10 +6,11 @@
 
 class UWorld;
 class AActor;
+class FAssetCatalogSystem;
 
 /**
  * Builds context information about the current scene to send to Claude
- * This helps Claude understand what's already in the level
+ * This helps Claude understand what's already in the level and what assets are available
  */
 class CLAUDETERMINALEDITOR_API FSceneContextBuilder
 {
@@ -20,11 +21,12 @@ public:
 	/**
 	 * Build a comprehensive context string describing the current scene
 	 * @param World The world to analyze
+	 * @param AssetCatalog Optional asset catalog to include available assets
 	 * @param bIncludeSelection Whether to include selected actors
 	 * @param MaxActors Maximum number of actors to include
 	 * @return Formatted context string for Claude
 	 */
-	FString BuildContext(UWorld* World, bool bIncludeSelection = true, int32 MaxActors = 100);
+	FString BuildContext(UWorld* World, FAssetCatalogSystem* AssetCatalog = nullptr, bool bIncludeSelection = true, int32 MaxActors = 100);
 
 	/**
 	 * Build context for selected actors only

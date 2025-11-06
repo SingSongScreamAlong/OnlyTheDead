@@ -7,11 +7,12 @@
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "ClaudeAPIClient.h"
-#include "EditorCommandExecutor.h"
+#include "EnhancedCommandExecutor.h"
 #include "SceneContextBuilder.h"
 
 /**
  * Slate widget for the Claude Terminal UI
+ * Now with comprehensive NLP control for all UE5 operations
  */
 class STerminalWidget : public SCompoundWidget
 {
@@ -33,7 +34,7 @@ private:
 
 	// Backend components
 	TSharedPtr<FClaudeAPIClient> APIClient;
-	TSharedPtr<FEditorCommandExecutor> CommandExecutor;
+	TSharedPtr<FEnhancedCommandExecutor> CommandExecutor; // Now using enhanced executor
 	TSharedPtr<FSceneContextBuilder> SceneContextBuilder;
 
 	// Terminal state

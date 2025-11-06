@@ -34,7 +34,8 @@ public class ClaudeTerminalEditor : ModuleRules
 				"PropertyEditor",
 				"Landscape",
 				"LandscapeEditor",
-				"ImageWrapper"
+				"ImageWrapper",
+				"AssetRegistry"  // For AssetCatalogSystem
 			}
 		);
 	}
