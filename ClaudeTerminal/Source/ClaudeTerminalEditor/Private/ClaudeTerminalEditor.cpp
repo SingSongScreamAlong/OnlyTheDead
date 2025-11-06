@@ -2,12 +2,15 @@
 
 #include "ClaudeTerminalEditor.h"
 #include "STerminalWidget.h"
+#include "CoordinatePickerMode.h"
 #include "ToolMenus.h"
 #include "LevelEditor.h"
 #include "Framework/Docking/TabManager.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "WorkspaceMenuStructure.h"
 #include "WorkspaceMenuStructureModule.h"
+#include "EditorModeManager.h"
+#include "EditorModeRegistry.h"
 
 static const FName ClaudeTerminalTabName("ClaudeTerminal");
 
@@ -15,6 +18,13 @@ static const FName ClaudeTerminalTabName("ClaudeTerminal");
 
 void FClaudeTerminalEditorModule::StartupModule()
 {
+	// Register coordinate picker editor mode (TIER 2.1)
+	FEditorModeRegistry::Get().RegisterMode<FCoordinatePickerMode>(
+		FCoordinatePickerMode::EM_CoordinatePicker,
+		LOCTEXT("CoordinatePickerModeName", "Coordinate Picker"),
+		FSlateIcon(),
+		false);
+
 	// Register tab spawner
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
 		ClaudeTerminalTabName,
@@ -30,6 +40,9 @@ void FClaudeTerminalEditorModule::StartupModule()
 
 void FClaudeTerminalEditorModule::ShutdownModule()
 {
+	// Unregister coordinate picker editor mode
+	FEditorModeRegistry::Get().UnregisterMode(FCoordinatePickerMode::EM_CoordinatePicker);
+
 	// Unregister tab spawner
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(ClaudeTerminalTabName);
 
