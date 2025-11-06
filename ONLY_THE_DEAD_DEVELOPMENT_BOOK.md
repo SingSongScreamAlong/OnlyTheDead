@@ -1352,7 +1352,333 @@ Low Morale → Shell shock → Combat ineffective → Death in battle
 
 ---
 
-**Current Document Length**: ~12,000 words
+<a name="mission-structure"></a>
+## PART III: MISSION DESIGN
+
+### MISSION STRUCTURE: ROTATION-BASED CAMPAIGN
+
+**Core Design Philosophy**: The player's goal is to **survive the entire 303-day Battle of Verdun** (February 21 - December 18, 1916) by rotating in and out of combat through the **Noria system**.
+
+---
+
+#### THE NORIA ROTATION SYSTEM
+
+**Historical Foundation**:
+- French divisions rotated through Verdun to prevent total breakdown
+- Cycle: Front Line → Support Line → Rest Area → Repeat
+- Each rotation lasted 4-7 days on average (varied by intensity)
+- Over 70 French divisions cycled through Verdun during 303 days
+- Prevented any single unit from being annihilated by prolonged exposure
+
+**Game Implementation**:
+
+```json
+{
+  "rotation_cycle": {
+    "front_line": {
+      "duration_days": "4-7 (varies by battle intensity)",
+      "location": "First trench, direct enemy contact",
+      "activities": [
+        "Survive bombardments",
+        "Repel German assaults",
+        "Man defensive positions",
+        "Night patrols",
+        "Sentry duty"
+      ],
+      "survival_difficulty": "EXTREME",
+      "death_risk": "High (70-80% of casualties occur here)",
+      "player_experience": "Terror, exhaustion, constant danger"
+    },
+
+    "support_line": {
+      "duration_days": "4-7",
+      "location": "Second trench, 200-500m behind front",
+      "activities": [
+        "Resupply front line",
+        "Repair trenches",
+        "Burial details",
+        "Reserve for counterattacks",
+        "Receive wounded"
+      ],
+      "survival_difficulty": "HIGH",
+      "death_risk": "Moderate (still within artillery range)",
+      "player_experience": "Fatigue, ongoing danger, some respite"
+    },
+
+    "rest_area": {
+      "duration_days": "7-14",
+      "location": "Villages 5-10km behind lines (Dugny, Bras, etc.)",
+      "activities": [
+        "Sleep (real sleep, not interrupted)",
+        "Receive mail from home",
+        "Hot meals, baths, delousing",
+        "Equipment repair",
+        "Training replacements",
+        "Write letters home"
+      ],
+      "survival_difficulty": "LOW",
+      "death_risk": "Minimal (occasional long-range artillery)",
+      "player_experience": "Relief, recovery, anticipatory dread of return"
+    },
+
+    "return_to_front": {
+      "duration": "1 day (march back to trenches)",
+      "player_experience": "Growing dread, final preparations, goodbyes",
+      "psychological": "Hardest moment - knowing what's coming"
+    }
+  },
+
+  "full_rotation_duration": "15-28 days total (varies)",
+  "rotations_in_campaign": "10-20 rotations over 303 days",
+  "player_sees_battle_evolve": "February desperation → June intensity → October climax → December relief"
+}
+```
+
+---
+
+#### CAMPAIGN STRUCTURE: 30+ MISSIONS
+
+**Mission Types**:
+
+1. **ROTATION MISSIONS** (20-25 missions)
+   - Each rotation = 1 mission
+   - Player must survive 4-7 days on front line
+   - Victory = Survive until relief arrives
+   - Failure = Death (checkpoint respawn OR permadeath mode)
+
+2. **SPECIAL EVENT MISSIONS** (5-8 missions)
+   - Fort Vaux Siege (7-day multi-stage mission)
+   - Oct 24 Douaumont Recapture (climax mission)
+   - Night patrol missions
+   - Supply run missions (Voie Sacrée)
+
+3. **TUTORIAL MISSIONS** (2-3 missions)
+   - First Day (Feb 21) - Learn survival basics
+   - First Rotation (Feb 22-28) - Complete rotation cycle
+
+---
+
+#### PROGRESSION SYSTEM
+
+**Player Transformation Over 303 Days**:
+
+```json
+{
+  "february_march": {
+    "player_status": "NOVICE",
+    "shell_recognition": "50% accuracy, 2-4 sec reaction",
+    "morale": "High (80-100) - still believes in cause",
+    "survival_meters": "Degrade quickly",
+    "death_risk": "Very high (inexperience kills)",
+    "psychological_state": "Fear, shock, disbelief"
+  },
+
+  "april_june": {
+    "player_status": "EXPERIENCED",
+    "shell_recognition": "80% accuracy, 0.5-1 sec reaction",
+    "morale": "Moderate (50-70) - grim determination",
+    "survival_meters": "More efficient management",
+    "death_risk": "Moderate (competence improves odds)",
+    "psychological_state": "Numbness setting in, autopilot mode"
+  },
+
+  "july_september": {
+    "player_status": "VETERAN",
+    "shell_recognition": "95% accuracy, <0.5 sec reaction",
+    "morale": "Low (30-50) - hollow, enduring",
+    "survival_meters": "Near-automatic management",
+    "death_risk": "Lower (but never safe)",
+    "psychological_state": "Dissociation, survivor guilt, 'living ghost'"
+  },
+
+  "october_december": {
+    "player_status": "SURVIVOR",
+    "shell_recognition": "Instant, unconscious",
+    "morale": "Variable (hope returns as French advance)",
+    "survival_meters": "Mastered but depleted",
+    "death_risk": "Moderate (climax battles dangerous)",
+    "psychological_state": "Cautious hope, fear of dying at the end",
+    "narrative": "So close to surviving... don't die now"
+  }
+}
+```
+
+**Unlocks & Skills**:
+- **Shell recognition** improves with experience (automatic skill gain)
+- **Veteran bonuses**: +30% reaction time, -20% stamina drain from panic
+- **Coping mechanisms unlock**: Dark humor, rituals, dissociation (morale management)
+- **No weapon unlocks** - not a power fantasy, same rifle entire game
+
+---
+
+#### VICTORY CONDITIONS
+
+**Mission-Level Victory** (per rotation):
+- ✅ Survive until relieved (4-7 days)
+- ✅ Complete assigned duties (sentry, patrol, defense)
+- ✅ Optional: Save squadmates (moral choices)
+
+**Campaign-Level Victory** (final goal):
+- ✅ **SURVIVE 303 DAYS** - Reach December 18, 1916 alive
+- ✅ Witness battle's end (final mission epilogue)
+- ✅ Optional: Maximum squadmates saved (companion survival tracker)
+
+**Permadeath Mode** (optional difficulty):
+- ❌ No checkpoints - death = restart entire campaign
+- 🎖️ For players seeking ultimate realism/challenge
+- 📊 Campaign completion rate: Estimated <5% (realistic to actual survival odds)
+
+---
+
+#### FAILURE CONDITIONS
+
+**Mission Failure** (checkpoint respawn):
+- Death from artillery
+- Death from combat
+- Death from gas exposure
+- Death from starvation/dehydration (survival meters at 0)
+- Shell shock breakdown (evacuation = mission failure, rejoin next rotation)
+
+**Campaign Failure** (permadeath mode only):
+- Death = Start over from February 21
+- OR: Play as new soldier (different regiment, continue from current date)
+
+---
+
+#### TIME PROGRESSION
+
+**Real-Time vs. Game-Time**:
+- **1 day in-game ≈ 20-40 minutes real-time** (compressed)
+- **Front-line rotation (4-7 days) ≈ 2-4 hours gameplay**
+- **Full campaign (303 days) ≈ 40-60 hours** for all missions
+
+**Time Compression**:
+- Daytime: Accelerated time (1 hour = 2-3 minutes)
+- Critical events: Real-time (combat, patrols, bombardments)
+- Rest periods: Fast-forward option (sleep, travel)
+- Night: Slower time (more dangerous, player needs to be alert)
+
+**Calendar System**:
+- Always visible: Current date, days survived, days until relief
+- Historical events noted: "Oct 24 - French counteroffensive begins"
+- Morale affected by calendar: "Only 50 days left..." vs. "200 more days of this?"
+
+---
+
+#### HISTORICAL TIMELINE INTEGRATION
+
+**Missions Follow Historical Progression**:
+
+| **Phase** | **Dates** | **Historical Event** | **Player Experience** | **Rotations** |
+|-----------|-----------|---------------------|----------------------|---------------|
+| Phase I | Feb 21-Mar 6 | Initial German assault | Desperate defense, chaos | 1-2 |
+| Phase II | Mar 6-Apr 9 | Left Bank offensive | Mort-Homme, Hill 304 fighting | 2-3 |
+| Phase III | Apr 9-May 7 | Renewed attacks on forts | Grinding attrition | 2-3 |
+| Phase IV | May 7-Jun 23 | Fort Vaux siege, German apex | **CLIMAX 1**: Vaux siege, Souville high-water mark | 2-4 |
+| Phase V | Jun 23-Oct 24 | Stalemate, Somme drains Germans | Lower intensity, prep for counterattack | 3-5 |
+| Phase VI | Oct 24-Nov 2 | French counteroffensive begins | **CLIMAX 2**: Douaumont recapture | 1-2 |
+| Phase VII | Nov 2-Dec 18 | French recapture gains | Victory push, cautious hope | 2-3 |
+
+**Key Historical Missions** (must include):
+1. ✅ Feb 21 - First Day (tutorial)
+2. ✅ Feb 25 - Douaumont falls (witness from distance)
+3. ✅ Mar 6 - Mort-Homme assault begins (if playing Left Bank rotation)
+4. ✅ Jun 1-7 - Fort Vaux siege (multi-day special mission)
+5. ✅ Jun 23 - German high-water mark at Souville (desperate defense)
+6. ✅ **Oct 24 - Douaumont recapture** (CENTERPIECE MISSION)
+7. ✅ Nov 2 - Vaux recaptured
+8. ✅ Dec 15-18 - Final offensive (victory, but exhausted)
+
+---
+
+#### PLAYER CHOICE & AGENCY
+
+**What Player CAN Control**:
+- ✅ How to manage survival meters (eat now or save rations?)
+- ✅ How to react to artillery (which cover, when to run?)
+- ✅ Whether to help wounded squadmates (risk self to save others?)
+- ✅ How to cope psychologically (dark humor, letters, dissociation?)
+- ✅ Combat tactics (when to shoot, conserve ammo, hold fire?)
+
+**What Player CANNOT Control**:
+- ❌ Historical outcomes (Douaumont falls Feb 25 no matter what player does)
+- ❌ When they rotate in/out (orders determine schedule)
+- ❌ The battle's timeline (events happen on historical dates)
+- ❌ Whether squadmates live/die (some deaths scripted for narrative)
+
+**Moral Choices** (impact morale, not history):
+- Save wounded soldier vs. preserve self (morale vs. survival meters)
+- Share rations vs. hoard (camaraderie vs. hunger)
+- Risk self on patrol vs. stay safe (duty vs. survival instinct)
+- Mercy-kill dying soldier vs. let suffer (humanity vs. trauma)
+
+---
+
+#### DIFFICULTY MODES
+
+```json
+{
+  "recruit": {
+    "description": "Experience the story with manageable challenge",
+    "survival_meter_drain": "70% normal rate",
+    "artillery_frequency": "70% normal frequency",
+    "checkpoint_frequency": "Generous (every 6 hours in-game)",
+    "permadeath": false,
+    "aim_assist": "Moderate",
+    "target_audience": "Story-focused players, history students"
+  },
+
+  "soldier": {
+    "description": "Balanced challenge - intended experience",
+    "survival_meter_drain": "100% normal rate",
+    "artillery_frequency": "100% historical frequency",
+    "checkpoint_frequency": "Standard (every 12 hours in-game)",
+    "permadeath": false,
+    "aim_assist": "Minimal",
+    "target_audience": "Most players"
+  },
+
+  "veteran": {
+    "description": "Brutal realism - high challenge",
+    "survival_meter_drain": "130% normal rate",
+    "artillery_frequency": "120% frequency (RNG nightmare)",
+    "checkpoint_frequency": "Sparse (every 24 hours in-game)",
+    "permadeath": false,
+    "aim_assist": "None",
+    "shell_recognition": "Player must learn audio cues (no UI hints)",
+    "target_audience": "Hardcore survival game fans"
+  },
+
+  "ironman": {
+    "description": "Permadeath - ultimate challenge",
+    "survival_meter_drain": "100% normal rate",
+    "artillery_frequency": "100% historical frequency",
+    "checkpoint_frequency": "NONE",
+    "permadeath": true,
+    "death_consequence": "Restart from Feb 21 OR play as new soldier",
+    "target_audience": "Masochists, achievement hunters",
+    "estimated_completion_rate": "<5% (realistic to actual survival odds)"
+  }
+}
+```
+
+---
+
+## [MISSION STRUCTURE COMPLETE - Individual missions to follow]
+
+**Mission Categories to Create**:
+1. Tutorial Missions (2-3)
+2. Early Rotations (Feb-Apr, 4-6 missions)
+3. Mid-Campaign Rotations (May-Sep, 8-10 missions)
+4. Climax Missions (Oct-Nov, 3-5 missions)
+5. Final Rotations (Nov-Dec, 3-4 missions)
+6. Special Event Missions (5-7 missions)
+
+**Total**: 30-35 missions covering full 303-day campaign
+
+---
+
+**Current Document Length**: ~15,000 words
 **Target Final Length**: 50,000-100,000 words (comprehensive game bible)
 
 ---
