@@ -483,9 +483,90 @@ bool FEnhancedCommandExecutor::ExecuteApplyMaterial(const TSharedPtr<FJsonObject
 
 bool FEnhancedCommandExecutor::ExecuteSetMaterialParameter(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement material parameter modification
-	OutLog += TEXT("set_material_parameter: Not yet implemented\n");
-	return false;
+	if (!Parameters.IsValid())
+	{
+		OutLog += TEXT("ERROR: No parameters provided\n");
+		return false;
+	}
+
+	// Get target (selected actors)
+	if (!GEditor || !GEditor->GetSelectedActorCount())
+	{
+		OutLog += TEXT("ERROR: No actors selected. Select actors first.\n");
+		return false;
+	}
+
+	// Get parameter name and value
+	FString ParamName;
+	if (!Parameters->TryGetStringField(TEXT("parameter_name"), ParamName))
+	{
+		OutLog += TEXT("ERROR: No parameter_name specified\n");
+		return false;
+	}
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Set Material Parameter")));
+
+	int32 ActorsModified = 0;
+
+	for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+	{
+		AActor* Actor = Cast<AActor>(*It);
+		if (!Actor) continue;
+
+		UStaticMeshComponent* MeshComp = Actor->FindComponentByClass<UStaticMeshComponent>();
+		if (!MeshComp) continue;
+
+		// Get or create dynamic material instance
+		for (int32 i = 0; i < MeshComp->GetNumMaterials(); i++)
+		{
+			UMaterialInterface* Material = MeshComp->GetMaterial(i);
+			if (!Material) continue;
+
+			UMaterialInstanceDynamic* DynMat = Cast<UMaterialInstanceDynamic>(Material);
+			if (!DynMat)
+			{
+				// Create dynamic instance
+				DynMat = MeshComp->CreateDynamicMaterialInstance(i, Material);
+			}
+
+			if (!DynMat) continue;
+
+			// Try to set parameter based on type
+			// Scalar parameter
+			if (Parameters->HasField(TEXT("scalar_value")))
+			{
+				double Value;
+				Parameters->TryGetNumberField(TEXT("scalar_value"), Value);
+				DynMat->SetScalarParameterValue(FName(*ParamName), Value);
+				OutLog += FString::Printf(TEXT("  Set scalar parameter '%s' = %.2f\n"), *ParamName, Value);
+			}
+			// Vector parameter
+			else if (Parameters->HasField(TEXT("vector_value")))
+			{
+				FLinearColor Color = ParseColor(Parameters, TEXT("vector_value"), FLinearColor::White);
+				DynMat->SetVectorParameterValue(FName(*ParamName), Color);
+				OutLog += FString::Printf(TEXT("  Set vector parameter '%s' = (%.2f, %.2f, %.2f, %.2f)\n"),
+					*ParamName, Color.R, Color.G, Color.B, Color.A);
+			}
+			// Texture parameter
+			else if (Parameters->HasField(TEXT("texture_path")))
+			{
+				FString TexturePath;
+				Parameters->TryGetStringField(TEXT("texture_path"), TexturePath);
+				UTexture* Texture = LoadObject<UTexture>(nullptr, *TexturePath);
+				if (Texture)
+				{
+					DynMat->SetTextureParameterValue(FName(*ParamName), Texture);
+					OutLog += FString::Printf(TEXT("  Set texture parameter '%s'\n"), *ParamName);
+				}
+			}
+
+			ActorsModified++;
+		}
+	}
+
+	OutLog += FString::Printf(TEXT("Modified material parameters on %d actors\n"), ActorsModified);
+	return ActorsModified > 0;
 }
 
 // ===== LIGHTING & ATMOSPHERE =====
@@ -563,9 +644,100 @@ bool FEnhancedCommandExecutor::ExecuteCreateLight(const TSharedPtr<FJsonObject>&
 
 bool FEnhancedCommandExecutor::ExecuteModifyLight(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement light modification
-	OutLog += TEXT("modify_light: Not yet implemented\n");
-	return false;
+	if (!Parameters.IsValid())
+	{
+		OutLog += TEXT("ERROR: No parameters provided\n");
+		return false;
+	}
+
+	// Get target light (selected light or find by type)
+	ALight* TargetLight = nullptr;
+
+	if (GEditor && GEditor->GetSelectedActorCount() > 0)
+	{
+		// Use selected light
+		for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+		{
+			TargetLight = Cast<ALight>(*It);
+			if (TargetLight) break;
+		}
+	}
+
+	if (!TargetLight)
+	{
+		// Find directional light (sun) as default
+		TargetLight = FindDirectionalLight(World);
+	}
+
+	if (!TargetLight)
+	{
+		OutLog += TEXT("ERROR: No light found. Select a light or ensure there's a directional light in scene.\n");
+		return false;
+	}
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Modify Light")));
+
+	ULightComponent* LightComp = TargetLight->GetLightComponent();
+	if (!LightComp)
+	{
+		OutLog += TEXT("ERROR: Light has no light component\n");
+		return false;
+	}
+
+	bool bModified = false;
+
+	// Modify intensity
+	if (Parameters->HasField(TEXT("intensity")))
+	{
+		double Intensity;
+		Parameters->TryGetNumberField(TEXT("intensity"), Intensity);
+		LightComp->SetIntensity(Intensity);
+		OutLog += FString::Printf(TEXT("  Set intensity to %.1f\n"), Intensity);
+		bModified = true;
+	}
+
+	// Modify color
+	if (Parameters->HasField(TEXT("color")))
+	{
+		FLinearColor Color = ParseColor(Parameters, TEXT("color"), FLinearColor::White);
+		LightComp->SetLightColor(Color);
+		OutLog += FString::Printf(TEXT("  Set color to (%.2f, %.2f, %.2f)\n"), Color.R, Color.G, Color.B);
+		bModified = true;
+	}
+
+	// Modify radius (point/spot lights)
+	if (Parameters->HasField(TEXT("radius")))
+	{
+		UPointLightComponent* PointLight = Cast<UPointLightComponent>(LightComp);
+		if (PointLight)
+		{
+			double Radius;
+			Parameters->TryGetNumberField(TEXT("radius"), Radius);
+			PointLight->SetAttenuationRadius(Radius);
+			OutLog += FString::Printf(TEXT("  Set radius to %.1f\n"), Radius);
+			bModified = true;
+		}
+	}
+
+	// Modify rotation (directional lights)
+	if (Parameters->HasField(TEXT("rotation")))
+	{
+		FRotator Rotation = ParseRotator(Parameters, TEXT("rotation"), FRotator::ZeroRotator);
+		TargetLight->SetActorRotation(Rotation);
+		OutLog += FString::Printf(TEXT("  Set rotation to %s\n"), *Rotation.ToString());
+		bModified = true;
+	}
+
+	if (bModified)
+	{
+		OutLog += FString::Printf(TEXT("Modified light: %s\n"), *TargetLight->GetName());
+		return true;
+	}
+	else
+	{
+		OutLog += TEXT("No modifications specified\n");
+		return false;
+	}
 }
 
 bool FEnhancedCommandExecutor::ExecuteSetTimeOfDay(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
@@ -633,9 +805,172 @@ bool FEnhancedCommandExecutor::ExecuteSetTimeOfDay(const TSharedPtr<FJsonObject>
 
 bool FEnhancedCommandExecutor::ExecuteSetWeather(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement weather control (fog, rain, clouds)
-	OutLog += TEXT("set_weather: Not yet implemented\n");
-	return false;
+	if (!Parameters.IsValid())
+	{
+		OutLog += TEXT("ERROR: No parameters provided\n");
+		return false;
+	}
+
+	// Get weather type
+	FString WeatherType = TEXT("clear");
+	Parameters->TryGetStringField(TEXT("weather_type"), WeatherType);
+	FString LowerWeather = WeatherType.ToLower();
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Set Weather")));
+
+	bool bModified = false;
+
+	// Handle different weather types
+	if (LowerWeather == TEXT("clear"))
+	{
+		// Clear weather: minimal fog, bright sun
+		// Set fog
+		AExponentialHeightFog* Fog = nullptr;
+		for (TActorIterator<AExponentialHeightFog> It(World); It; ++It)
+		{
+			Fog = *It;
+			break;
+		}
+		if (Fog)
+		{
+			Fog->GetComponent()->SetFogDensity(0.01f);
+			OutLog += TEXT("  Set fog to minimal\n");
+		}
+
+		// Set sun intensity
+		ADirectionalLight* Sun = FindDirectionalLight(World);
+		if (Sun)
+		{
+			Sun->GetLightComponent()->SetIntensity(10.0f);
+			OutLog += TEXT("  Set sun to bright\n");
+		}
+
+		bModified = true;
+	}
+	else if (LowerWeather == TEXT("foggy") || LowerWeather == TEXT("fog"))
+	{
+		// Foggy: heavy fog, dimmer sun
+		AExponentialHeightFog* Fog = nullptr;
+		for (TActorIterator<AExponentialHeightFog> It(World); It; ++It)
+		{
+			Fog = *It;
+			break;
+		}
+		if (!Fog)
+		{
+			Fog = World->SpawnActor<AExponentialHeightFog>();
+		}
+		if (Fog)
+		{
+			Fog->GetComponent()->SetFogDensity(0.05f);
+			Fog->GetComponent()->SetFogInscatteringColor(FLinearColor(0.7f, 0.7f, 0.8f));
+			OutLog += TEXT("  Set heavy fog\n");
+		}
+
+		ADirectionalLight* Sun = FindDirectionalLight(World);
+		if (Sun)
+		{
+			Sun->GetLightComponent()->SetIntensity(5.0f);
+			OutLog += TEXT("  Dimmed sun\n");
+		}
+
+		bModified = true;
+	}
+	else if (LowerWeather == TEXT("overcast") || LowerWeather == TEXT("cloudy"))
+	{
+		// Overcast: medium fog, medium sun
+		AExponentialHeightFog* Fog = nullptr;
+		for (TActorIterator<AExponentialHeightFog> It(World); It; ++It)
+		{
+			Fog = *It;
+			break;
+		}
+		if (!Fog)
+		{
+			Fog = World->SpawnActor<AExponentialHeightFog>();
+		}
+		if (Fog)
+		{
+			Fog->GetComponent()->SetFogDensity(0.02f);
+			Fog->GetComponent()->SetFogInscatteringColor(FLinearColor(0.6f, 0.6f, 0.65f));
+			OutLog += TEXT("  Set overcast fog\n");
+		}
+
+		ADirectionalLight* Sun = FindDirectionalLight(World);
+		if (Sun)
+		{
+			Sun->GetLightComponent()->SetIntensity(7.0f);
+			Sun->GetLightComponent()->SetLightColor(FLinearColor(0.9f, 0.9f, 1.0f));
+			OutLog += TEXT("  Set diffuse sunlight\n");
+		}
+
+		bModified = true;
+	}
+	else if (LowerWeather == TEXT("stormy") || LowerWeather == TEXT("storm"))
+	{
+		// Stormy: dark, heavy fog
+		AExponentialHeightFog* Fog = nullptr;
+		for (TActorIterator<AExponentialHeightFog> It(World); It; ++It)
+		{
+			Fog = *It;
+			break;
+		}
+		if (!Fog)
+		{
+			Fog = World->SpawnActor<AExponentialHeightFog>();
+		}
+		if (Fog)
+		{
+			Fog->GetComponent()->SetFogDensity(0.08f);
+			Fog->GetComponent()->SetFogInscatteringColor(FLinearColor(0.4f, 0.4f, 0.5f));
+			OutLog += TEXT("  Set stormy conditions\n");
+		}
+
+		ADirectionalLight* Sun = FindDirectionalLight(World);
+		if (Sun)
+		{
+			Sun->GetLightComponent()->SetIntensity(3.0f);
+			Sun->GetLightComponent()->SetLightColor(FLinearColor(0.7f, 0.7f, 0.8f));
+			OutLog += TEXT("  Set dark lighting\n");
+		}
+
+		bModified = true;
+	}
+
+	// Custom intensity/density if specified
+	if (Parameters->HasField(TEXT("fog_density")))
+	{
+		double Density;
+		Parameters->TryGetNumberField(TEXT("fog_density"), Density);
+
+		AExponentialHeightFog* Fog = nullptr;
+		for (TActorIterator<AExponentialHeightFog> It(World); It; ++It)
+		{
+			Fog = *It;
+			break;
+		}
+		if (!Fog)
+		{
+			Fog = World->SpawnActor<AExponentialHeightFog>();
+		}
+		if (Fog)
+		{
+			Fog->GetComponent()->SetFogDensity(Density);
+			OutLog += FString::Printf(TEXT("  Custom fog density: %.3f\n"), Density);
+		}
+		bModified = true;
+	}
+
+	if (bModified)
+	{
+		OutLog += FString::Printf(TEXT("Set weather to: %s\n"), *WeatherType);
+		return true;
+	}
+	else
+	{
+		OutLog += TEXT("Unknown weather type. Use: clear, foggy, overcast, stormy\n");
+		return false;
+	}
 }
 
 bool FEnhancedCommandExecutor::ExecuteSetFog(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
@@ -713,9 +1048,101 @@ bool FEnhancedCommandExecutor::ExecuteCreateCamera(const TSharedPtr<FJsonObject>
 
 bool FEnhancedCommandExecutor::ExecutePlayAnimation(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement animation playback
-	OutLog += TEXT("play_animation: Not yet implemented\n");
-	return false;
+	if (!Parameters.IsValid())
+	{
+		OutLog += TEXT("ERROR: No parameters provided\n");
+		return false;
+	}
+
+	// Get animation asset path or name
+	FString AnimationQuery;
+	if (!Parameters->TryGetStringField(TEXT("animation"), AnimationQuery))
+	{
+		OutLog += TEXT("ERROR: No animation specified\n");
+		return false;
+	}
+
+	// Get target (selected actors with skeletal mesh components)
+	if (!GEditor || !GEditor->GetSelectedActorCount())
+	{
+		OutLog += TEXT("ERROR: No actors selected. Select actors with skeletal meshes.\n");
+		return false;
+	}
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Play Animation")));
+
+	int32 ActorsAnimated = 0;
+
+	for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+	{
+		AActor* Actor = Cast<AActor>(*It);
+		if (!Actor) continue;
+
+		// Find skeletal mesh component
+		USkeletalMeshComponent* SkelMeshComp = Actor->FindComponentByClass<USkeletalMeshComponent>();
+		if (!SkelMeshComp) continue;
+
+		// Try to load animation asset
+		UAnimationAsset* AnimAsset = nullptr;
+
+		// First try as direct path
+		AnimAsset = LoadObject<UAnimationAsset>(nullptr, *AnimationQuery);
+
+		// If not found, try searching asset catalog
+		if (!AnimAsset)
+		{
+			// Search for animation assets
+			TArray<FAssetMetadata> AnimAssets;
+			if (AssetCatalog.SearchAssets(AnimationQuery, AnimAssets, 5) > 0)
+			{
+				for (const FAssetMetadata& Asset : AnimAssets)
+				{
+					if (Asset.AssetType == TEXT("AnimSequence") || Asset.AssetType == TEXT("AnimMontage"))
+					{
+						AnimAsset = LoadObject<UAnimationAsset>(nullptr, *Asset.AssetPath);
+						if (AnimAsset) break;
+					}
+				}
+			}
+		}
+
+		if (!AnimAsset)
+		{
+			OutLog += FString::Printf(TEXT("  Could not find animation: %s\n"), *AnimationQuery);
+			continue;
+		}
+
+		// Play animation
+		UAnimSequence* AnimSequence = Cast<UAnimSequence>(AnimAsset);
+		if (AnimSequence)
+		{
+			SkelMeshComp->PlayAnimation(AnimSequence, false);
+			OutLog += FString::Printf(TEXT("  Playing animation on %s\n"), *Actor->GetName());
+			ActorsAnimated++;
+		}
+		else
+		{
+			// Try as montage
+			UAnimMontage* AnimMontage = Cast<UAnimMontage>(AnimAsset);
+			if (AnimMontage && SkelMeshComp->GetAnimInstance())
+			{
+				SkelMeshComp->GetAnimInstance()->Montage_Play(AnimMontage);
+				OutLog += FString::Printf(TEXT("  Playing montage on %s\n"), *Actor->GetName());
+				ActorsAnimated++;
+			}
+		}
+	}
+
+	if (ActorsAnimated > 0)
+	{
+		OutLog += FString::Printf(TEXT("Played animation on %d actors\n"), ActorsAnimated);
+		return true;
+	}
+	else
+	{
+		OutLog += TEXT("No valid skeletal mesh components found on selected actors\n");
+		return false;
+	}
 }
 
 // ===== ACTOR MANIPULATION =====
@@ -810,9 +1237,115 @@ bool FEnhancedCommandExecutor::ExecuteDeleteActor(const TSharedPtr<FJsonObject>&
 
 bool FEnhancedCommandExecutor::ExecuteDuplicateActor(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement actor duplication
-	OutLog += TEXT("duplicate_actor: Not yet implemented\n");
-	return false;
+	if (!GEditor || !GEditor->GetSelectedActorCount())
+	{
+		OutLog += TEXT("ERROR: No actors selected\n");
+		return false;
+	}
+
+	// Get duplication parameters
+	int32 Count = 1;
+	Parameters->TryGetNumberField(TEXT("count"), Count);
+	Count = FMath::Clamp(Count, 1, 100);
+
+	FVector Offset = ParseVector(Parameters, TEXT("offset"), FVector(500.0f, 0.0f, 0.0f));
+	FString Pattern = TEXT("linear");
+	Parameters->TryGetStringField(TEXT("pattern"), Pattern);
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Duplicate Actor")));
+
+	TArray<AActor*> SourceActors;
+	TArray<AActor*> NewActors;
+
+	// Collect source actors
+	for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+	{
+		AActor* Actor = Cast<AActor>(*It);
+		if (Actor)
+		{
+			SourceActors.Add(Actor);
+		}
+	}
+
+	// Duplicate each source actor
+	for (AActor* SourceActor : SourceActors)
+	{
+		FVector BaseLocation = SourceActor->GetActorLocation();
+		FRotator BaseRotation = SourceActor->GetActorRotation();
+
+		for (int32 i = 0; i < Count; i++)
+		{
+			// Calculate position based on pattern
+			FVector NewLocation = BaseLocation;
+
+			if (Pattern == TEXT("linear") || Pattern == TEXT("line"))
+			{
+				NewLocation = BaseLocation + Offset * (i + 1);
+			}
+			else if (Pattern == TEXT("grid"))
+			{
+				int32 GridSize = FMath::CeilToInt(FMath::Sqrt(Count));
+				int32 Row = i / GridSize;
+				int32 Col = i % GridSize;
+				NewLocation = BaseLocation + FVector(Row * Offset.X, Col * Offset.Y, 0.0f);
+			}
+			else if (Pattern == TEXT("circle"))
+			{
+				float Angle = (360.0f / Count) * i;
+				float AngleRad = FMath::DegreesToRadians(Angle);
+				float Radius = Offset.Size();
+				NewLocation = BaseLocation + FVector(
+					FMath::Cos(AngleRad) * Radius,
+					FMath::Sin(AngleRad) * Radius,
+					0.0f
+				);
+			}
+			else if (Pattern == TEXT("scatter"))
+			{
+				float Radius = Offset.Size();
+				float Angle = FMath::FRandRange(0.0f, 360.0f);
+				float Distance = FMath::FRandRange(0.0f, Radius);
+				float AngleRad = FMath::DegreesToRadians(Angle);
+				NewLocation = BaseLocation + FVector(
+					FMath::Cos(AngleRad) * Distance,
+					FMath::Sin(AngleRad) * Distance,
+					FMath::FRandRange(-Offset.Z, Offset.Z)
+				);
+			}
+
+			// Duplicate actor
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Template = SourceActor;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			AActor* NewActor = World->SpawnActor<AActor>(
+				SourceActor->GetClass(),
+				NewLocation,
+				BaseRotation,
+				SpawnParams
+			);
+
+			if (NewActor)
+			{
+				NewActor->SetActorLabel(FString::Printf(TEXT("%s_Copy_%d"), *SourceActor->GetActorLabel(), i + 1));
+				NewActors.Add(NewActor);
+			}
+		}
+	}
+
+	// Select duplicated actors
+	if (NewActors.Num() > 0)
+	{
+		SelectActors(NewActors);
+		OutLog += FString::Printf(TEXT("Duplicated %d actors into %d copies in %s pattern\n"),
+			SourceActors.Num(), NewActors.Num(), *Pattern);
+		return true;
+	}
+	else
+	{
+		OutLog += TEXT("Failed to duplicate actors\n");
+		return false;
+	}
 }
 
 // ===== BATCH OPERATIONS =====
@@ -825,9 +1358,157 @@ bool FEnhancedCommandExecutor::ExecuteBatchPlace(const TSharedPtr<FJsonObject>& 
 
 bool FEnhancedCommandExecutor::ExecuteArrangePattern(const TSharedPtr<FJsonObject>& Parameters, UWorld* World, FString& OutLog)
 {
-	// TODO: Implement pattern arrangement
-	OutLog += TEXT("arrange_pattern: Not yet implemented\n");
-	return false;
+	if (!GEditor || !GEditor->GetSelectedActorCount())
+	{
+		OutLog += TEXT("ERROR: No actors selected\n");
+		return false;
+	}
+
+	// Get pattern parameters
+	FString Pattern = TEXT("grid");
+	Parameters->TryGetStringField(TEXT("pattern"), Pattern);
+
+	float Spacing = 500.0f; // 5 meters default
+	Parameters->TryGetNumberField(TEXT("spacing"), Spacing);
+
+	FVector Center = FVector::ZeroVector;
+	if (Parameters->HasField(TEXT("center")))
+	{
+		Center = ParseVector(Parameters, TEXT("center"), FVector::ZeroVector);
+	}
+	else
+	{
+		// Calculate center of selected actors
+		int32 Count = 0;
+		for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+		{
+			AActor* Actor = Cast<AActor>(*It);
+			if (Actor)
+			{
+				Center += Actor->GetActorLocation();
+				Count++;
+			}
+		}
+		if (Count > 0)
+		{
+			Center /= Count;
+		}
+	}
+
+	FScopedTransaction Transaction(FText::FromString(TEXT("Arrange Pattern")));
+
+	TArray<AActor*> ActorsToArrange;
+	for (FSelectionIterator It(GEditor->GetSelectedActorIterator()); It; ++It)
+	{
+		AActor* Actor = Cast<AActor>(*It);
+		if (Actor)
+		{
+			ActorsToArrange.Add(Actor);
+		}
+	}
+
+	if (ActorsToArrange.Num() == 0)
+	{
+		OutLog += TEXT("No valid actors to arrange\n");
+		return false;
+	}
+
+	// Arrange actors based on pattern
+	if (Pattern == TEXT("grid"))
+	{
+		int32 GridSize = FMath::CeilToInt(FMath::Sqrt(ActorsToArrange.Num()));
+		int32 HalfSize = GridSize / 2;
+
+		for (int32 i = 0; i < ActorsToArrange.Num(); i++)
+		{
+			int32 Row = i / GridSize;
+			int32 Col = i % GridSize;
+
+			FVector NewLocation = Center + FVector(
+				(Row - HalfSize) * Spacing,
+				(Col - HalfSize) * Spacing,
+				0.0f
+			);
+
+			ActorsToArrange[i]->SetActorLocation(NewLocation);
+		}
+
+		OutLog += FString::Printf(TEXT("Arranged %d actors in %dx%d grid with %.1f spacing\n"),
+			ActorsToArrange.Num(), GridSize, GridSize, Spacing);
+	}
+	else if (Pattern == TEXT("circle"))
+	{
+		float AngleStep = 360.0f / ActorsToArrange.Num();
+
+		for (int32 i = 0; i < ActorsToArrange.Num(); i++)
+		{
+			float Angle = AngleStep * i;
+			float AngleRad = FMath::DegreesToRadians(Angle);
+
+			FVector NewLocation = Center + FVector(
+				FMath::Cos(AngleRad) * Spacing,
+				FMath::Sin(AngleRad) * Spacing,
+				0.0f
+			);
+
+			ActorsToArrange[i]->SetActorLocation(NewLocation);
+
+			// Optional: Face inward
+			FRotator LookAtCenter = (Center - NewLocation).Rotation();
+			ActorsToArrange[i]->SetActorRotation(FRotator(0.0f, LookAtCenter.Yaw, 0.0f));
+		}
+
+		OutLog += FString::Printf(TEXT("Arranged %d actors in circle with %.1f radius\n"),
+			ActorsToArrange.Num(), Spacing);
+	}
+	else if (Pattern == TEXT("line"))
+	{
+		int32 HalfCount = ActorsToArrange.Num() / 2;
+
+		for (int32 i = 0; i < ActorsToArrange.Num(); i++)
+		{
+			FVector NewLocation = Center + FVector((i - HalfCount) * Spacing, 0.0f, 0.0f);
+			ActorsToArrange[i]->SetActorLocation(NewLocation);
+		}
+
+		OutLog += FString::Printf(TEXT("Arranged %d actors in line with %.1f spacing\n"),
+			ActorsToArrange.Num(), Spacing);
+	}
+	else if (Pattern == TEXT("sphere"))
+	{
+		// Fibonacci sphere distribution for even spacing
+		float GoldenRatio = (1.0f + FMath::Sqrt(5.0f)) / 2.0f;
+		float AngleIncrement = PI * 2.0f * GoldenRatio;
+
+		for (int32 i = 0; i < ActorsToArrange.Num(); i++)
+		{
+			float t = (float)i / ActorsToArrange.Num();
+			float Inclination = FMath::Acos(1.0f - 2.0f * t);
+			float Azimuth = AngleIncrement * i;
+
+			FVector NewLocation = Center + FVector(
+				FMath::Sin(Inclination) * FMath::Cos(Azimuth) * Spacing,
+				FMath::Sin(Inclination) * FMath::Sin(Azimuth) * Spacing,
+				FMath::Cos(Inclination) * Spacing
+			);
+
+			ActorsToArrange[i]->SetActorLocation(NewLocation);
+
+			// Face outward
+			FRotator LookOutward = (NewLocation - Center).Rotation();
+			ActorsToArrange[i]->SetActorRotation(LookOutward);
+		}
+
+		OutLog += FString::Printf(TEXT("Arranged %d actors on sphere with %.1f radius\n"),
+			ActorsToArrange.Num(), Spacing);
+	}
+	else
+	{
+		OutLog += TEXT("Unknown pattern. Use: grid, circle, line, sphere\n");
+		return false;
+	}
+
+	return true;
 }
 
 // ===== LANDSCAPE (delegate to LandscapeManager) =====
