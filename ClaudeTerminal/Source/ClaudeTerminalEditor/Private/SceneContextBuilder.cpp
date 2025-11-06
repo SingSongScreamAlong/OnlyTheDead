@@ -3,6 +3,8 @@
 #include "SceneContextBuilder.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/PlayerStart.h"
+#include "GameFramework/WorldSettings.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/Light.h"
 #include "Components/StaticMeshComponent.h"

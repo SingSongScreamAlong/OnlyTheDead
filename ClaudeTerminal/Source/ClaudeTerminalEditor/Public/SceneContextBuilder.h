@@ -11,7 +11,7 @@ class AActor;
  * Builds context information about the current scene to send to Claude
  * This helps Claude understand what's already in the level
  */
-class CLAUDETERMINAL_API FSceneContextBuilder
+class CLAUDETERMINALEDITOR_API FSceneContextBuilder
 {
 public:
 	FSceneContextBuilder();

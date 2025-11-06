@@ -70,6 +70,19 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 					return FReply::Handled();
 				})
 			]
+
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(5.0f, 0.0f)
+			[
+				SNew(SButton)
+				.Text(LOCTEXT("HelpButton", "Help"))
+				.OnClicked_Lambda([this]() -> FReply
+				{
+					AppendOutput(FCommandExecutor::GetHelpText(), FLinearColor(0.7f, 1.0f, 0.7f));
+					return FReply::Handled();
+				})
+			]
 		]
 
 		// Separator

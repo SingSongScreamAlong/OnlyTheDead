@@ -223,7 +223,15 @@ bool FCommandExecutor::ExecuteSpawnActor(const TSharedPtr<FJsonObject>& Paramete
 
 	NewActor->SetActorScale3D(Scale);
 
-	OutLog = FString::Printf(TEXT("Successfully spawned '%s' at location %s."), *ClassName, *Location.ToString());
+	// Select the newly spawned actor for visual feedback
+	if (GEditor)
+	{
+		GEditor->SelectNone(false, true);
+		GEditor->SelectActor(NewActor, true, true);
+		GEditor->NoteSelectionChange();
+	}
+
+	OutLog = FString::Printf(TEXT("Successfully spawned '%s' at location %s (now selected)."), *ClassName, *Location.ToString());
 	return true;
 }
 
@@ -293,7 +301,15 @@ bool FCommandExecutor::ExecuteCreateRoad(const TSharedPtr<FJsonObject>& Paramete
 		}
 	}
 
-	OutLog = FString::Printf(TEXT("Successfully created road from %s to %s (width: %.1f)."),
+	// Select the road actor for visual feedback
+	if (GEditor)
+	{
+		GEditor->SelectNone(false, true);
+		GEditor->SelectActor(RoadActor, true, true);
+		GEditor->NoteSelectionChange();
+	}
+
+	OutLog = FString::Printf(TEXT("Successfully created road from %s to %s (width: %.1f, now selected)."),
 		*StartLocation.ToString(), *EndLocation.ToString(), Width);
 	return true;
 }
@@ -331,7 +347,15 @@ bool FCommandExecutor::ExecutePlaceModel(const TSharedPtr<FJsonObject>& Paramete
 	MeshActor->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 	MeshActor->SetActorScale3D(Scale);
 
-	OutLog = FString::Printf(TEXT("Successfully placed model '%s' at location %s."), *MeshPath, *Location.ToString());
+	// Select the newly placed mesh for visual feedback
+	if (GEditor)
+	{
+		GEditor->SelectNone(false, true);
+		GEditor->SelectActor(MeshActor, true, true);
+		GEditor->NoteSelectionChange();
+	}
+
+	OutLog = FString::Printf(TEXT("Successfully placed model '%s' at location %s (now selected)."), *MeshPath, *Location.ToString());
 	return true;
 }
 
@@ -461,4 +485,60 @@ FRotator FCommandExecutor::ParseRotator(const TSharedPtr<FJsonObject>& Obj, cons
 	(*RotatorObj)->TryGetNumberField(TEXT("roll"), Result.Roll);
 
 	return Result;
+}
+
+FString FCommandExecutor::GetHelpText()
+{
+	return TEXT(
+		"=== CLAUDE TERMINAL HELP ===\n\n"
+		"I can help you manipulate Unreal Engine 5 using natural language.\n"
+		"Just tell me what you want to do, and I'll execute the appropriate commands.\n\n"
+
+		"AVAILABLE COMMANDS:\n\n"
+
+		"1. spawn_actor - Create any UE5 actor\n"
+		"   Examples:\n"
+		"   - 'Spawn a cube at 0,0,100'\n"
+		"   - 'Create a point light at 1000,500,200'\n"
+		"   - 'Place a player start here'\n\n"
+
+		"2. create_road - Build spline-based roads\n"
+		"   Examples:\n"
+		"   - 'Create a road from 0,0,0 to 1000,0,0'\n"
+		"   - 'Make a 6-meter wide road from A to B'\n"
+		"   - 'Build a dirt road connecting these points'\n\n"
+
+		"3. place_model - Position static meshes\n"
+		"   Examples:\n"
+		"   - 'Place the trench mesh at 1000,500,0'\n"
+		"   - 'Add a tree at 500,200,0 with scale 2'\n"
+		"   - 'Put a tank model at the player location'\n\n"
+
+		"4. modify_landscape - Sculpt terrain (limited)\n"
+		"   Examples:\n"
+		"   - 'Raise the terrain at 0,0,0 with radius 500'\n"
+		"   - 'Flatten the ground under the base'\n"
+		"   - 'Smooth the landscape around spawn point'\n\n"
+
+		"5. create_material - Make material instances\n"
+		"   Examples:\n"
+		"   - 'Create a material from M_Basic with red color'\n"
+		"   - 'Make a new material instance for metal'\n\n"
+
+		"TIPS:\n"
+		"- I can see what's selected in your viewport\n"
+		"- I know your camera location\n"
+		"- I understand relative positions ('above', 'near', 'between')\n"
+		"- You can undo any command with Ctrl+Z\n"
+		"- Ask me questions! I can explain concepts and help troubleshoot\n\n"
+
+		"EXAMPLES:\n"
+		"- 'What's in this level?' - I'll describe the scene\n"
+		"- 'Move selected actor 100 units up' - I see your selection\n"
+		"- 'Create a trench from here to there' - Use camera for reference\n"
+		"- 'How do I create a material?' - I'll explain and help\n\n"
+
+		"Just talk to me naturally - I'll figure out what you need!\n"
+		"================================\n"
+	);
 }

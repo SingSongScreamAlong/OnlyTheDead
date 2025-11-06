@@ -40,4 +40,11 @@ private:
 	// Helper functions
 	FVector ParseVector(const TSharedPtr<FJsonObject>& Obj, const FString& FieldName, const FVector& Default = FVector::ZeroVector);
 	FRotator ParseRotator(const TSharedPtr<FJsonObject>& Obj, const FString& FieldName, const FRotator& Default = FRotator::ZeroRotator);
+
+public:
+	/**
+	 * Get help text describing available commands
+	 * @return Formatted help text
+	 */
+	static FString GetHelpText();
 };
