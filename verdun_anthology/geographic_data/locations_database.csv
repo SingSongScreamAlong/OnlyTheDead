@@ -1,0 +1,68 @@
+name,type,latitude,longitude,elevation_m,significance,phase,date_key,notes
+Fort Douaumont,fortification,49.2106,5.4272,388,Primary objective - largest fort in Verdun defensive system,multiple,"Feb 25 (lost), Oct 24 (recaptured)",Lost to Germans Feb 25 after minimal resistance; recaptured Oct 24 after massive bombardment
+Fort Vaux,fortification,49.1989,5.4494,390,Major defensive position - scene of 7-day siege,multiple,"Jun 7 (lost), Nov 2 (recaptured)",Heroic defense May 31-Jun 7; garrison held despite no water; recaptured Nov 2 after German evacuation
+Fort Souville,fortification,49.1908,5.4222,380,Southernmost German advance point (June 1916),Phase II,Jun 23,German high-water mark; never captured by Germans
+Fort Tavannes,fortification,49.1856,5.4256,350,Tunnel fort - underground shelter and supply depot,multiple,all phases,Major tunnel system; site of ammunition explosion May 4
+Fort Froideterre,fortification,49.1944,5.3931,345,Left bank defensive position,Phase I-II,Feb-Jun,Supported defense of Left Bank
+Fort Thiaumont,fortification,49.2058,5.4333,385,Contested position between Douaumont and Fleury,Phase II-IV,Apr-Sep,Changed hands 16 times during battle
+Mort-Homme (Hill 295),hill,49.2389,5.3331,295,Key Left Bank position - brutal fighting March-May,Phase I-II,Mar-May,"The Dead Man" - changed hands multiple times
+Hill 304,hill,49.2403,5.3214,304,Left Bank height commanding Verdun,Phase I-II,Mar-May,Named for elevation; critical for observing French lines
+Côte 304 West,terrain,49.2397,5.3189,300,Western approaches to Hill 304,Phase I-II,Mar-May,German assault routes
+Côte de l'Oie,hill,49.2181,5.4278,361,Ridge near Fort Douaumont,Phase I,Feb,Early German objective
+Côte du Poivre,hill,49.2033,5.4394,365,Hill between Douaumont and Vaux,Phase I-II,Feb-Jun,Contested throughout battle
+Bois Bourrus Ridge,ridge,49.2153,5.4211,370,Ridge system north of Douaumont,Phase I,Feb,German advance route
+Hassoule Ravine,ravine,49.2114,5.4186,340,Supply route to Fort Douaumont,multiple,all phases,Critical for fort resupply
+Verdun,city,49.1594,5.3864,200,City being defended - French headquarters,all,all phases,City never fell; population evacuated
+Fleury-devant-Douaumont,destroyed_village,49.2000,5.4350,360,Village destroyed and recaptured multiple times,Phase II-V,Jun-Oct,"Changed hands 16 times; completely destroyed; ""village that died for France"""
+Douaumont village,destroyed_village,49.2136,5.4258,365,Village near fort - totally destroyed,Phase I,Feb 25,Captured same day as fort; never rebuilt
+Vaux village,destroyed_village,49.2017,5.4478,375,Village near Fort Vaux - destroyed,Phase II,Jun,Destroyed during siege of fort
+Beaumont,destroyed_village,49.2278,5.4344,345,Village captured early in German offensive,Phase I,Feb 24,One of first villages to fall
+Ornes,destroyed_village,49.2319,5.4572,330,Northern village - German occupation,Phase I,Feb 24,"Zone Rouge (Red Zone) after war; never rebuilt"
+Louvemont,destroyed_village,49.2264,5.4453,355,Village north of Douaumont,Phase I-V,Feb-Nov,Destroyed Feb; partially recaptured Nov
+Bezonvaux,destroyed_village,49.2078,5.4594,340,Eastern village near Vaux,Phase II-V,Jun-Nov,German occupation Jun; recaptured Nov 11-12
+Vaux-devant-Damloup,destroyed_village,49.1953,5.4547,365,Village east of Fort Vaux,Phase II-V,Jun-Nov,Captured by French Nov 3 after Vaux recapture
+Haumont,destroyed_village,49.2356,5.4208,338,Northern village - completely obliterated,Phase I,Feb 22,"First village destroyed; ""disappeared from the map"""
+Cumières,destroyed_village,49.2297,5.3653,240,Left Bank village - destroyed,Phase I-II,Mar,Destroyed during Left Bank fighting
+Chattancourt,destroyed_village,49.2361,5.3472,250,Left Bank village near Mort-Homme,Phase I-II,Mar-May,German occupation; destroyed
+Bois des Caures,woods,49.2322,5.4106,320,Forest - site of initial German assault,Phase I,Feb 21,Col. Driant's defense; first day of battle
+Bois de la Caillette,woods,49.1947,5.4314,355,Woods south of Douaumont,Phase II,Apr-Jun,Scene of intense fighting
+Bois d'Haumont,woods,woods,49.2331,5.4250,335,Forest north of battlefield,Phase I,Feb 22-23,Early German capture
+Bois de Fosses,woods,49.2264,5.3950,310,Woods on Left Bank,Phase I-II,Mar,Contested during Left Bank operations
+Bois de Cumières,woods,49.2347,5.3711,265,Left Bank forest,Phase I-II,Mar,Near Cumières village
+Herbebois,woods,49.2425,5.4331,315,Northern woods,Phase I,Feb,German assembly area
+Hardaumont Wood,woods,49.2011,5.4442,375,Woods north of Fort Vaux,Phase V,Nov,Partially captured Nov 4-5
+Meuse River,river,49.1600,5.3900,190,Major river west of Verdun,all,all phases,Natural barrier; crossed by bridges at Verdun
+Ravin de la Dame,ravine,49.2003,5.4264,350,Ravine between Douaumont and Vaux,multiple,all phases,Supply and communication route
+Ravin de la Couleuvre,ravine,49.1981,5.4333,355,Ravine south of Thiaumont,multiple,all phases,Shelter from artillery
+Ravin des Vignes,ravine,49.2044,5.4186,360,Ravine west of Douaumont,multiple,all phases,French supply route
+Tunnel de Tavannes,tunnel,49.1856,5.4256,340,Underground tunnel system at Fort Tavannes,multiple,all phases,Housed thousands of soldiers; site of May 4 explosion (500+ killed)
+Voie Sacrée (Sacred Way),road,49.1594,5.3864,200-250,Supply road from Bar-le-Duc to Verdun (75km),all,all phases,"Lifeline of Verdun; 3,000 trucks/day; one vehicle every 14 seconds"
+Bar-le-Duc,city,48.7700,5.1600,188,Southern terminus of Voie Sacrée,all,all phases,Main supply hub for Verdun operations
+R1 Trench,trench,49.2092,5.4289,380,Main French trench line near Douaumont,multiple,Feb-Oct,Key defensive position
+R2 Trench,trench,49.2078,5.4306,375,Secondary trench line,multiple,Feb-Oct,Fallback position
+German Front Line (Feb 21),line,49.2400,5.4200,variable,German starting line Feb 21 1916,Phase I,Feb 21,Jumped off at 07:15 after 9-hour bombardment
+German High-Water Mark (Jun 23),point,49.1908,5.4222,380,Furthest German advance - Fort Souville,Phase II,Jun 23,After this date French counteroffensives begin reversing gains
+French Front Line (Dec 18),line,49.2350,5.4250,variable,French line at battle end Dec 18 1916,Phase V,Dec 18,Restored to near Feb 21 positions; Germans lost nearly all gains
+Observation Post - Mort-Homme,observation,49.2389,5.3331,295,German artillery observation position,Phase II,Mar-May,After capture commanded view of Verdun
+Observation Post - Douaumont,observation,49.2106,5.4272,388,Fort's observation cupola - critical sightline,multiple,Feb-Oct,360-degree view of battlefield
+Battery Position - Bois d'Haumont,artillery,49.2331,5.4250,335,German heavy artillery positions,Phase I,Feb,Housed 420mm mortars (Big Bertha type)
+Battery Position - Azannes,artillery,49.2758,5.4594,280,German long-range artillery,all,all phases,Fired on Verdun city and rear areas
+French Artillery - Left Bank,artillery,49.2100,5.3500,250-300,French counter-battery positions,all,all phases,Protected Verdun's western approaches
+PC 119 (Command Post),command,49.2014,5.4139,365,French forward command post,multiple,all phases,Underground bunker system
+Souville Command Post,command,49.1908,5.4222,375,Command bunker at Fort Souville,multiple,Jun-Dec,Critical communications hub
+Battlefield Center,reference,49.2050,5.4300,365,Approximate geographic center of combat zone,all,all phases,Roughly equidistant from Douaumont/Vaux/Fleury
+Right Bank Zone,zone,49.2000,5.4400,variable,Eastern battlefield (primary combat area),all,all phases,35 km² combat zone; majority of casualties
+Left Bank Zone,zone,49.2350,5.3400,variable,Western battlefield (Mort-Homme/Hill 304),Phase I-II,Feb-May,25 km² combat zone; fierce fighting Mar-May
+No-Man's-Land (typical),zone,variable,variable,variable,Area between opposing trenches,all,all phases,Width: 50-500 meters depending on sector; instant death zone
+Zone Rouge (Red Zone),zone,49.2150,5.4350,variable,Post-war exclusion zone - too dangerous for habitation,post-war,all phases,"100+ km² still restricted today; unexploded ordnance, soil contamination"
+Faubourg Pavé,suburb,49.1636,5.3886,205,Verdun suburb - shelled constantly,all,all phases,Residential area evacuated; artillery target
+Citadel of Verdun,fortification,49.1603,5.3847,210,Underground fortress beneath Verdun city,all,all phases,Housed 1000s of troops; command center; hospital
+Bras-sur-Meuse,village,49.1822,5.4017,230,Supply village south of battlefield,all,all phases,Logistics hub; hospital facilities
+Nixéville,village,49.1450,5.3992,215,Southern village - field hospital location,all,all phases,Casualty clearing station
+Eix,village,49.2686,5.4808,295,Northern village - German rear area,all,all phases,German logistics and rest area
+Damvillers,village,49.3342,5.4036,260,Northern German position,all,all phases,German field hospitals and reserves
+Spincourt,village,49.3014,5.5642,250,Northeast German logistics hub,all,all phases,Rail terminus for German supplies
+Stenay,town,49.4917,5.1889,165,German rear headquarters,all,all phases,Crown Prince Wilhelm's headquarters
+Dugny,village,49.1731,5.3644,225,Western village - French logistics,all,all phases,Supply depot for Left Bank operations
+Charny,village,49.1950,5.3622,235,Left Bank rear area,all,all phases,Medical facilities and rest billets
+Baleycourt,village,49.1797,5.3381,245,Western logistics village,all,all phases,Supply staging area

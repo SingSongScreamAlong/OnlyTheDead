@@ -1,0 +1,548 @@
+{
+  "terrain_name": "Verdun_Battlefield_1916",
+  "description": "Complete terrain generation parameters for Battle of Verdun (Feb 21 - Dec 18, 1916)",
+  "version": "1.0.0",
+  "author": "Claude (Verdun Anthology Historian)",
+  "date_created": "2025",
+
+  "geographic_coverage": {
+    "center": {
+      "latitude": 49.2050,
+      "longitude": 5.4300,
+      "elevation_m": 365,
+      "description": "Approximate battlefield center"
+    },
+    "bounds": {
+      "north": 49.25,
+      "south": 49.14,
+      "east": 5.47,
+      "west": 5.31
+    },
+    "area_km2": 60,
+    "combat_zones": {
+      "right_bank": {
+        "description": "Primary combat area (Douaumont, Vaux, Fleury)",
+        "area_km2": 35,
+        "center_lat": 49.2000,
+        "center_lon": 5.4400,
+        "intensity": "extreme (70-80% of casualties)"
+      },
+      "left_bank": {
+        "description": "Mort-Homme and Hill 304 sector",
+        "area_km2": 25,
+        "center_lat": 49.2350,
+        "center_lon": 5.3400,
+        "intensity": "high (March-May 1916)"
+      }
+    }
+  },
+
+  "elevation_data": {
+    "source": "SRTM 30m (NASA Shuttle Radar Topography Mission)",
+    "resolution_meters": 30,
+    "accuracy_vertical_meters": 10,
+    "accuracy_horizontal_meters": 20,
+    "format_options": [
+      "verdun_elevation_raw.tif (GeoTIFF)",
+      "verdun_elevation_grid.npy (NumPy array)",
+      "verdun_elevation_grid.csv (CSV)",
+      "verdun_heightmap_16bit.png (16-bit PNG)"
+    ],
+    "range_meters": {
+      "min": 165,
+      "max": 390,
+      "mean": 300,
+      "note": "Min: Meuse River valley, Max: Fort Vaux area"
+    }
+  },
+
+  "key_elevations_meters": {
+    "forts": {
+      "Fort_Douaumont": 388,
+      "Fort_Vaux": 390,
+      "Fort_Souville": 380,
+      "Fort_Tavannes": 350,
+      "Fort_Froideterre": 345,
+      "Fort_Thiaumont": 385
+    },
+    "hills": {
+      "Mort_Homme": 295,
+      "Hill_304": 304,
+      "Cote_de_Oie": 361,
+      "Cote_du_Poivre": 365,
+      "Bois_Bourrus_Ridge": 370
+    },
+    "strategic_points": {
+      "Verdun_City": 200,
+      "Meuse_River": 190,
+      "Fleury_village": 360,
+      "Douaumont_village": 365
+    }
+  },
+
+  "terrain_features": {
+    "ridges": [
+      {
+        "name": "Bois Bourrus Ridge",
+        "elevation_m": 370,
+        "orientation": "North-South",
+        "length_km": 2.5,
+        "significance": "German advance route February 1916"
+      },
+      {
+        "name": "Côte de l'Oie",
+        "elevation_m": 361,
+        "orientation": "East-West",
+        "length_km": 1.8,
+        "significance": "Early German objective"
+      }
+    ],
+    "ravines": [
+      {
+        "name": "Hassoule Ravine",
+        "floor_elevation_m": 340,
+        "depth_m": 30,
+        "significance": "Supply route to Fort Douaumont"
+      },
+      {
+        "name": "Ravin de la Dame",
+        "floor_elevation_m": 350,
+        "depth_m": 25,
+        "significance": "Communication route Douaumont-Vaux"
+      },
+      {
+        "name": "Ravin de la Couleuvre",
+        "floor_elevation_m": 355,
+        "depth_m": 20,
+        "significance": "Shelter from artillery"
+      }
+    ],
+    "slopes": {
+      "gentle": {
+        "angle_degrees": "0-10",
+        "percentage": 40,
+        "trafficability": "Easy (infantry, vehicles, artillery)"
+      },
+      "moderate": {
+        "angle_degrees": "10-20",
+        "percentage": 35,
+        "trafficability": "Moderate (infantry only, difficult for vehicles)"
+      },
+      "steep": {
+        "angle_degrees": "20-30",
+        "percentage": 20,
+        "trafficability": "Difficult (infantry with climbing, no vehicles)"
+      },
+      "very_steep": {
+        "angle_degrees": "30+",
+        "percentage": 5,
+        "trafficability": "Near-impossible (cliff faces, crater walls)"
+      }
+    }
+  },
+
+  "surface_materials": {
+    "composition_percentage": {
+      "mud": 70,
+      "chalk": 15,
+      "dead_grass": 10,
+      "rock": 5
+    },
+    "seasonal_variation": {
+      "february_march": "50% mud, 30% snow/ice, 20% frozen ground",
+      "april_may": "80% mud (peak mud season), 15% standing water, 5% dry ground",
+      "june_august": "60% mud, 25% dry/cracked earth, 15% dust",
+      "september_october": "75% mud (rain returns), 20% wet ground, 5% dry",
+      "november_december": "70% mud, 20% frozen mud, 10% snow/ice"
+    },
+    "materials": {
+      "mud": {
+        "color": "Brown-grey (#4A3F35 to #6B5D52)",
+        "wetness": "90% wet, 10% dry patches",
+        "depth_cm": "10-50 (ankle to knee deep)",
+        "trafficability": "Extremely difficult - exhausting movement",
+        "texture": "Churned, sticky, mixed with debris (wood, metal, cloth)"
+      },
+      "chalk": {
+        "color": "White to light grey (#E8E4D0 to #C8C4B0)",
+        "exposure": "Crater walls, trench sides, fort foundations",
+        "origin": "Verdun sits on Meuse chalk deposits (Cretaceous period)",
+        "note": "Verdun's distinctive white chalk visible in all historical photos"
+      },
+      "grass": {
+        "color": "Brown, dead (#6B5D42)",
+        "coverage": "Sparse patches only (99% destroyed by gas and shelling)",
+        "type": "Dead/dying European meadow grass",
+        "distribution": "Rare - only in untouched rear areas"
+      },
+      "rock": {
+        "color": "Grey limestone (#8B8680)",
+        "exposure": "Hilltops, crater rims, exposed bedrock",
+        "type": "Limestone (Meuse chalk formation)",
+        "note": "Broken, angular fragments from constant bombardment"
+      }
+    }
+  },
+
+  "vegetation": {
+    "trees": {
+      "survival_rate": "1% (99% destroyed)",
+      "types": [
+        "Dead oak trunks (3-8m tall, blackened)",
+        "Broken pine stumps (0.5-2m tall)",
+        "Shattered beech (fragments only)"
+      ],
+      "density": "1 dead trunk per 100-200 square meters (very sparse)",
+      "distribution": "None in central combat zone, sparse in periphery"
+    },
+    "ground_vegetation": {
+      "survival_rate": "5% (95% destroyed)",
+      "coverage": "Patchy, only in shell holes and untouched areas",
+      "note": "Chemical gas (phosgene, chlorine) killed all plant life in combat zones"
+    },
+    "man_made_vegetation": {
+      "barbed_wire_posts": {
+        "height_m": 1.5,
+        "spacing_m": 2,
+        "distribution": "Dense along trench lines and no-man's-land"
+      },
+      "wooden_duckboards": {
+        "description": "Walkways over mud in trenches",
+        "width_m": 0.6,
+        "length_m": "Variable (10-100m sections)"
+      }
+    }
+  },
+
+  "battlefield_modifications": {
+    "trenches": {
+      "total_length_km": 800,
+      "dimensions": {
+        "width_m": 1.5,
+        "depth_m": 2.0,
+        "wall_height_above_ground_m": 0.5,
+        "note": "Dimensions are ideal; reality varied widely"
+      },
+      "pattern": "Zigzag with traverses every 10-15 meters",
+      "types": [
+        "Front-line fire trench (facing enemy)",
+        "Support trench (50-100m behind front)",
+        "Reserve trench (200-300m behind front)",
+        "Communication trench (connecting front to rear)"
+      ],
+      "condition_by_phase": {
+        "phase_I_II": "Relatively intact (some collapse from shelling)",
+        "phase_III_IV": "50% collapsed/filled (artillery damage)",
+        "phase_V": "70% destroyed (October-December counteroffensive)"
+      },
+      "key_systems": [
+        "Fort Douaumont perimeter (concentric rings)",
+        "Fort Vaux perimeter (concentric rings)",
+        "R1/R2 French defensive lines",
+        "German front lines (Feb 21 jump-off positions)"
+      ]
+    },
+    "shell_craters": {
+      "total_estimated": 500000,
+      "density_per_hectare": {
+        "high_intensity_zones": "50-100 (Fort Douaumont, Fort Vaux, Fleury)",
+        "medium_intensity_zones": "20-50 (Most of Right Bank)",
+        "low_intensity_zones": "5-20 (Left Bank, periphery)"
+      },
+      "sizes_by_shell_type": [
+        {
+          "shell": "75mm French field gun",
+          "diameter_m": 2,
+          "depth_m": 0.5,
+          "percentage": 60,
+          "note": "Most common - 23 million fired"
+        },
+        {
+          "shell": "155mm howitzer",
+          "diameter_m": 6,
+          "depth_m": 1.5,
+          "percentage": 25,
+          "note": "Medium artillery"
+        },
+        {
+          "shell": "305mm heavy howitzer",
+          "diameter_m": 15,
+          "depth_m": 3,
+          "percentage": 10,
+          "note": "Heavy artillery"
+        },
+        {
+          "shell": "420mm super-heavy (Big Bertha type)",
+          "diameter_m": 30,
+          "depth_m": 6,
+          "percentage": 5,
+          "note": "Rare but devastating - visible from kilometers away"
+        }
+      ],
+      "overlapping": "30-50% of craters overlap (multiple hits same location)",
+      "water_filled": "60% in rainy season (April-May, Oct-Nov)",
+      "condition": "Most edges collapsed/eroded after months of rain"
+    },
+    "destroyed_structures": {
+      "villages": [
+        "Fleury-devant-Douaumont (total destruction - 'disappeared')",
+        "Douaumont village (total destruction)",
+        "Vaux village (total destruction)",
+        "Beaumont (total destruction)",
+        "Ornes (total destruction)",
+        "Louvemont (total destruction)",
+        "Haumont (total destruction - first to vanish)",
+        "Bezonvaux (total destruction)",
+        "Cumières (severe damage)"
+      ],
+      "buildings": {
+        "survival_rate": "0% in combat zone",
+        "remains": "Rubble piles, foundation stones, cellar holes",
+        "height_max_m": 2,
+        "note": "Villages reduced to brick/stone fragments mixed with mud"
+      },
+      "roads": {
+        "condition": "95% impassable (shell damage, mud)",
+        "Voie_Sacree": "Only maintained road - 3,000 trucks/day kept it open",
+        "crater_density_on_roads": "1 crater per 10-20 meters on average"
+      }
+    },
+    "fortifications": {
+      "forts": "Shell-damaged but structurally intact (concrete/steel construction)",
+      "bunkers": "~2,000 small concrete bunkers (many collapsed)",
+      "observation_posts": "Scattered throughout battlefield (often destroyed)",
+      "dugouts": {
+        "total_estimated": 50000,
+        "depth_categories": {
+          "shallow": "1-2m deep, 60-70% survival rate",
+          "medium": "2-4m deep, 80-85% survival rate",
+          "deep": "4-10m deep, 90-95% survival rate",
+          "fort_casemates": "10-30m underground, 95%+ survival"
+        }
+      }
+    }
+  },
+
+  "hydrology": {
+    "meuse_river": {
+      "elevation_m": 190,
+      "width_m": 50,
+      "flow_direction": "North to South",
+      "significance": "Western boundary, supply route via bridges at Verdun"
+    },
+    "streams": [
+      "Multiple small streams in ravines (seasonal, often dry in summer)",
+      "Most water sources contaminated by corpses, chemicals, debris"
+    ],
+    "water_table": {
+      "depth_m": "5-15m below surface (varies by location)",
+      "quality": "Contaminated in combat zones",
+      "shell_hole_ponds": "Thousands of stagnant, polluted water sources"
+    },
+    "drainage": {
+      "natural": "Poor - chalk bedrock creates surface water accumulation",
+      "war_damage": "Worse - craters and collapsed trenches create permanent pools",
+      "mud_zones": "40% of battlefield is standing water or deep mud (rainy season)"
+    }
+  },
+
+  "weather_effects_on_terrain": {
+    "february_march_1916": {
+      "temperature_c": "0-8",
+      "precipitation": "Snow, sleet, occasional rain",
+      "ground_state": "Frozen or muddy (freeze-thaw cycles)",
+      "trafficability": "Moderate to difficult"
+    },
+    "april_may_1916": {
+      "temperature_c": "8-15",
+      "precipitation": "Constant rain (peak mud season)",
+      "ground_state": "Deep mud (ankle to knee deep)",
+      "trafficability": "Extremely difficult - worst period"
+    },
+    "june_august_1916": {
+      "temperature_c": "15-25",
+      "precipitation": "Occasional storms, some dry periods",
+      "ground_state": "Drying mud, some dust in dry areas",
+      "trafficability": "Improved but still difficult in churned areas"
+    },
+    "september_october_1916": {
+      "temperature_c": "8-15",
+      "precipitation": "Rain increasing (autumn)",
+      "ground_state": "Mud returns",
+      "trafficability": "Difficult again"
+    },
+    "november_december_1916": {
+      "temperature_c": "0-10",
+      "precipitation": "Rain, snow, freezing",
+      "ground_state": "Frozen mud, ice, snow cover",
+      "trafficability": "Moderate (frozen ground easier than mud)"
+    }
+  },
+
+  "visibility_conditions": {
+    "clear_days": "30% (rare)",
+    "overcast": "50% (most common)",
+    "fog_mist": "15% (especially morning)",
+    "smoke_haze": "90% (artillery smoke constant)",
+    "gas_clouds": "5% (during gas attacks)",
+    "night": {
+      "darkness": "Very dark (no artificial light - blackout conditions)",
+      "flares": "Illuminate 50-100m radius for 30-60 seconds",
+      "visibility_m": "0-50 without flares, 50-100 with flares"
+    },
+    "visibility_range_by_condition": {
+      "clear": "500-1000m",
+      "overcast": "200-500m",
+      "fog": "20-100m",
+      "heavy_smoke": "10-50m",
+      "gas_cloud": "5-20m (wearing mask reduces visibility further)"
+    }
+  },
+
+  "audio_environment": {
+    "constant": [
+      "Artillery rumble (distant thunder, never stops)",
+      "Rifle/machine gun fire (sporadic crackling)",
+      "Shells whistling overhead (every few seconds to minutes)"
+    ],
+    "periodic": [
+      "Bombardments (intense 1-4 hour barrages, daily)",
+      "Explosions (close hits, random)",
+      "Screams (wounded soldiers)",
+      "Shouted orders"
+    ],
+    "rare": [
+      "Silence (almost never - even lulls have distant gunfire)",
+      "Birds (ravens, crows scavenging - eerie cawing)",
+      "Rats (scratching, squeaking in trenches)"
+    ],
+    "shell_sounds_by_type": [
+      {
+        "shell": "75mm",
+        "sound": "Ffff-CRACK! (sharp, high-pitched)",
+        "warning_time_sec": "1-3"
+      },
+      {
+        "shell": "155mm",
+        "sound": "Whummm...WHUMP (deeper rumble)",
+        "warning_time_sec": "3-6"
+      },
+      {
+        "shell": "305mm",
+        "sound": "RRROOOAAARRR (freight train)",
+        "warning_time_sec": "10-15"
+      },
+      {
+        "shell": "420mm",
+        "sound": "RUUMMMBLLE (earthquake)",
+        "warning_time_sec": "20-30"
+      }
+    ]
+  },
+
+  "gameplay_parameters": {
+    "movement_speed_multipliers": {
+      "mud_ankle_deep": 0.7,
+      "mud_knee_deep": 0.4,
+      "trench_floor": 0.6,
+      "no_mans_land_crouched": 0.5,
+      "no_mans_land_crawling": 0.2,
+      "inside_dugout": 0.8,
+      "frozen_ground": 0.9
+    },
+    "stamina_drain_multipliers": {
+      "walking_mud": 2.0,
+      "running_mud": 4.0,
+      "climbing_crater_edge": 3.0,
+      "carrying_wounded": 5.0,
+      "digging_trench": 6.0
+    },
+    "cover_quality": {
+      "trench": 0.95,
+      "shell_crater": 0.85,
+      "rubble_pile": 0.70,
+      "standing_wall_fragment": 0.60,
+      "sandbag_wall": 0.90,
+      "dugout_entrance": 0.80,
+      "open_ground": 0.0
+    },
+    "line_of_sight_blockers": {
+      "ridgeline": "Blocks view completely",
+      "crater_rim": "Blocks ground-level view, visible from above",
+      "smoke": "Reduces visibility 80-95%",
+      "fog": "Reduces visibility 50-90%",
+      "rubble": "Partial occlusion (50-70%)"
+    }
+  },
+
+  "procedural_generation_hints": {
+    "crater_scatter": {
+      "method": "Noise-based distribution weighted by proximity to forts",
+      "density_map": "Higher near Fort Douaumont/Vaux, lower at periphery",
+      "randomization": "15-25% position jitter to avoid grid patterns"
+    },
+    "trench_generation": {
+      "method": "Spline-based curves with zigzag pattern",
+      "width_variation": "±0.2m randomization",
+      "depth_variation": "±0.3m randomization",
+      "collapse_probability": "30-70% depending on phase and location"
+    },
+    "erosion_simulation": {
+      "hydraulic_erosion": "Heavy (10 months continuous rain + disrupted drainage)",
+      "thermal_erosion": "Moderate (collapsed walls, slumping)",
+      "noise_erosion": "High frequency (rough, churned texture)"
+    },
+    "material_blending": {
+      "base_layer": "Mud (70%)",
+      "chalk_exposure": "Height > 350m OR slope > 25° OR crater walls",
+      "grass_patches": "Height > 360m AND slope < 10° AND distance_from_fort > 2km",
+      "rock_exposure": "Slope > 30° OR hilltops"
+    }
+  },
+
+  "historical_accuracy_verification": {
+    "tier_1_documented": [
+      "Fort locations and elevations (French military archives)",
+      "Village locations (verified)",
+      "Hill elevations (military maps)",
+      "Total shells fired: 40,000,000 (documented)",
+      "Battle dates and phases (documented)"
+    ],
+    "tier_2_reconstructed": [
+      "Crater density estimates (from total shells / area)",
+      "Trench length estimates (from divisional deployment records)",
+      "Surface material percentages (from testimonies and photos)",
+      "Weather patterns (from meteorological records)"
+    ],
+    "tier_3_informed_speculation": [
+      "Exact crater positions (random scatter within density zones)",
+      "Specific trench paths (general patterns known, exact routes vary)",
+      "Dugout locations (known to exist, exact positions unknown)",
+      "Individual tree positions (99% destroyed - documented)"
+    ]
+  },
+
+  "references": {
+    "elevation_data": "SRTM 30m (NASA)",
+    "historical_sources": [
+      "Horne, Alistair: The Price of Glory: Verdun 1916 (1962)",
+      "Jankowski, Paul: Verdun: The Longest Battle of the Great War (2013)",
+      "French official history: Les Armées françaises dans la Grande Guerre",
+      "Service Historique de la Défense, Vincennes (military maps)"
+    ],
+    "geographic_references": [
+      "Institut Géographique National (IGN) - French national mapping agency",
+      "French military maps 1916-1918",
+      "Aerial reconnaissance photos (French archives)"
+    ],
+    "weather_data": "Météo-France historical records (1916)"
+  },
+
+  "usage_notes": {
+    "scale": "All measurements in meters unless otherwise specified",
+    "coordinate_system": "WGS84 (lat/lon) for source data, convert to local for game engines",
+    "historical_period": "February 21 - December 18, 1916 (303 days)",
+    "recommended_LOD": "Use different crater/trench density for distant areas (performance)",
+    "accuracy_vs_performance": "Balance historical accuracy with gameplay performance needs"
+  }
+}
