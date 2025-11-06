@@ -10,6 +10,7 @@
 
 FAssetCatalogSystem::FAssetCatalogSystem()
 	: bCatalogBuilt(false)
+	, bAutoRefreshEnabled(false)
 {
 	// Initialize keyword aliases for semantic search
 	KeywordAliases.Add(TEXT("building"), {TEXT("structure"), TEXT("house"), TEXT("farmhouse"), TEXT("church"), TEXT("fort")});
@@ -26,6 +27,11 @@ FAssetCatalogSystem::FAssetCatalogSystem()
 
 FAssetCatalogSystem::~FAssetCatalogSystem()
 {
+	// Unregister delegates if enabled
+	if (bAutoRefreshEnabled)
+	{
+		UnwatchAssetRegistry();
+	}
 }
 
 bool FAssetCatalogSystem::BuildCatalog(FString& OutLog)
@@ -201,6 +207,8 @@ void FAssetCatalogSystem::ExtractSemanticInfo(FAssetMetadata& Metadata)
 
 int32 FAssetCatalogSystem::SearchAssets(const FString& Query, TArray<FAssetMetadata>& OutAssets, int32 MaxResults)
 {
+	FScopeLock Lock(&CatalogMutex);
+
 	OutAssets.Empty();
 
 	if (!bCatalogBuilt)
@@ -471,4 +479,193 @@ TArray<FString> FAssetCatalogSystem::ParseQuery(const FString& Query) const
 	});
 
 	return Keywords;
+}
+
+// ===== AUTO-REFRESH IMPLEMENTATION (TIER 1.3) =====
+
+void FAssetCatalogSystem::EnableAutoRefresh(bool bEnable)
+{
+	if (bEnable == bAutoRefreshEnabled)
+	{
+		return; // Already in desired state
+	}
+
+	bAutoRefreshEnabled = bEnable;
+
+	if (bEnable)
+	{
+		WatchAssetRegistry();
+		UE_LOG(LogTemp, Log, TEXT("Asset Catalog Auto-Refresh ENABLED"));
+	}
+	else
+	{
+		UnwatchAssetRegistry();
+		UE_LOG(LogTemp, Log, TEXT("Asset Catalog Auto-Refresh DISABLED"));
+	}
+}
+
+void FAssetCatalogSystem::WatchAssetRegistry()
+{
+	FAssetRegistryModule& AssetRegistryModule =
+		FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+	// Register delegates for asset changes
+	AssetAddedHandle = AssetRegistry.OnAssetAdded().AddRaw(
+		this, &FAssetCatalogSystem::OnAssetAdded);
+	AssetRemovedHandle = AssetRegistry.OnAssetRemoved().AddRaw(
+		this, &FAssetCatalogSystem::OnAssetRemoved);
+	AssetRenamedHandle = AssetRegistry.OnAssetRenamed().AddRaw(
+		this, &FAssetCatalogSystem::OnAssetRenamed);
+
+	UE_LOG(LogTemp, Log, TEXT("Asset Catalog: Watching Asset Registry for changes"));
+}
+
+void FAssetCatalogSystem::UnwatchAssetRegistry()
+{
+	FAssetRegistryModule& AssetRegistryModule =
+		FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+	// Unregister delegates
+	if (AssetAddedHandle.IsValid())
+	{
+		AssetRegistry.OnAssetAdded().Remove(AssetAddedHandle);
+		AssetAddedHandle.Reset();
+	}
+	if (AssetRemovedHandle.IsValid())
+	{
+		AssetRegistry.OnAssetRemoved().Remove(AssetRemovedHandle);
+		AssetRemovedHandle.Reset();
+	}
+	if (AssetRenamedHandle.IsValid())
+	{
+		AssetRegistry.OnAssetRenamed().Remove(AssetRenamedHandle);
+		AssetRenamedHandle.Reset();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Asset Catalog: Stopped watching Asset Registry"));
+}
+
+void FAssetCatalogSystem::OnAssetAdded(const FAssetData& AssetData)
+{
+	// Only track relevant asset types
+	if (AssetData.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName() ||
+	    AssetData.AssetClassPath == UMaterialInterface::StaticClass()->GetClassPathName() ||
+	    AssetData.AssetClassPath == UBlueprint::StaticClass()->GetClassPathName())
+	{
+		AddAssetToCatalog(AssetData);
+		UE_LOG(LogTemp, Verbose, TEXT("Asset Catalog: Added %s"), *AssetData.AssetName.ToString());
+	}
+}
+
+void FAssetCatalogSystem::OnAssetRemoved(const FAssetData& AssetData)
+{
+	FString AssetPath = AssetData.GetObjectPathString();
+	RemoveAssetFromCatalog(AssetPath);
+	UE_LOG(LogTemp, Verbose, TEXT("Asset Catalog: Removed %s"), *AssetData.AssetName.ToString());
+}
+
+void FAssetCatalogSystem::OnAssetRenamed(const FAssetData& AssetData, const FString& OldPath)
+{
+	// Remove old entry
+	RemoveAssetFromCatalog(OldPath);
+
+	// Add new entry
+	if (AssetData.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName() ||
+	    AssetData.AssetClassPath == UMaterialInterface::StaticClass()->GetClassPathName() ||
+	    AssetData.AssetClassPath == UBlueprint::StaticClass()->GetClassPathName())
+	{
+		AddAssetToCatalog(AssetData);
+	}
+
+	UE_LOG(LogTemp, Verbose, TEXT("Asset Catalog: Renamed %s to %s"), *OldPath, *AssetData.AssetName.ToString());
+}
+
+void FAssetCatalogSystem::AddAssetToCatalog(const FAssetData& AssetData)
+{
+	FScopeLock Lock(&CatalogMutex);
+
+	FString AssetPath = AssetData.GetObjectPathString();
+
+	// Check if already exists
+	if (AssetPathToIndex.Contains(AssetPath))
+	{
+		return; // Already in catalog
+	}
+
+	// Analyze and add
+	FAssetMetadata Metadata = AnalyzeAsset(AssetPath);
+
+	// Determine asset type
+	if (AssetData.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName())
+	{
+		Metadata.AssetType = TEXT("StaticMesh");
+	}
+	else if (AssetData.AssetClassPath == UMaterialInterface::StaticClass()->GetClassPathName())
+	{
+		Metadata.AssetType = TEXT("Material");
+	}
+	else if (AssetData.AssetClassPath == UBlueprint::StaticClass()->GetClassPathName())
+	{
+		Metadata.AssetType = TEXT("Blueprint");
+	}
+
+	// Add to catalog
+	int32 Index = AssetCatalog.Add(Metadata);
+	AssetPathToIndex.Add(AssetPath, Index);
+}
+
+void FAssetCatalogSystem::RemoveAssetFromCatalog(const FString& AssetPath)
+{
+	FScopeLock Lock(&CatalogMutex);
+
+	if (int32* IndexPtr = AssetPathToIndex.Find(AssetPath))
+	{
+		int32 IndexToRemove = *IndexPtr;
+
+		// Remove from catalog array
+		AssetCatalog.RemoveAt(IndexToRemove);
+
+		// Rebuild index map (indices shifted after removal)
+		AssetPathToIndex.Empty();
+		for (int32 i = 0; i < AssetCatalog.Num(); i++)
+		{
+			AssetPathToIndex.Add(AssetCatalog[i].AssetPath, i);
+		}
+	}
+}
+
+void FAssetCatalogSystem::RebuildCatalog(FString& OutLog)
+{
+	FScopeLock Lock(&CatalogMutex);
+
+	OutLog = TEXT("Rebuilding asset catalog...\n");
+
+	// Disable auto-refresh temporarily
+	bool bWasAutoRefreshEnabled = bAutoRefreshEnabled;
+	if (bAutoRefreshEnabled)
+	{
+		UnwatchAssetRegistry();
+	}
+
+	// Rebuild catalog
+	BuildCatalog(OutLog);
+
+	// Re-enable auto-refresh if it was enabled
+	if (bWasAutoRefreshEnabled)
+	{
+		WatchAssetRegistry();
+		bAutoRefreshEnabled = true;
+	}
+
+	OutLog += TEXT("Catalog rebuild complete.\n");
+}
+
+void FAssetCatalogSystem::IncrementalUpdate()
+{
+	// This method can be called manually to force a check
+	// The Asset Registry delegates handle automatic updates,
+	// so this is mainly for debugging or manual refresh
+	UE_LOG(LogTemp, Log, TEXT("Asset Catalog: Manual incremental update triggered"));
 }

@@ -26,7 +26,10 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 	// Initialize state
 	CommandHistory.Empty();
 	HistoryIndex = 0;
-	OutputText = LOCTEXT("WelcomeMessage", "Claude Terminal v2.0 - Comprehensive NLP Controller\nNow with intelligent asset selection, semantic understanding, and complete UE5 control.\nType your commands below.\n\n");
+	bHistorySearchActive = false;
+	FilteredHistoryIndex = 0;
+	LoadFavorites();
+	OutputText = LOCTEXT("WelcomeMessage", "Claude Terminal v2.0 - Comprehensive NLP Controller\nNow with intelligent asset selection, semantic understanding, and complete UE5 control.\nType your commands below. Press Ctrl+R to search history.\n\n");
 
 	ChildSlot
 	[
@@ -245,30 +248,91 @@ void STerminalWidget::OnInputTextCommitted(const FText& NewText, ETextCommit::Ty
 
 FReply STerminalWidget::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
-	if (InKeyEvent.GetKey() == EKeys::Up)
+	// Check for Ctrl+R (history search)
+	if (InKeyEvent.IsControlDown() && InKeyEvent.GetKey() == EKeys::R)
 	{
-		// Navigate history backwards
-		if (CommandHistory.Num() > 0 && HistoryIndex > 0)
+		if (bHistorySearchActive)
 		{
-			HistoryIndex--;
-			InputTextBox->SetText(FText::FromString(CommandHistory[HistoryIndex]));
-		}
-		return FReply::Handled();
-	}
-	else if (InKeyEvent.GetKey() == EKeys::Down)
-	{
-		// Navigate history forwards
-		if (CommandHistory.Num() > 0 && HistoryIndex < CommandHistory.Num() - 1)
-		{
-			HistoryIndex++;
-			InputTextBox->SetText(FText::FromString(CommandHistory[HistoryIndex]));
+			// Already searching, cycle to next match
+			SelectNextHistoryMatch();
 		}
 		else
 		{
-			HistoryIndex = CommandHistory.Num();
-			InputTextBox->SetText(FText::GetEmpty());
+			// Activate history search
+			ActivateHistorySearch();
 		}
 		return FReply::Handled();
+	}
+
+	// Check for Ctrl+F (add to favorites)
+	if (InKeyEvent.IsControlDown() && InKeyEvent.GetKey() == EKeys::F)
+	{
+		FString CurrentText = InputTextBox->GetText().ToString();
+		if (!CurrentText.IsEmpty())
+		{
+			if (IsFavorite(CurrentText))
+			{
+				RemoveFromFavorites(CurrentText);
+				AppendOutput(FString::Printf(TEXT("Removed from favorites: %s\n"), *CurrentText), FLinearColor::Yellow);
+			}
+			else
+			{
+				AddToFavorites(CurrentText);
+				AppendOutput(FString::Printf(TEXT("★ Added to favorites: %s\n"), *CurrentText), FLinearColor::Yellow);
+			}
+		}
+		return FReply::Handled();
+	}
+
+	// Check for Escape (cancel history search)
+	if (InKeyEvent.GetKey() == EKeys::Escape && bHistorySearchActive)
+	{
+		DeactivateHistorySearch();
+		return FReply::Handled();
+	}
+
+	// Handle history search mode navigation
+	if (bHistorySearchActive)
+	{
+		if (InKeyEvent.GetKey() == EKeys::Up)
+		{
+			SelectPreviousHistoryMatch();
+			return FReply::Handled();
+		}
+		else if (InKeyEvent.GetKey() == EKeys::Down)
+		{
+			SelectNextHistoryMatch();
+			return FReply::Handled();
+		}
+	}
+	else
+	{
+		// Normal mode - arrow key history navigation
+		if (InKeyEvent.GetKey() == EKeys::Up)
+		{
+			// Navigate history backwards
+			if (CommandHistory.Num() > 0 && HistoryIndex > 0)
+			{
+				HistoryIndex--;
+				InputTextBox->SetText(FText::FromString(CommandHistory[HistoryIndex]));
+			}
+			return FReply::Handled();
+		}
+		else if (InKeyEvent.GetKey() == EKeys::Down)
+		{
+			// Navigate history forwards
+			if (CommandHistory.Num() > 0 && HistoryIndex < CommandHistory.Num() - 1)
+			{
+				HistoryIndex++;
+				InputTextBox->SetText(FText::FromString(CommandHistory[HistoryIndex]));
+			}
+			else
+			{
+				HistoryIndex = CommandHistory.Num();
+				InputTextBox->SetText(FText::GetEmpty());
+			}
+			return FReply::Handled();
+		}
 	}
 
 	return FReply::Unhandled();
@@ -349,6 +413,171 @@ UWorld* STerminalWidget::GetEditorWorld() const
 		return GEditor->GetEditorWorldContext().World();
 	}
 	return nullptr;
+}
+
+// ===== HISTORY SEARCH IMPLEMENTATION (TIER 1.5) =====
+
+void STerminalWidget::ActivateHistorySearch()
+{
+	if (CommandHistory.Num() == 0)
+	{
+		AppendOutput(TEXT("No command history available.\n"), FLinearColor::Yellow);
+		return;
+	}
+
+	bHistorySearchActive = true;
+	HistorySearchQuery = InputTextBox->GetText().ToString();
+
+	// Build filtered history (show favorites first, then matching commands)
+	FilteredHistory.Empty();
+
+	// Add favorites that match
+	for (const FString& Fav : FavoriteCommands)
+	{
+		if (HistorySearchQuery.IsEmpty() || Fav.Contains(HistorySearchQuery))
+		{
+			FilteredHistory.AddUnique(Fav);
+		}
+	}
+
+	// Add history matches (excluding favorites already added)
+	for (int32 i = CommandHistory.Num() - 1; i >= 0; i--)
+	{
+		const FString& Cmd = CommandHistory[i];
+		if (!FilteredHistory.Contains(Cmd))
+		{
+			if (HistorySearchQuery.IsEmpty() || Cmd.Contains(HistorySearchQuery))
+			{
+				FilteredHistory.Add(Cmd);
+			}
+		}
+	}
+
+	if (FilteredHistory.Num() == 0)
+	{
+		AppendOutput(FString::Printf(TEXT("No matches found for: '%s'\n"), *HistorySearchQuery), FLinearColor::Yellow);
+		bHistorySearchActive = false;
+		return;
+	}
+
+	FilteredHistoryIndex = 0;
+	InputTextBox->SetText(FText::FromString(FilteredHistory[0]));
+
+	FString StatusMsg = FString::Printf(TEXT("[SEARCH MODE] Match %d/%d (Ctrl+R for next, Esc to cancel)%s\n"),
+		FilteredHistoryIndex + 1, FilteredHistory.Num(),
+		IsFavorite(FilteredHistory[0]) ? TEXT(" ★") : TEXT(""));
+	AppendOutput(StatusMsg, FLinearColor(1.0f, 0.8f, 0.2f));
+}
+
+void STerminalWidget::DeactivateHistorySearch()
+{
+	bHistorySearchActive = false;
+	FilteredHistory.Empty();
+	AppendOutput(TEXT("[SEARCH MODE] Cancelled\n"), FLinearColor::Yellow);
+}
+
+void STerminalWidget::UpdateHistorySearch(const FString& Query)
+{
+	HistorySearchQuery = Query;
+	// Rebuild filtered list with new query
+	ActivateHistorySearch();
+}
+
+void STerminalWidget::SelectNextHistoryMatch()
+{
+	if (FilteredHistory.Num() == 0)
+		return;
+
+	FilteredHistoryIndex = (FilteredHistoryIndex + 1) % FilteredHistory.Num();
+	InputTextBox->SetText(FText::FromString(FilteredHistory[FilteredHistoryIndex]));
+
+	FString StatusMsg = FString::Printf(TEXT("[SEARCH MODE] Match %d/%d%s\n"),
+		FilteredHistoryIndex + 1, FilteredHistory.Num(),
+		IsFavorite(FilteredHistory[FilteredHistoryIndex]) ? TEXT(" ★") : TEXT(""));
+	AppendOutput(StatusMsg, FLinearColor(1.0f, 0.8f, 0.2f));
+}
+
+void STerminalWidget::SelectPreviousHistoryMatch()
+{
+	if (FilteredHistory.Num() == 0)
+		return;
+
+	FilteredHistoryIndex--;
+	if (FilteredHistoryIndex < 0)
+	{
+		FilteredHistoryIndex = FilteredHistory.Num() - 1;
+	}
+
+	InputTextBox->SetText(FText::FromString(FilteredHistory[FilteredHistoryIndex]));
+
+	FString StatusMsg = FString::Printf(TEXT("[SEARCH MODE] Match %d/%d%s\n"),
+		FilteredHistoryIndex + 1, FilteredHistory.Num(),
+		IsFavorite(FilteredHistory[FilteredHistoryIndex]) ? TEXT(" ★") : TEXT(""));
+	AppendOutput(StatusMsg, FLinearColor(1.0f, 0.8f, 0.2f));
+}
+
+void STerminalWidget::AddToFavorites(const FString& Command)
+{
+	if (!Command.IsEmpty() && !FavoriteCommands.Contains(Command))
+	{
+		FavoriteCommands.Add(Command);
+		SaveFavorites();
+	}
+}
+
+void STerminalWidget::RemoveFromFavorites(const FString& Command)
+{
+	FavoriteCommands.Remove(Command);
+	SaveFavorites();
+}
+
+bool STerminalWidget::IsFavorite(const FString& Command) const
+{
+	return FavoriteCommands.Contains(Command);
+}
+
+void STerminalWidget::LoadFavorites()
+{
+	FavoriteCommands.Empty();
+
+	FString SavePath = FPaths::ProjectSavedDir() / TEXT("ClaudeTerminal") / TEXT("Favorites.txt");
+
+	if (FPaths::FileExists(SavePath))
+	{
+		TArray<FString> Lines;
+		if (FFileHelper::LoadFileToStringArray(Lines, *SavePath))
+		{
+			for (const FString& Line : Lines)
+			{
+				FString Trimmed = Line.TrimStartAndEnd();
+				if (!Trimmed.IsEmpty())
+				{
+					FavoriteCommands.Add(Trimmed);
+				}
+			}
+		}
+	}
+}
+
+void STerminalWidget::SaveFavorites()
+{
+	FString SavePath = FPaths::ProjectSavedDir() / TEXT("ClaudeTerminal") / TEXT("Favorites.txt");
+
+	// Ensure directory exists
+	FString SaveDir = FPaths::GetPath(SavePath);
+	if (!FPaths::DirectoryExists(SaveDir))
+	{
+		IFileManager::Get().MakeDirectory(*SaveDir, true);
+	}
+
+	// Save favorites (one per line)
+	FString Content;
+	for (const FString& Fav : FavoriteCommands)
+	{
+		Content += Fav + TEXT("\n");
+	}
+
+	FFileHelper::SaveStringToFile(Content, *SavePath);
 }
 
 #undef LOCTEXT_NAMESPACE

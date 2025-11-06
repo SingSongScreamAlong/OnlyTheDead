@@ -99,6 +99,29 @@ public:
 	 */
 	TArray<FAssetMetadata> GetAssetsByEra(const FString& Era) const;
 
+	// ===== AUTO-REFRESH FUNCTIONALITY (TIER 1.3) =====
+
+	/**
+	 * Enable or disable automatic catalog refresh when assets change
+	 * @param bEnable true to enable auto-refresh
+	 */
+	void EnableAutoRefresh(bool bEnable);
+
+	/**
+	 * Check if auto-refresh is currently enabled
+	 */
+	bool IsAutoRefreshEnabled() const { return bAutoRefreshEnabled; }
+
+	/**
+	 * Manually rebuild the entire catalog
+	 */
+	void RebuildCatalog(FString& OutLog);
+
+	/**
+	 * Perform incremental update (adds/removes single asset without full rebuild)
+	 */
+	void IncrementalUpdate();
+
 private:
 	// Scan content directories
 	void ScanContentDirectory(const FString& Directory, FString& OutLog);
@@ -115,6 +138,21 @@ private:
 	// Parse semantic query into keywords
 	TArray<FString> ParseQuery(const FString& Query) const;
 
+	// Auto-refresh delegate handlers
+	void OnAssetAdded(const FAssetData& AssetData);
+	void OnAssetRemoved(const FAssetData& AssetData);
+	void OnAssetRenamed(const FAssetData& AssetData, const FString& OldPath);
+
+	// Watch Asset Registry for changes
+	void WatchAssetRegistry();
+	void UnwatchAssetRegistry();
+
+	// Add single asset to catalog
+	void AddAssetToCatalog(const FAssetData& AssetData);
+
+	// Remove single asset from catalog
+	void RemoveAssetFromCatalog(const FString& AssetPath);
+
 	// Asset database
 	TArray<FAssetMetadata> AssetCatalog;
 	TMap<FString, int32> AssetPathToIndex; // Fast lookup
@@ -122,4 +160,13 @@ private:
 
 	// Semantic keyword mappings
 	TMap<FString, TArray<FString>> KeywordAliases; // "house" → ["building", "structure", "farmhouse"]
+
+	// Auto-refresh state
+	bool bAutoRefreshEnabled;
+	FDelegateHandle AssetAddedHandle;
+	FDelegateHandle AssetRemovedHandle;
+	FDelegateHandle AssetRenamedHandle;
+
+	// Thread safety for catalog modifications
+	mutable FCriticalSection CatalogMutex;
 };

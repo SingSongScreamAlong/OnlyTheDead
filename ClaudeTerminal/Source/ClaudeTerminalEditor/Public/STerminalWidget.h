@@ -42,6 +42,13 @@ private:
 	TArray<FString> CommandHistory;
 	int32 HistoryIndex;
 
+	// ===== COMMAND HISTORY SEARCH (TIER 1.5) =====
+	TArray<FString> FavoriteCommands;
+	bool bHistorySearchActive;
+	FString HistorySearchQuery;
+	TArray<FString> FilteredHistory;
+	int32 FilteredHistoryIndex;
+
 	// Callbacks
 	FReply OnSendCommand();
 	void OnInputTextChanged(const FText& NewText);
@@ -50,6 +57,18 @@ private:
 
 	// Claude API response handler
 	void OnClaudeResponseReceived(bool bSuccess, const FString& Response);
+
+	// History search methods
+	void ActivateHistorySearch();
+	void DeactivateHistorySearch();
+	void UpdateHistorySearch(const FString& Query);
+	void SelectNextHistoryMatch();
+	void SelectPreviousHistoryMatch();
+	void AddToFavorites(const FString& Command);
+	void RemoveFromFavorites(const FString& Command);
+	bool IsFavorite(const FString& Command) const;
+	void LoadFavorites();
+	void SaveFavorites();
 
 	// Helper functions
 	void AppendOutput(const FString& Text, const FLinearColor& Color = FLinearColor::White);
