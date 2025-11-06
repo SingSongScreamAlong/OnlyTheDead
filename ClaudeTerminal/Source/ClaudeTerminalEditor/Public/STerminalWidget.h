@@ -7,7 +7,7 @@
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "ClaudeAPIClient.h"
-#include "CommandExecutor.h"
+#include "EditorCommandExecutor.h"
 #include "SceneContextBuilder.h"
 
 /**
@@ -33,7 +33,7 @@ private:
 
 	// Backend components
 	TSharedPtr<FClaudeAPIClient> APIClient;
-	TSharedPtr<FCommandExecutor> CommandExecutor;
+	TSharedPtr<FEditorCommandExecutor> CommandExecutor;
 	TSharedPtr<FSceneContextBuilder> SceneContextBuilder;
 
 	// Terminal state

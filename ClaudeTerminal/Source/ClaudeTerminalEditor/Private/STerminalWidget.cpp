@@ -16,7 +16,7 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 {
 	// Initialize backend components
 	APIClient = MakeShared<FClaudeAPIClient>();
-	CommandExecutor = MakeShared<FCommandExecutor>();
+	CommandExecutor = MakeShared<FEditorCommandExecutor>();
 	SceneContextBuilder = MakeShared<FSceneContextBuilder>();
 
 	// Initialize state
@@ -79,7 +79,7 @@ void STerminalWidget::Construct(const FArguments& InArgs)
 				.Text(LOCTEXT("HelpButton", "Help"))
 				.OnClicked_Lambda([this]() -> FReply
 				{
-					AppendOutput(FCommandExecutor::GetHelpText(), FLinearColor(0.7f, 1.0f, 0.7f));
+					AppendOutput(FEditorCommandExecutor::GetHelpText(), FLinearColor(0.7f, 1.0f, 0.7f));
 					return FReply::Handled();
 				})
 			]

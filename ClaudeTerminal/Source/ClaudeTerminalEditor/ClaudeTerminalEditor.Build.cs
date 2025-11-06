@@ -32,7 +32,9 @@ public class ClaudeTerminalEditor : ModuleRules
 				"InputCore",
 				"LevelEditor",
 				"PropertyEditor",
-				"Landscape"
+				"Landscape",
+				"LandscapeEditor",
+				"ImageWrapper"
 			}
 		);
 	}
