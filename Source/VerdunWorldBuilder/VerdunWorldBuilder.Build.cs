@@ -32,7 +32,9 @@ public class VerdunWorldBuilder : ModuleRules
 				"Json",
 				"JsonUtilities",
 				"Landscape",
-				"Foliage"
+				"Foliage",
+				"ImageWrapper",
+				"ImageCore"
 			}
 		);
 
@@ -41,7 +43,8 @@ public class VerdunWorldBuilder : ModuleRules
 			new string[]
 			{
 				"RenderCore",
-				"RHI"
+				"RHI",
+				"LandscapeEditor"
 			}
 		);
 
