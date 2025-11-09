@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "Verdun World Builder",
+	"Description": "Automated world builder for Battle of Verdun using historical terrain data. Loads Tier 1 documented locations and provides artillery impact generation systems.",
+	"Category": "World Building",
+	"CreatedBy": "Only The Dead Development",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "VerdunWorldBuilder",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
