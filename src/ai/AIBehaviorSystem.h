@@ -15,6 +15,13 @@
  * - Suppression from artillery
  * - Squad cohesion
  * - Survival behaviors
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - World-scale navigation (50km² pathfinding)
+ * - Region-aware behavior (adapt to degraded terrain)
+ * - Historical trench line patrols (GPS coordinates)
+ * - Dynamic cover selection (shell craters, destroyed buildings)
+ * - Squad follows player across region boundaries
  */
 
 UENUM(BlueprintType)
@@ -203,6 +210,46 @@ public:
     /** Report situation */
     UFUNCTION(BlueprintCallable, Category = "AI|Communication")
     void ReportSituation(const FString& Report);
+
+    // ========================================================================
+    // PERSISTENT WORLD - NAVIGATION
+    // ========================================================================
+
+    /** Current region AI is in */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|PersistentWorld")
+    FString CurrentRegionID;
+
+    /** Patrol route (world coordinates) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|PersistentWorld")
+    TArray<FVector> PatrolRoute;
+
+    /** Navigate to world location (long distance pathfinding) */
+    UFUNCTION(BlueprintCallable, Category = "AI|PersistentWorld")
+    void NavigateToWorldLocation(FVector TargetLocation, float AcceptanceRadius = 100.0f);
+
+    /** Follow player across regions (squad behavior) */
+    UFUNCTION(BlueprintCallable, Category = "AI|PersistentWorld")
+    void FollowPlayerAcrossRegions(AActor* PlayerActor);
+
+    /** Set patrol route from GPS coordinates */
+    UFUNCTION(BlueprintCallable, Category = "AI|PersistentWorld")
+    void SetPatrolRouteFromGPS(TArray<FVector2D> GPS_Waypoints);
+
+    /** Find nearest crater for cover */
+    UFUNCTION(BlueprintPure, Category = "AI|PersistentWorld")
+    FVector FindNearestCraterCover(FVector FromLocation, float SearchRadius = 5000.0f) const;
+
+    /** Check if location is navigable (not in crater, not in destroyed building) */
+    UFUNCTION(BlueprintPure, Category = "AI|PersistentWorld")
+    bool IsLocationNavigable(FVector Location) const;
+
+    /** Get terrain degradation at location (affects movement speed) */
+    UFUNCTION(BlueprintPure, Category = "AI|PersistentWorld")
+    float GetTerrainDegradationAtLocation(FVector Location) const;
+
+    /** Update region awareness (adapts behavior to current region state) */
+    UFUNCTION(BlueprintCallable, Category = "AI|PersistentWorld")
+    void UpdateRegionAwareness();
 
 protected:
     // ========================================================================

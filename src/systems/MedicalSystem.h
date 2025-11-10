@@ -12,6 +12,13 @@
  * Medical and injury system
  * Realistic WWI medical practices and survival rates
  * Manages wounds, triage, field hospitals, and death
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Physical field hospitals at GPS coordinates (Bras-sur-Meuse, Verdun city)
+ * - Casualty Clearing Stations (CCS) behind lines
+ * - Treatment quality based on distance to rear (front line = basic, hospital = advanced)
+ * - Player must travel to hospitals for serious injuries
+ * - Evacuation routes and medical supply lines
  */
 
 UENUM(BlueprintType)
@@ -85,6 +92,85 @@ struct FMedicalSupply
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Medical")
     float TreatmentEffectiveness = 0.0f;
+};
+
+// ========================================================================
+// PERSISTENT WORLD: FIELD HOSPITALS
+// ========================================================================
+
+UENUM(BlueprintType)
+enum class EHospitalType : uint8
+{
+    AidStation          UMETA(DisplayName = "Aid Station (Front Line)"),
+    CasualtyClearing    UMETA(DisplayName = "Casualty Clearing Station (CCS)"),
+    FieldHospital       UMETA(DisplayName = "Field Hospital"),
+    BaseHospital        UMETA(DisplayName = "Base Hospital (Rear)"),
+    MedicalTrain        UMETA(DisplayName = "Medical Train (Evacuation)")
+};
+
+UENUM(BlueprintType)
+enum class EHospitalStatus : uint8
+{
+    Operational         UMETA(DisplayName = "Operational"),
+    Overwhelmed         UMETA(DisplayName = "Overwhelmed (Long Wait Times)"),
+    UnderBombardment    UMETA(DisplayName = "Under Bombardment"),
+    Evacuating          UMETA(DisplayName = "Evacuating"),
+    Captured            UMETA(DisplayName = "Captured by Enemy"),
+    Destroyed           UMETA(DisplayName = "Destroyed")
+};
+
+USTRUCT(BlueprintType)
+struct FFieldHospital
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    FString HospitalID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    FText HospitalName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    EHospitalType HospitalType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    EHospitalStatus Status = EHospitalStatus::Operational;
+
+    /** World coordinates in persistent map */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital|Location")
+    FVector WorldLocation = FVector::ZeroVector;
+
+    /** Original GPS coordinates (for reference) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital|Location")
+    FVector2D GPS_Coordinates = FVector2D::ZeroVector;
+
+    /** Interaction radius (meters) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital|Location")
+    float InteractionRadiusMeters = 100.0f;
+
+    /** Distance to front line (affects casualty load) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    float DistanceToFrontKM = 10.0f;
+
+    /** Treatment quality (0.0 = basic field care, 1.0 = advanced surgery) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    float TreatmentQuality = 0.5f;
+
+    /** Available medical supplies */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    TArray<FMedicalSupply> AvailableSupplies;
+
+    /** Current patient load */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    int32 CurrentPatients = 0;
+
+    /** Maximum capacity */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    int32 MaxCapacity = 50;
+
+    /** Historical notes */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospital")
+    FText HistoricalNotes;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -256,6 +342,42 @@ public:
     /** Call for medic */
     UFUNCTION(BlueprintCallable, Category = "Medical|Comrades")
     void CallForMedic();
+
+    // ========================================================================
+    // PERSISTENT WORLD - FIELD HOSPITALS
+    // ========================================================================
+
+    /** All field hospitals in persistent world */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hospitals")
+    TMap<FString, FFieldHospital> FieldHospitals;
+
+    /** Initialize all hospital locations */
+    UFUNCTION(BlueprintCallable, Category = "Hospitals")
+    void InitializeFieldHospitals();
+
+    /** Find nearest hospital to location */
+    UFUNCTION(BlueprintPure, Category = "Hospitals")
+    FFieldHospital GetNearestHospital(FVector PlayerLocation, EHospitalType PreferredType = EHospitalType::FieldHospital) const;
+
+    /** Check if player is within hospital range */
+    UFUNCTION(BlueprintPure, Category = "Hospitals")
+    bool IsNearHospital(FVector PlayerLocation, float& OutDistance, FString& OutHospitalID) const;
+
+    /** Seek treatment at hospital */
+    UFUNCTION(BlueprintCallable, Category = "Hospitals")
+    bool SeekTreatmentAtHospital(const FString& HospitalID);
+
+    /** Get treatment quality based on location type */
+    UFUNCTION(BlueprintPure, Category = "Hospitals")
+    float GetTreatmentQualityAtLocation(FVector Location) const;
+
+    /** Get hospital status text for UI */
+    UFUNCTION(BlueprintPure, Category = "Hospitals")
+    FText GetHospitalStatusText(const FString& HospitalID) const;
+
+    /** Update hospital status (historical events) */
+    UFUNCTION(BlueprintCallable, Category = "Hospitals")
+    void SetHospitalStatus(const FString& HospitalID, EHospitalStatus NewStatus);
 
 protected:
     // ========================================================================

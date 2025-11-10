@@ -12,6 +12,13 @@
  * Weather and time-of-day system
  * Uses historical weather data from Verdun 1916
  * Affects visibility, survival meters, and gameplay
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Regional weather coverage (entire 50km² battlefield)
+ * - Regional variations (clear at Verdun city, rain at Mort-Homme)
+ * - Mud accumulation persists across sessions
+ * - Historical weather patterns for specific dates
+ * - Weather saved/loaded with world state
  */
 
 USTRUCT(BlueprintType)
@@ -181,6 +188,38 @@ public:
     /** Get temperature range for season */
     UFUNCTION(BlueprintPure, Category = "Weather|Season")
     void GetSeasonalTemperatureRange(FHistoricalDate Date, float& OutMinTemp, float& OutMaxTemp) const;
+
+    // ========================================================================
+    // PERSISTENT WORLD - REGIONAL WEATHER
+    // ========================================================================
+
+    /** Weather states per region (allows regional variations) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather|Regional")
+    TMap<FString, FWeatherState> RegionalWeather;
+
+    /** Mud levels per region */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather|Regional")
+    TMap<FString, float> RegionalMudLevels;
+
+    /** Get weather at specific world location */
+    UFUNCTION(BlueprintPure, Category = "Weather|Regional")
+    FWeatherState GetWeatherAtLocation(FVector Location) const;
+
+    /** Get mud level at specific location */
+    UFUNCTION(BlueprintPure, Category = "Weather|Regional")
+    float GetMudLevelAtLocation(FVector Location) const;
+
+    /** Set regional weather (for weather fronts, local storms) */
+    UFUNCTION(BlueprintCallable, Category = "Weather|Regional")
+    void SetRegionalWeather(FString RegionID, FWeatherState Weather);
+
+    /** Update all regional weather states */
+    UFUNCTION(BlueprintCallable, Category = "Weather|Regional")
+    void UpdateRegionalWeather(float DeltaTime);
+
+    /** Get region ID at location (delegates to EnvironmentDegradationSystem) */
+    UFUNCTION(BlueprintPure, Category = "Weather|Regional")
+    FString GetRegionIDAtLocation(FVector Location) const;
 
 protected:
     // ========================================================================

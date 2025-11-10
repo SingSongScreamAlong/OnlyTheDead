@@ -12,6 +12,13 @@
  * 3D spatial audio system - CRITICAL for survival gameplay
  * Shell recognition by audio is core game mechanic
  * Implements authentic WWI soundscape
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Terrain occlusion (hills block artillery sound)
+ * - Distance-based attenuation (hear Fort Douaumont bombardment 5km away)
+ * - Regional ambient soundscape (trenches vs open field vs ruins)
+ * - Echo/reverb varies by environment degradation state
+ * - Continuous spatial audio across 50km² battlefield
  */
 
 UENUM(BlueprintType)
@@ -243,6 +250,34 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio|Settings")
     bool bShellRecognitionHintsEnabled = false; // For accessibility
+
+    // ========================================================================
+    // PERSISTENT WORLD - TERRAIN OCCLUSION & REGIONAL AUDIO
+    // ========================================================================
+
+    /** Check terrain occlusion between listener and sound source */
+    UFUNCTION(BlueprintPure, Category = "Audio|PersistentWorld")
+    bool IsTerrainOccluding(FVector SoundLocation, FVector ListenerLocation) const;
+
+    /** Get occlusion amount (0.0 = no occlusion, 1.0 = fully blocked) */
+    UFUNCTION(BlueprintPure, Category = "Audio|PersistentWorld")
+    float CalculateTerrainOcclusion(FVector SoundLocation, FVector ListenerLocation) const;
+
+    /** Get ambient soundscape for current region */
+    UFUNCTION(BlueprintPure, Category = "Audio|PersistentWorld")
+    FString GetRegionalAmbientSoundscape(FVector Location) const;
+
+    /** Play distant artillery from neighboring region */
+    UFUNCTION(BlueprintCallable, Category = "Audio|PersistentWorld")
+    void PlayDistantRegionArtillery(FVector RegionCenter, float DistanceKM);
+
+    /** Get reverb settings based on environment state */
+    UFUNCTION(BlueprintPure, Category = "Audio|PersistentWorld")
+    void GetEnvironmentReverbSettings(FVector Location, float& OutReverbAmount, float& OutDecayTime) const;
+
+    /** Update regional ambient audio (changes as regions degrade) */
+    UFUNCTION(BlueprintCallable, Category = "Audio|PersistentWorld")
+    void UpdateRegionalAmbience(FString RegionID, float DegradationLevel);
 
 protected:
     // ========================================================================

@@ -12,6 +12,13 @@
  * Player progression and meta-game system
  * Tracks experience, skills, unlocks, and 303-day journey
  * Player transforms from Novice → Experienced → Veteran → Survivor
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Track regions explored (discovered 15/20 regions)
+ * - Region-specific experience (survived 10 days in Fort Douaumont)
+ * - Skills unlock from battlefield exposure, not mission completion
+ * - Exploration achievements ("Visited all 20 regions", "Survived Zone Rouge")
+ * - Continuous day tracking (not mission-based)
  */
 
 UENUM(BlueprintType)
@@ -223,6 +230,46 @@ public:
     /** Is permadeath active */
     UFUNCTION(BlueprintPure, Category = "Difficulty")
     bool IsPermadeathActive() const;
+
+    // ========================================================================
+    // PERSISTENT WORLD - EXPLORATION TRACKING
+    // ========================================================================
+
+    /** Regions player has visited (discovered) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exploration")
+    TArray<FString> DiscoveredRegions;
+
+    /** Time spent in each region (in game hours) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exploration")
+    TMap<FString, float> TimeInRegion;
+
+    /** Days survived in each region */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exploration")
+    TMap<FString, int32> DaysSurvivedInRegion;
+
+    /** Mark region as discovered */
+    UFUNCTION(BlueprintCallable, Category = "Exploration")
+    void DiscoverRegion(FString RegionID);
+
+    /** Check if region has been discovered */
+    UFUNCTION(BlueprintPure, Category = "Exploration")
+    bool HasDiscoveredRegion(FString RegionID) const;
+
+    /** Get exploration completion percentage */
+    UFUNCTION(BlueprintPure, Category = "Exploration")
+    float GetExplorationPercentage() const;
+
+    /** Record time spent in region (called by MissionSystem) */
+    UFUNCTION(BlueprintCallable, Category = "Exploration")
+    void RecordTimeInRegion(FString RegionID, float GameHours);
+
+    /** Get most visited region */
+    UFUNCTION(BlueprintPure, Category = "Exploration")
+    FString GetMostVistedRegion() const;
+
+    /** Check exploration achievements (visited all regions, etc.) */
+    UFUNCTION(BlueprintCallable, Category = "Exploration")
+    void CheckExplorationAchievements();
 
 protected:
     // ========================================================================
