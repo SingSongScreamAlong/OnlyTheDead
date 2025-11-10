@@ -2,6 +2,7 @@
 // Copyright 2025. All Rights Reserved.
 
 #include "ArtillerySystem.h"
+#include "EnvironmentDegradationSystem.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -25,9 +26,15 @@ void UArtillerySystem::BeginPlay()
 
     InitializeShellDatabase();
     InitializeAudioSystem();
+    FindEnvironmentDegradationSystem();
 
     UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Initialized. Ready for bombardment."));
     UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Historical fact - 70%% of Verdun casualties from artillery"));
+
+    if (EnvironmentDegradationSystem)
+    {
+        UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Linked to EnvironmentDegradationSystem for persistent world transformation"));
+    }
 }
 
 void UArtillerySystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -623,6 +630,12 @@ void UArtillerySystem::SpawnShellImpact(const FArtilleryStrike& Strike)
     // Create crater
     CreateCrater(Strike.ImpactLocation, Strike.ShellType);
 
+    // PERSISTENT WORLD: Apply environmental degradation from shell impact
+    if (EnvironmentDegradationSystem)
+    {
+        EnvironmentDegradationSystem->ApplyShellImpact(Strike.ImpactLocation, Strike.ShellType);
+    }
+
     // Spawn explosion VFX
     // Play impact sound
     // Apply damage to nearby actors
@@ -724,5 +737,44 @@ void UArtillerySystem::InitializeAudioSystem()
 
             UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Audio component initialized"));
         }
+    }
+}
+
+// ========================================================================
+// PERSISTENT WORLD - ENVIRONMENT DEGRADATION INTEGRATION
+// ========================================================================
+
+void UArtillerySystem::FindEnvironmentDegradationSystem()
+{
+    // Find the environment degradation system in the world
+    // This allows shell impacts to drive persistent world transformation
+
+    AActor* Owner = GetOwner();
+    if (!Owner)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ArtillerySystem: No owner found, cannot link to EnvironmentDegradationSystem"));
+        return;
+    }
+
+    // Search for EnvironmentDegradationSystem component on owner or GameState
+    EnvironmentDegradationSystem = Owner->FindComponentByClass<UEnvironmentDegradationSystem>();
+
+    if (!EnvironmentDegradationSystem)
+    {
+        // Try finding it on the GameState
+        AGameStateBase* GameState = GetWorld()->GetGameState();
+        if (GameState)
+        {
+            EnvironmentDegradationSystem = GameState->FindComponentByClass<UEnvironmentDegradationSystem>();
+        }
+    }
+
+    if (!EnvironmentDegradationSystem)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ArtillerySystem: EnvironmentDegradationSystem not found. World will not degrade from shell impacts."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Successfully linked to EnvironmentDegradationSystem"));
     }
 }

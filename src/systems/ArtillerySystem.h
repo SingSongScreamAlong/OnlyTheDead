@@ -191,4 +191,14 @@ protected:
     class UAudioComponent* ArtilleryAudioComponent;
 
     void InitializeAudioSystem();
+
+    // ========================================================================
+    // PERSISTENT WORLD - ENVIRONMENT DEGRADATION
+    // ========================================================================
+
+    /** Reference to environment degradation system (for persistent world transformation) */
+    UPROPERTY()
+    class UEnvironmentDegradationSystem* EnvironmentDegradationSystem;
+
+    void FindEnvironmentDegradationSystem();
 };

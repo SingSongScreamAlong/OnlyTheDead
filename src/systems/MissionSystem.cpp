@@ -53,6 +53,14 @@ void UMissionSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
     UpdateRotationSystem(DeltaTime);
     CheckMissionObjectives();
     CheckForHistoricalEvents();
+
+    // PERSISTENT WORLD: Check if player is near any mission trigger zones
+    AActor* Owner = GetOwner();
+    if (Owner)
+    {
+        FVector PlayerLocation = Owner->GetActorLocation();
+        CheckProximityTriggers(PlayerLocation);
+    }
 }
 
 // ========================================================================
@@ -71,6 +79,10 @@ void UMissionSystem::LoadMissionDatabase()
     // Load missions from data table
     // In production, this would load from Content/Data/DT_Missions
     // For now, create some core missions programmatically
+    //
+    // PERSISTENT WORLD NOTE:
+    // GPS coordinates from verdun_anthology/geographic_data/locations_database.csv
+    // Converted to UE5 world space using ConvertGPSToWorldSpace()
 
     // Mission 01: The Guns Begin
     FMissionData M01;
@@ -83,6 +95,11 @@ void UMissionSystem::LoadMissionDatabase()
     M01.DurationDays = 1;
     M01.bIsHistoricalEvent = true;
     M01.HistoricalContext = FText::FromString(TEXT("At 7:15 AM, 1,400 German artillery pieces opened fire on French positions. The bombardment lasted 9 hours."));
+    // GPS from locations_database.csv: Bois des Caures (49.2500, 5.4167)
+    M01.GPS_Coordinates = FVector2D(49.2500, 5.4167);
+    M01.MissionLocationWorld = ConvertGPSToWorldSpace(M01.GPS_Coordinates);
+    M01.MissionTriggerRadiusMeters = 800.0f; // Large trigger zone for opening mission
+    M01.bRequiresProximityTrigger = true;
     MissionDatabase.Add(M01.MissionID, M01);
 
     // Mission 02: The First Night
@@ -95,6 +112,10 @@ void UMissionSystem::LoadMissionDatabase()
     M02.LocationSector = TEXT("Bois des Caures");
     M02.DurationDays = 1;
     M02.bIsHistoricalEvent = false;
+    M02.GPS_Coordinates = FVector2D(49.2500, 5.4167); // Same location as M01
+    M02.MissionLocationWorld = ConvertGPSToWorldSpace(M02.GPS_Coordinates);
+    M02.MissionTriggerRadiusMeters = 500.0f;
+    M02.bRequiresProximityTrigger = false; // Auto-triggers after M01 completion
     MissionDatabase.Add(M02.MissionID, M02);
 
     // Mission 12: The Recapture (Fort Douaumont)
@@ -108,6 +129,11 @@ void UMissionSystem::LoadMissionDatabase()
     M12.DurationDays = 1;
     M12.bIsHistoricalEvent = true;
     M12.HistoricalContext = FText::FromString(TEXT("French forces recaptured Fort Douaumont using creeping barrage tactics. Victory was complete by nightfall."));
+    // GPS from locations_database.csv: Fort Douaumont (49.2267, 5.5167)
+    M12.GPS_Coordinates = FVector2D(49.2267, 5.5167);
+    M12.MissionLocationWorld = ConvertGPSToWorldSpace(M12.GPS_Coordinates);
+    M12.MissionTriggerRadiusMeters = 1000.0f; // Large fort complex
+    M12.bRequiresProximityTrigger = true;
     MissionDatabase.Add(M12.MissionID, M12);
 
     // Mission 35: The Last Day
@@ -121,9 +147,15 @@ void UMissionSystem::LoadMissionDatabase()
     M35.DurationDays = 1;
     M35.bIsHistoricalEvent = true;
     M35.HistoricalContext = FText::FromString(TEXT("The Battle of Verdun officially ended. 700,000 casualties. The longest battle of WWI."));
+    // GPS from locations_database.csv: Verdun city center (49.1600, 5.3833)
+    M35.GPS_Coordinates = FVector2D(49.1600, 5.3833);
+    M35.MissionLocationWorld = ConvertGPSToWorldSpace(M35.GPS_Coordinates);
+    M35.MissionTriggerRadiusMeters = 2000.0f; // Large area for final mission
+    M35.bRequiresProximityTrigger = false; // Auto-triggers on Dec 18, 1916
     MissionDatabase.Add(M35.MissionID, M35);
 
-    UE_LOG(LogTemp, Log, TEXT("MissionSystem: Mission database initialized with %d missions"), MissionDatabase.Num());
+    UE_LOG(LogTemp, Log, TEXT("MissionSystem: Mission database initialized with %d missions (Persistent World Mode)"), MissionDatabase.Num());
+    UE_LOG(LogTemp, Log, TEXT("MissionSystem: All missions use trigger zones in 1:1 scale Verdun map"));
 }
 
 FMissionData UMissionSystem::GetMissionData(const FString& MissionID) const
@@ -593,4 +625,98 @@ void UMissionSystem::UpdateCampaignStatistics()
            MissionsCompleted,
            DaysSurvived,
            GetCampaignCompletionPercentage());
+}
+
+// ========================================================================
+// PERSISTENT WORLD - PROXIMITY TRIGGERS
+// ========================================================================
+
+void UMissionSystem::CheckProximityTriggers(FVector PlayerLocation)
+{
+    // Check all missions with proximity triggers enabled
+    for (const auto& MissionPair : MissionDatabase)
+    {
+        const FMissionData& Mission = MissionPair.Value;
+
+        // Skip if mission doesn't use proximity triggers
+        if (!Mission.bRequiresProximityTrigger)
+        {
+            continue;
+        }
+
+        // Skip if mission is already active or completed
+        if (Mission.Status != EMissionStatus::NotStarted)
+        {
+            continue;
+        }
+
+        // Check if player is within trigger radius
+        if (IsPlayerInMissionTriggerZone(Mission.MissionID, PlayerLocation))
+        {
+            UE_LOG(LogTemp, Log, TEXT("MissionSystem: Player entered mission trigger zone - %s"), *Mission.MissionID);
+
+            // Auto-start mission
+            StartMission(Mission.MissionID);
+            break; // Only trigger one mission at a time
+        }
+    }
+}
+
+float UMissionSystem::GetDistanceToMission(const FString& MissionID, FVector PlayerLocation) const
+{
+    if (!MissionDatabase.Contains(MissionID))
+    {
+        return -1.0f;
+    }
+
+    const FMissionData& Mission = MissionDatabase[MissionID];
+    float Distance = FVector::Dist(PlayerLocation, Mission.MissionLocationWorld);
+
+    return Distance / 100.0f; // Convert from cm to meters
+}
+
+bool UMissionSystem::IsPlayerInMissionTriggerZone(const FString& MissionID, FVector PlayerLocation) const
+{
+    float DistanceMeters = GetDistanceToMission(MissionID, PlayerLocation);
+
+    if (DistanceMeters < 0.0f)
+    {
+        return false; // Mission not found
+    }
+
+    const FMissionData& Mission = MissionDatabase[MissionID];
+    return DistanceMeters <= Mission.MissionTriggerRadiusMeters;
+}
+
+FVector UMissionSystem::ConvertGPSToWorldSpace(FVector2D GPS_Coordinates)
+{
+    // Convert GPS (Latitude, Longitude) to UE5 world coordinates
+    //
+    // Verdun battlefield extent (from geographic_data):
+    // Lat: 49.0833 to 49.3833 (30 km range)
+    // Lon: 5.2833 to 5.6833 (40 km range)
+    //
+    // UE5 World Space:
+    // Origin at Verdun city center: (49.1600, 5.3833)
+    // 1 degree latitude ≈ 111 km
+    // 1 degree longitude ≈ 74 km (at 49° N)
+    //
+    // Conversion:
+    // X (East-West) = (Longitude - Origin_Lon) * 74000 * 100 (cm)
+    // Y (North-South) = (Latitude - Origin_Lat) * 111000 * 100 (cm)
+    // Z = 0 (terrain height handled by landscape)
+
+    const FVector2D OriginGPS(49.1600, 5.3833); // Verdun city center
+    const float MetersPerDegreeLat = 111000.0f;
+    const float MetersPerDegreeLon = 74000.0f;
+    const float UE5_CM_PER_METER = 100.0f;
+
+    float DeltaLat = GPS_Coordinates.X - OriginGPS.X;
+    float DeltaLon = GPS_Coordinates.Y - OriginGPS.Y;
+
+    float WorldX = DeltaLon * MetersPerDegreeLon * UE5_CM_PER_METER;
+    float WorldY = DeltaLat * MetersPerDegreeLat * UE5_CM_PER_METER;
+    float WorldZ = 0.0f; // Terrain height handled by landscape
+
+    return FVector(WorldX, WorldY, WorldZ);
 }

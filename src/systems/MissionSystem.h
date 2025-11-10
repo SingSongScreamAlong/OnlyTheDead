@@ -12,6 +12,12 @@
  * Mission system managing 303-day campaign structure
  * Implements Noria rotation system (Front → Support → Rest)
  * Tracks player progression through Battle of Verdun timeline
+ *
+ * PERSISTENT WORLD DESIGN:
+ * - Missions are trigger zones in ONE 1:1 scale Verdun map
+ * - No separate map loads - continuous open world gameplay
+ * - Player watches world transform from forest to wasteland over 303 days
+ * - GPS coordinates from locations_database.csv converted to UE5 world space
  */
 
 UENUM(BlueprintType)
@@ -57,6 +63,28 @@ struct FMissionData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission")
     FString LocationSector;
+
+    // ========================================================================
+    // PERSISTENT WORLD SUPPORT (Trigger Zones, not separate maps)
+    // ========================================================================
+
+    /** World coordinates in persistent 1:1 scale Verdun map (converted from GPS) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission|PersistentWorld")
+    FVector MissionLocationWorld = FVector::ZeroVector;
+
+    /** Radius in meters for mission trigger zone */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission|PersistentWorld")
+    float MissionTriggerRadiusMeters = 500.0f;
+
+    /** If true, mission activates when player enters trigger radius */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission|PersistentWorld")
+    bool bRequiresProximityTrigger = true;
+
+    /** Original GPS coordinates (for reference) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission|PersistentWorld")
+    FVector2D GPS_Coordinates = FVector2D::ZeroVector; // (Latitude, Longitude)
+
+    // ========================================================================
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission")
     int32 DurationDays = 1;
@@ -265,6 +293,26 @@ public:
     /** Get campaign completion percentage (days survived / 303) */
     UFUNCTION(BlueprintPure, Category = "Statistics")
     float GetCampaignCompletionPercentage() const;
+
+    // ========================================================================
+    // PERSISTENT WORLD - PROXIMITY TRIGGERS
+    // ========================================================================
+
+    /** Check if player is within trigger radius of any mission */
+    UFUNCTION(BlueprintCallable, Category = "Missions|PersistentWorld")
+    void CheckProximityTriggers(FVector PlayerLocation);
+
+    /** Check distance to specific mission location */
+    UFUNCTION(BlueprintPure, Category = "Missions|PersistentWorld")
+    float GetDistanceToMission(const FString& MissionID, FVector PlayerLocation) const;
+
+    /** Check if player is within mission trigger radius */
+    UFUNCTION(BlueprintPure, Category = "Missions|PersistentWorld")
+    bool IsPlayerInMissionTriggerZone(const FString& MissionID, FVector PlayerLocation) const;
+
+    /** Convert GPS coordinates to UE5 world space */
+    UFUNCTION(BlueprintPure, Category = "Missions|PersistentWorld")
+    static FVector ConvertGPSToWorldSpace(FVector2D GPS_Coordinates);
 
 protected:
     // ========================================================================
