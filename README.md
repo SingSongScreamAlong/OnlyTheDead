@@ -11,7 +11,8 @@
 |---------------------------|---------|
 | **🎮 Game Design Specs** | [`ONLY_THE_DEAD_DEVELOPMENT_BOOK.md`](ONLY_THE_DEAD_DEVELOPMENT_BOOK.md) (17K words) |
 | **📖 Historical Research (100K+ words!)** | [`verdun_anthology/`](verdun_anthology/) — see [Content Browser](#-content-browser---100000-words-50-documents) below |
-| **🗓️ 303-Day Battle Timeline** | [`verdun_anthology/timeline/`](verdun_anthology/timeline/) (12 monthly files) |
+| **🗓️ 303-Day Battle Timeline** | [`verdun_anthology/timeline/`](verdun_anthology/timeline/) (11 files: 1 master + 10 monthly) |
+| **📋 Authenticity Audit** | [`verdun_anthology/AUTHENTICITY_AUDIT.md`](verdun_anthology/AUTHENTICITY_AUDIT.md) — What's real vs. recreated vs. fictional |
 | **💬 Letters, Diaries, Primary Sources** | [`verdun_anthology/letters/`](verdun_anthology/letters/), [`verdun_anthology/diaries/`](verdun_anthology/diaries/) |
 | **⚔️ Combat & Survival Systems** | [`verdun_anthology/survival/`](verdun_anthology/survival/), [`verdun_anthology/research/`](verdun_anthology/research/) |
 | **🗺️ Real Terrain Data & Tools** | [`verdun_anthology/geographic_data/`](verdun_anthology/geographic_data/) |
@@ -37,12 +38,12 @@ This repository contains **TWO complementary documents**:
 **Location**: [`verdun_anthology/`](verdun_anthology/)
 
 **Contents**:
-- ✅ Complete 303-day timeline (12 detailed monthly files covering Feb-Dec 1916)
-- ✅ Letters, diaries, military orders, medical reports (30+ documents)
+- ✅ Complete 303-day timeline (11 files: 1 master covering all days + 10 detailed monthly breakdowns Mar-Dec)
+- ✅ Letters, diaries, military orders, medical reports (30+ documents — mix of verified, reconstructed, and fictional)
 - ✅ Survival mechanics documentation (6 systems based on soldier testimonies)
-- ✅ Geographic data package (80+ locations, real SRTM terrain data, UE5/Houdini tools)
-- ✅ Historical accuracy verification (three-tier source system)
-- ✅ Research foundation (artillery, medical, fortifications)
+- ✅ Geographic data package (80+ verified locations, real SRTM terrain data, UE5/Houdini tools)
+- ✅ Historical accuracy verification (three-tier source system — see [Authenticity Audit](verdun_anthology/AUTHENTICITY_AUDIT.md))
+- ✅ Research foundation (artillery, medical, fortifications — all verified)
 
 **Use for**: Historical accuracy, educational reference, mission foundation
 
@@ -80,14 +81,27 @@ See: [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/RE
 
 ## 📦 CONTENT BROWSER — 100,000+ Words, 50+ Documents
 
+**⚠️ TRANSPARENCY: What's Real, What's Recreated, What's Fiction**
+
+This repository contains **THREE types of content**:
+- ✅ **VERIFIED FACTS** (~33%) — Real historical events, dates, battles, commanders, statistics from archives
+- ⚠️ **RECONSTRUCTIONS** (~46%) — Based on archival sources but details reconstructed (e.g., daily casualty estimates, tactical sequences)
+- ⚠️⚠️⚠️ **FICTION** (~21%) — Characters and narratives created for game, grounded in real history
+
+**📋 [FULL AUTHENTICITY AUDIT](verdun_anthology/AUTHENTICITY_AUDIT.md)** — Complete document-by-document verification
+
+---
+
 **Can't find something? Everything is here:**
 
-### 🗓️ TIMELINE (12 detailed monthly files)
+### 🗓️ TIMELINE (11 files: 1 master + 10 monthly breakdowns)
 **Location**: [`verdun_anthology/timeline/`](verdun_anthology/timeline/)
+**Authenticity**: ✅ All major events/dates verified | ⚠️ Daily casualty figures estimated from monthly totals
 
-- [`verdun_timeline_master.md`](verdun_anthology/timeline/verdun_timeline_master.md) - Overview of all 303 days
-- **Monthly breakdowns** (Feb-Dec 1916):
-  - [`verdun_february_1916_detailed.md`](verdun_anthology/timeline/verdun_february_1916_detailed.md) - The guns begin (Feb 21)
+- [`verdun_timeline_master.md`](verdun_anthology/timeline/verdun_timeline_master.md) - Overview of all 303 days (includes Feb 21-29)
+- **Detailed monthly breakdowns** (March-December 1916):
+  - **February 21-29, 1916**: Covered in master timeline above (dedicated monthly file to be added)
+
   - [`verdun_march_1916_detailed.md`](verdun_anthology/timeline/verdun_march_1916_detailed.md) - Expansion to left bank
   - [`verdun_april_1916_detailed.md`](verdun_anthology/timeline/verdun_april_1916_detailed.md) - The May inferno begins
   - [`verdun_may_1916_detailed.md`](verdun_anthology/timeline/verdun_may_1916_detailed.md) - Continued assault
@@ -103,23 +117,24 @@ See: [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/RE
 
 ### 💬 LETTERS & DIARIES (8 documents, ~10,000 words)
 **Personal voices from the battle**
+**Authenticity**: ⚠️⚠️⚠️ Most are fictional characters | ✅ Based on real soldier letter patterns | ⚠️ Steinbrecher is real person
 
 **French Letters**: [`verdun_anthology/letters/french/`](verdun_anthology/letters/french/)
-- [`letter_renard_to_wife_feb20_1916.md`](verdun_anthology/letters/french/letter_renard_to_wife_feb20_1916.md) - Night before the offensive
-- [`letter_beaumont_to_mother_mar07_1916.md`](verdun_anthology/letters/french/letter_beaumont_to_mother_mar07_1916.md) - Young soldier, day before death
-- [`letter_nurse_dubois_apr18_1916.md`](verdun_anthology/letters/french/letter_nurse_dubois_apr18_1916.md) - Nurse's perspective
-- [`letter_chaplain_bernard_may22_1916.md`](verdun_anthology/letters/french/letter_chaplain_bernard_may22_1916.md) - Chaplain's experience
-- [`letter_colonial_benmokhtar_jun10_1916.md`](verdun_anthology/letters/french/letter_colonial_benmokhtar_jun10_1916.md) - Colonial soldier
+- ⚠️⚠️⚠️ [`letter_renard_to_wife_feb20_1916.md`](verdun_anthology/letters/french/letter_renard_to_wife_feb20_1916.md) - Night before offensive (fictional character, real pattern)
+- ⚠️⚠️⚠️ [`letter_beaumont_to_mother_mar07_1916.md`](verdun_anthology/letters/french/letter_beaumont_to_mother_mar07_1916.md) - Young soldier (fictional character)
+- ⚠️⚠️⚠️ [`letter_nurse_dubois_apr18_1916.md`](verdun_anthology/letters/french/letter_nurse_dubois_apr18_1916.md) - Nurse's perspective (fictional character)
+- ⚠️⚠️⚠️ [`letter_chaplain_bernard_may22_1916.md`](verdun_anthology/letters/french/letter_chaplain_bernard_may22_1916.md) - Chaplain's crisis (fictional character)
+- ⚠️⚠️⚠️ [`letter_colonial_benmokhtar_jun10_1916.md`](verdun_anthology/letters/french/letter_colonial_benmokhtar_jun10_1916.md) - Colonial soldier (fictional character)
 
 **German Letters**: [`verdun_anthology/letters/german/`](verdun_anthology/letters/german/)
-- [`letter_steinbrecher_to_mentor_apr15_1916.md`](verdun_anthology/letters/german/letter_steinbrecher_to_mentor_apr15_1916.md) - Crisis of faith (ACTUAL historical letter)
+- ⚠️ [`letter_steinbrecher_to_mentor_apr15_1916.md`](verdun_anthology/letters/german/letter_steinbrecher_to_mentor_apr15_1916.md) - **REAL PERSON** (Lt. Friedrich Steinbrecher), letter reconstructed from published writings
 
 **French Diaries**: [`verdun_anthology/diaries/french/`](verdun_anthology/diaries/french/)
-- [`moreau_diary_feb_mar_1916.md`](verdun_anthology/diaries/french/moreau_diary_feb_mar_1916.md) - Feb-Mar entries
-- [`moreau_diary_apr_jun_1916.md`](verdun_anthology/diaries/french/moreau_diary_apr_jun_1916.md) - Apr-Jun entries
+- ⚠️⚠️⚠️ [`moreau_diary_feb_mar_1916.md`](verdun_anthology/diaries/french/moreau_diary_feb_mar_1916.md) - Fictional character (composite of real French diaries)
+- ⚠️⚠️⚠️ [`moreau_diary_apr_jun_1916.md`](verdun_anthology/diaries/french/moreau_diary_apr_jun_1916.md) - Fictional character (all events referenced are real)
 
 **German Diaries**: [`verdun_anthology/diaries/german/`](verdun_anthology/diaries/german/)
-- [`wolff_diary_feb_1916.md`](verdun_anthology/diaries/german/wolff_diary_feb_1916.md) - Eyewitness to Fort Douaumont capture
+- ⚠️⚠️⚠️ [`wolff_diary_feb_1916.md`](verdun_anthology/diaries/german/wolff_diary_feb_1916.md) - Fictional character (eyewitness to real Fort Douaumont capture)
 
 ---
 
@@ -134,60 +149,68 @@ See: [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/RE
 ---
 
 ### ⚔️ COMBAT & SURVIVAL SYSTEMS (9 documents, ~25,000 words)
+**Authenticity**: ✅ Practices verified from soldier memoirs | ⚠️ Specific examples composite
 
 **Survival Mechanics**: [`verdun_anthology/survival/`](verdun_anthology/survival/)
-- [`surviving_artillery_verdun_1916.md`](verdun_anthology/survival/surviving_artillery_verdun_1916.md) - How to survive shelling
-- [`food_rations_verdun_1916.md`](verdun_anthology/survival/food_rations_verdun_1916.md) - What soldiers ate
-- [`water_supply_verdun_1916.md`](verdun_anthology/survival/water_supply_verdun_1916.md) - Water scarcity crisis
-- [`shelter_living_conditions_verdun_1916.md`](verdun_anthology/survival/shelter_living_conditions_verdun_1916.md) - Trenches, dugouts, conditions
-- [`french_daily_routine_verdun_1916.md`](verdun_anthology/survival/french_daily_routine_verdun_1916.md) - Daily life timeline
-- [`night_patrols_verdun_1916.md`](verdun_anthology/survival/night_patrols_verdun_1916.md) - Patrol missions
+- ⚠️ [`surviving_artillery_verdun_1916.md`](verdun_anthology/survival/surviving_artillery_verdun_1916.md) - How to survive shelling (based on soldier testimonies)
+- ⚠️ [`food_rations_verdun_1916.md`](verdun_anthology/survival/food_rations_verdun_1916.md) - What soldiers ate (rations verified)
+- ⚠️ [`water_supply_verdun_1916.md`](verdun_anthology/survival/water_supply_verdun_1916.md) - Water scarcity crisis (documented problem)
+- ⚠️ [`shelter_living_conditions_verdun_1916.md`](verdun_anthology/survival/shelter_living_conditions_verdun_1916.md) - Trenches, dugouts (verified conditions)
+- ⚠️ [`french_daily_routine_verdun_1916.md`](verdun_anthology/survival/french_daily_routine_verdun_1916.md) - Daily life (composite from memoirs)
+- ⚠️ [`night_patrols_verdun_1916.md`](verdun_anthology/survival/night_patrols_verdun_1916.md) - Patrol missions (based on real practices)
 
 **Research & Technical Data**: [`verdun_anthology/research/`](verdun_anthology/research/)
-- [`artillery_data.md`](verdun_anthology/research/artillery_data.md) - Weapons, munitions, tactics (~37-40 million shells fired)
-- [`medical_practices.md`](verdun_anthology/research/medical_practices.md) - Wounds, treatments, evacuation chain
-- [`fortifications_divisions_commands.md`](verdun_anthology/research/fortifications_divisions_commands.md) - Forts, units, commanders
+**Authenticity**: ✅ All specifications verified from technical manuals and archives
+- ✅ [`artillery_data.md`](verdun_anthology/research/artillery_data.md) - Weapons, munitions, tactics (~37-40 million shells verified)
+- ✅ [`medical_practices.md`](verdun_anthology/research/medical_practices.md) - Wounds, treatments (Service de Santé records)
+- ✅ [`fortifications_divisions_commands.md`](verdun_anthology/research/fortifications_divisions_commands.md) - Forts, units, commanders (all verified)
 
 ---
 
 ### 📖 STORIES & PRIMARY SOURCES (6 documents)
 
 **Battle Narratives**: [`verdun_anthology/stories/`](verdun_anthology/stories/)
-- [`the_guns_begin_feb21_1916.md`](verdun_anthology/stories/the_guns_begin_feb21_1916.md) - Feb 21, 1916 (10,000 words)
-- [`siege_of_fort_vaux_june_1916.md`](verdun_anthology/stories/siege_of_fort_vaux_june_1916.md) - 7-day siege
-- [`mort_homme_battle_mar_may_1916.md`](verdun_anthology/stories/mort_homme_battle_mar_may_1916.md) - "Dead Man's Hill"
+**Authenticity**: ✅ All battles/dates real | ⚠️⚠️⚠️ Dialogue and characters recreated/fictional
+- ⚠️ [`the_guns_begin_feb21_1916.md`](verdun_anthology/stories/the_guns_begin_feb21_1916.md) - Feb 21, 1916 (10,000 words, events verified)
+- ⚠️ [`siege_of_fort_vaux_june_1916.md`](verdun_anthology/stories/siege_of_fort_vaux_june_1916.md) - 7-day siege (based on Raynal's memoir)
+- ⚠️ [`mort_homme_battle_mar_may_1916.md`](verdun_anthology/stories/mort_homme_battle_mar_may_1916.md) - "Dead Man's Hill" (events verified)
 
 **Actual Historical Documents**: [`verdun_anthology/primary_sources/`](verdun_anthology/primary_sources/)
-- [`actual_documents/petain_order_april_1916.md`](verdun_anthology/primary_sources/actual_documents/petain_order_april_1916.md) - "On les aura!" (AUTHENTIC)
-- [`speeches/poincare_verdun_speech_june_1916.md`](verdun_anthology/primary_sources/speeches/poincare_verdun_speech_june_1916.md) - Presidential visit
+**Authenticity**: ✅ Real documents | ⚠️ Some reconstructed from excerpts
+- ✅ [`actual_documents/petain_order_april_1916.md`](verdun_anthology/primary_sources/actual_documents/petain_order_april_1916.md) - "On les aura!" **AUTHENTIC** (SHD archives)
+- ⚠️ [`speeches/poincare_verdun_speech_june_1916.md`](verdun_anthology/primary_sources/speeches/poincare_verdun_speech_june_1916.md) - Presidential visit (excerpts real, full text reconstructed)
 
 **Contemporary Press**: [`verdun_anthology/newspapers/`](verdun_anthology/newspapers/)
-- [`french/le_matin_feb27_1916.md`](verdun_anthology/newspapers/french/le_matin_feb27_1916.md) - Propaganda vs. reality
+**Authenticity**: ⚠️ Composite based on real Le Matin coverage
+- ⚠️ [`french/le_matin_feb27_1916.md`](verdun_anthology/newspapers/french/le_matin_feb27_1916.md) - Propaganda vs. reality (themes authentic)
 
 ---
 
 ### 🗺️ GEOGRAPHIC DATA & TERRAIN TOOLS
 **Location**: [`verdun_anthology/geographic_data/`](verdun_anthology/geographic_data/)
+**Authenticity**: ✅ All coordinates verified from French topographic surveys and SRTM data
 
-- [`GEOGRAPHIC_DATA_OVERVIEW.md`](verdun_anthology/geographic_data/GEOGRAPHIC_DATA_OVERVIEW.md) - 80+ verified locations with coordinates
-- **Real SRTM terrain data** covering 60 km² battlefield
-- **UE5 export tools** for Unreal Engine 5
-- **Houdini export tools** for procedural terrain
-- Complete workflow for importing real Verdun terrain into game engines
+- ✅ [`GEOGRAPHIC_DATA_OVERVIEW.md`](verdun_anthology/geographic_data/GEOGRAPHIC_DATA_OVERVIEW.md) - 80+ verified locations with GPS coordinates
+- ✅ **Real SRTM terrain data** covering 60 km² battlefield (NASA public domain data)
+- ✅ **UE5 export tools** for Unreal Engine 5
+- ✅ **Houdini export tools** for procedural terrain
+- ✅ Complete workflow for importing real Verdun terrain into game engines
 
 ---
 
 ### 👥 CHARACTERS (45 characters)
 **Location**: [`verdun_anthology/characters/`](verdun_anthology/characters/)
+**Authenticity**: ✅ Mix of real historical figures | ⚠️⚠️⚠️ Fictional composites (clearly labeled)
 
-- **French roster** - 20 characters (historical + fictional)
-- **German roster** - 25 characters (historical + fictional)
+- **French roster** - 20 characters (✅ ~8 real historical figures | ⚠️⚠️⚠️ ~12 fictional)
+- **German roster** - 25 characters (✅ ~10 real historical figures | ⚠️⚠️⚠️ ~15 fictional)
 - Complete backstories, narrative arcs, fates
 
 ---
 
 ### 📚 COMPREHENSIVE GUIDES
 
+- [`verdun_anthology/AUTHENTICITY_AUDIT.md`](verdun_anthology/AUTHENTICITY_AUDIT.md) - **NEW!** Complete document-by-document verification
 - [`verdun_anthology/DOCUMENTATION_CATALOG.md`](verdun_anthology/DOCUMENTATION_CATALOG.md) - Complete index of all 50+ documents
 - [`verdun_anthology/HISTORICAL_ACCURACY_STATEMENT.md`](verdun_anthology/HISTORICAL_ACCURACY_STATEMENT.md) - Three-tier source verification system
 - [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md) - How history and game design work together
