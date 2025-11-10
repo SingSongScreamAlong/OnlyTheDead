@@ -432,3 +432,4 @@ export * from './damage';
 export * from './bombardment';
 export * from './fireMission';
 export * from './playerDetection';
+export * from './artilleryWeather';

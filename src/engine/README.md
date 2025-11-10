@@ -8,6 +8,23 @@ A historically accurate WWI artillery simulation engine for the Battle of Verdun
 
 This artillery engine simulates the **40 million shells** fired during the 303-day Battle of Verdun, the deadliest artillery bombardment in history. The system is designed for a survival game where artillery is the primary threat (70-75% of casualties), not enemy soldiers.
 
+### 🌩️ Artillery as Weather
+
+**The player doesn't control artillery - they survive it.**
+
+Like a weather system, artillery:
+- **Never stops** - Harassing fire is constant (24/7)
+- **Ebbs and flows** - Quiet periods, then sudden storms
+- **Is unpredictable** - Random surges, no safe patterns
+- **Runs autonomously** - German batteries fire automatically
+- **Can't be controlled** - Only reacted to
+
+The player is **subject to** the bombardment, like being caught in a deadly storm. They can only:
+- **Listen** for incoming shells
+- **Recognize** shell types by sound
+- **Take cover** when threats appear
+- **Survive** through skill and luck
+
 ### Key Features
 
 - **Historically Accurate**: Based on extensive research of WWI artillery data
@@ -49,64 +66,130 @@ import { createArtilleryEngine, createVerdunScenario } from './engine/artilleryE
 
 ## Quick Start
 
-### Basic Setup
+### Artillery Weather System (Recommended)
+
+The **Artillery Weather System** runs automatically - artillery is an environmental hazard:
 
 ```typescript
-import { createArtilleryEngine } from './engine/artilleryEngine';
-import { createArtilleryBattery, createFireMission } from './engine/fireMission';
-import { ShellType, BombardmentIntensity, CoverType } from './engine/types';
+import { createVerdunArtilleryWeather } from './engine/artilleryWeather';
+import { CoverType } from './engine/types';
 
-// Create the engine
-const engine = createArtilleryEngine();
+// Create the weather system - it runs autonomously
+const artilleryWeather = createVerdunArtilleryWeather(
+  { x: 0, y: 0, z: 0 }, // Your trench position
+  new Date('1916-03-15') // Historical date
+);
 
-// Set player position
+// Access the underlying engine for player interactions
+const engine = (artilleryWeather as any).engine;
+
+// Set player state
 engine.setPlayerPosition({ x: 0, y: 0, z: 0 });
 engine.setPlayerCover(CoverType.SHALLOW_TRENCH);
 
-// Create an artillery battery
-const battery = createArtilleryBattery(
-  "French 75mm Battery",
-  "french",
-  ShellType.FRENCH_75MM,
-  6, // 6 guns
-  { x: -1000, y: 0, z: 0 }, // Position
-  11000 // Range in meters
-);
-
-engine.addBattery(battery);
-
-// Update loop (call every frame)
+// Game loop - artillery runs automatically
 function gameLoop(deltaTime: number) {
+  // Update weather system (manages bombardments automatically)
+  artilleryWeather.update(deltaTime);
+
+  // Update engine (tracks shells, impacts)
   engine.update(deltaTime);
 
-  // Check what shells player can detect
+  // Player REACTS to incoming shells
   const detections = engine.getPlayerDetections();
 
   for (const detection of detections) {
     if (detection.threatLevel === 'extreme') {
-      console.log(`DANGER! ${detection.recommendedAction}`);
+      // Play warning sound
+      // Show shell direction
+      // Player must take cover!
+      console.log(`💀 ${detection.recommendedAction}`);
     }
+  }
+
+  // Check weather status
+  const status = artilleryWeather.getStatus();
+  if (status.isStormActive) {
+    console.log(`🌩️ Artillery storm! ${status.stormTimeRemaining}s remaining`);
   }
 }
 ```
 
-### Creating a Fire Mission
+### Weather System Features
 
 ```typescript
-import { createFireMission, assignBatteryToMission } from './engine/fireMission';
-import { FireMissionType } from './engine/types';
+// Check current bombardment intensity
+const status = artilleryWeather.getStatus();
+console.log(status.currentIntensity); // HARASSING_FIRE, LIGHT, HEAVY, or DRUMFIRE
 
-const mission = createFireMission(
-  FireMissionType.SUPPRESSION,
-  { x: 100, y: 0, z: 100 }, // Target position
-  "Enemy trench",
-  4, // Priority (1-5)
-  600, // Duration in seconds
-  BombardmentIntensity.HEAVY
-);
+// Artillery storms occur randomly
+if (status.isStormActive) {
+  console.log(`Storm! ${status.stormTimeRemaining}s left`);
+} else {
+  console.log(`Next storm in ${status.nextStormIn}s`);
+}
+```
 
-assignBatteryToMission(battery, mission);
-engine.startMission(mission);
+### Historical Scenarios
+
+```typescript
+import {
+  createFebruary21Weather,     // Apocalyptic opening bombardment
+  createQuietPeriodWeather      // Relatively safe periods
+} from './engine/artilleryWeather';
+
+// February 21, 1916 - constant drumfire
+const apocalypse = createFebruary21Weather({ x: 0, y: 0, z: 0 });
+
+// Quiet period - harassing fire with occasional storms
+const quietPeriod = createQuietPeriodWeather({ x: 0, y: 0, z: 0 });
+```
+
+### Player Survival Loop
+
+The player's experience:
+
+```typescript
+// 1. Constant awareness
+const detections = engine.getPlayerDetections();
+
+// 2. Shell recognition (audio-based)
+for (const detection of detections) {
+  if (detection.isRecognized) {
+    // Player identified shell type by sound
+    playShellSound(detection.shellType); // "Ffff-CRACK!" = 75mm
+  } else {
+    // Player doesn't recognize it yet (learning curve)
+    playGenericSound();
+  }
+
+  // 3. Threat assessment
+  switch (detection.threatLevel) {
+    case 'extreme':
+      // Within lethal range - MOVE NOW
+      showWarning("💀 INCOMING!");
+      break;
+    case 'high':
+      // Severe wound range - take cover
+      showWarning("⚠️ Danger close!");
+      break;
+    case 'moderate':
+      // Could get hit - be alert
+      break;
+  }
+
+  // 4. Recommended action
+  console.log(detection.recommendedAction);
+  // "Drop prone immediately!"
+  // "Sprint to nearest deep cover!"
+  // "Continue task"
+}
+
+// 5. Player skills improve over time
+if (playerSurvived) {
+  engine.updatePlayerSkills(shellWasRecognized, true);
+  // Recognition improves: novice → experienced → veteran
+}
 ```
 
 ## Core Systems

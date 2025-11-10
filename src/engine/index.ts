@@ -252,6 +252,21 @@ export {
 } from './playerDetection';
 
 // ============================================================================
+// ARTILLERY WEATHER SYSTEM (Environmental Hazard)
+// ============================================================================
+
+export {
+  ArtilleryWeatherSystem,
+  createVerdunArtilleryWeather,
+  createFebruary21Weather,
+  createQuietPeriodWeather
+} from './artilleryWeather';
+
+export type {
+  ArtilleryWeatherConfig
+} from './artilleryWeather';
+
+// ============================================================================
 // EXAMPLES
 // ============================================================================
 
