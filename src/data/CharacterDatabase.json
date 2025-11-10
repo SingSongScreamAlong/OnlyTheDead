@@ -1,0 +1,340 @@
+{
+  "_meta": {
+    "description": "Character Database for Only The Dead",
+    "version": "1.0",
+    "last_updated": "2025-11-10",
+    "note": "Mix of composite characters (marked 'fictional') and historical figures (marked 'historical')"
+  },
+
+  "player_character": {
+    "character_id": "player_jean_moreau",
+    "name": "Jean Moreau",
+    "type": "player_character",
+    "historical_accuracy": "composite",
+    "rank": "Soldat (Private) → Caporal (Corporal)",
+    "unit": "151e Régiment d'Infanterie",
+    "age": 24,
+    "hometown": "Lyon, France",
+    "background": "Former metalworker. Conscripted February 1915. Survived Artois offensive. Assigned to Verdun February 21, 1916. Player experiences 303-day battle through his eyes.",
+    "personality": "Determined survivor. Starts naive, becomes hardened. Maintains humanity through letters home and camaraderie.",
+    "voice_direction": "French accent, starts hopeful, gradually becomes weary but resolute."
+  },
+
+  "squad_members": {
+    "henri_dubois": {
+      "character_id": "npc_henri_dubois",
+      "type": "squad_mate",
+      "historical_accuracy": "composite",
+      "rank": "Caporal-chef (Corporal-Chief)",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 32,
+      "hometown": "Paris, France",
+      "background": "Veteran of 1914-1915 campaigns. Squad leader. Experienced survivor who mentors younger soldiers.",
+      "personality": "Gruff but caring. Dark humor. Knows how to survive. Teaches player shell recognition.",
+      "role": "Tutorial NPC, mentor figure",
+      "key_moments": [
+        "Teaches shell recognition (Feb 21)",
+        "Saves player from 155mm strike (March)",
+        "Dies during drumfire barrage (June)"
+      ],
+      "voice_direction": "Deep voice, Parisian accent, sardonic wit."
+    },
+
+    "pierre_laurent": {
+      "character_id": "npc_pierre_laurent",
+      "type": "squad_mate",
+      "historical_accuracy": "composite",
+      "rank": "Soldat",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 19,
+      "hometown": "Bretagne, France",
+      "background": "Farm boy. Conscripted January 1916. First battle is Verdun. Terrified but loyal.",
+      "personality": "Young, scared, looks to player for guidance. Represents innocence lost.",
+      "role": "Emotional anchor, shows transformation of youth",
+      "key_moments": [
+        "First day terror (Feb 21)",
+        "Shell shock episode (April)",
+        "Either survives or dies based on player choices"
+      ],
+      "voice_direction": "Young, Breton accent, voice cracks under stress."
+    },
+
+    "georges_mercier": {
+      "character_id": "npc_georges_mercier",
+      "type": "squad_mate",
+      "historical_accuracy": "composite",
+      "rank": "Soldat",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 28,
+      "hometown": "Marseille, France",
+      "background": "Former sailor. Transferred to infantry 1915. Knows how to navigate chaos.",
+      "personality": "Pragmatic, resourceful, occasionally breaks rules to survive. Black market connections.",
+      "role": "Supplies contact, morally complex character",
+      "key_moments": [
+        "Trades contraband wine for extra rations",
+        "Steals from German corpses",
+        "Moral choice: report him or let it slide?"
+      ],
+      "voice_direction": "Southern French accent, smooth-talking."
+    },
+
+    "andre_rousseau": {
+      "character_id": "npc_andre_rousseau",
+      "type": "squad_mate",
+      "historical_accuracy": "composite",
+      "rank": "Sergent (Sergeant)",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 35,
+      "hometown": "Normandie, France",
+      "background": "Career soldier. Served in North Africa before WWI. Promoted from ranks.",
+      "personality": "By-the-book professional. Cares for his men but follows orders. Internal conflict between duty and humanity.",
+      "role": "Authority figure, represents military hierarchy",
+      "key_moments": [
+        "Orders player on suicide missions",
+        "Breakdown after losing entire section",
+        "Redemption arc or descent into brutality?"
+      ],
+      "voice_direction": "Norman accent, authoritative but weary."
+    }
+  },
+
+  "medics": {
+    "doctor_bernard_lambert": {
+      "character_id": "npc_bernard_lambert",
+      "type": "medic",
+      "historical_accuracy": "composite",
+      "rank": "Médecin aide-major (Assistant Surgeon)",
+      "unit": "Field Hospital, Verdun Sector",
+      "age": 42,
+      "hometown": "Strasbourg, France",
+      "background": "Civilian surgeon before war. Overwhelmed by scale of casualties. Drinks to cope.",
+      "personality": "Compassionate but exhausted. Performs triage under impossible conditions. PTSD.",
+      "role": "Medical system tutorial, shows cost of war on healers",
+      "key_moments": [
+        "Teaches player field dressing",
+        "Triage scene: 'I can only save one'",
+        "Breakdown: 'I've cut off 50 legs this week'"
+      ],
+      "voice_direction": "Alsatian accent, exhausted, trembling hands implied in voice."
+    },
+
+    "nurse_marie_charpentier": {
+      "character_id": "npc_marie_charpentier",
+      "type": "medic",
+      "historical_accuracy": "composite",
+      "rank": "Infirmière (Nurse)",
+      "unit": "Field Hospital, Verdun Sector",
+      "age": 29,
+      "hometown": "Lyon, France",
+      "background": "Volunteer nurse. Lost brother at Marne. Determined to save others.",
+      "personality": "Strong-willed, compassionate, refuses to give up on patients.",
+      "role": "Hope amid horror, love interest (subtle/respectful)",
+      "key_moments": [
+        "Treats player's wounds (multiple times)",
+        "Player can write letters to her",
+        "Final scene if player survives campaign"
+      ],
+      "voice_direction": "Lyonnais accent, warm but firm."
+    }
+  },
+
+  "officers": {
+    "lieutenant_etienne_marchand": {
+      "character_id": "npc_etienne_marchand",
+      "type": "officer",
+      "historical_accuracy": "composite",
+      "rank": "Sous-lieutenant (Second Lieutenant)",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 23,
+      "hometown": "Paris, France",
+      "background": "Saint-Cyr military academy graduate. First command at Verdun. Idealistic.",
+      "personality": "Naive but brave. Learns harsh realities of command. Either grows or breaks.",
+      "role": "Shows cost of leadership",
+      "key_moments": [
+        "Leads ill-fated assault (high casualties)",
+        "Moral dilemma: follow suicidal orders or refuse?",
+        "Either becomes hardened realist or is killed"
+      ],
+      "voice_direction": "Upper-class Parisian, starts confident, becomes uncertain."
+    },
+
+    "capitaine_françois_durand": {
+      "character_id": "npc_francois_durand",
+      "type": "officer",
+      "historical_accuracy": "composite",
+      "rank": "Capitaine (Captain)",
+      "unit": "151e Régiment d'Infanterie",
+      "age": 38,
+      "hometown": "Toulouse, France",
+      "background": "Veteran officer. Cynical but competent. Protects his men when possible.",
+      "personality": "Pragmatic, dark humor, manipulates system to save soldiers.",
+      "role": "Mentor officer, shows how good leaders survive bad system",
+      "key_moments": [
+        "Delays attack order to save lives",
+        "Confronts higher command",
+        "Killed or promoted based on choices"
+      ],
+      "voice_direction": "Southern accent, gravelly voice, world-weary."
+    }
+  },
+
+  "historical_figures": {
+    "colonel_emile_driant": {
+      "character_id": "historical_emile_driant",
+      "type": "historical_figure",
+      "historical_accuracy": "historical",
+      "rank": "Lieutenant-colonel",
+      "unit": "56e and 59e Battalions de Chasseurs à Pied",
+      "age": 59,
+      "death_date": "February 22, 1916",
+      "location": "Bois des Caures",
+      "background": "Politician, author, and soldier. Warned of German attack. Died defending Bois des Caures on Day 2.",
+      "role": "Tutorial mission figure, establishes stakes",
+      "key_moments": [
+        "Opening bombardment (Feb 21)",
+        "Player witnesses his death (Feb 22)",
+        "Final words: 'Ils ne passeront pas'"
+      ],
+      "voice_direction": "Elderly but commanding, dignified even in death.",
+      "historical_note": "Actual historical figure. Death and words are documented."
+    },
+
+    "general_philippe_petain": {
+      "character_id": "historical_philippe_petain",
+      "type": "historical_figure",
+      "historical_accuracy": "historical",
+      "rank": "Général",
+      "unit": "Commander, 2nd Army (Verdun Defense)",
+      "age": 60,
+      "background": "Took command Feb 26. Organized Noria rotation system. 'Ils ne passeront pas.'",
+      "role": "Background figure, appears in cutscenes",
+      "key_moments": [
+        "Feb 26 speech (cutscene)",
+        "Organizes Voie Sacrée supply line",
+        "Final victory celebration (if player survives)"
+      ],
+      "voice_direction": "Authoritative, calm, inspiring confidence.",
+      "historical_note": "Actual historical figure. Later controversial (Vichy), but hero of Verdun."
+    },
+
+    "commandant_raynal": {
+      "character_id": "historical_raynal",
+      "type": "historical_figure",
+      "historical_accuracy": "historical",
+      "rank": "Commandant (Major)",
+      "unit": "Garrison Commander, Fort Vaux",
+      "age": 49,
+      "death_date": "Survived (POW)",
+      "background": "Defended Fort Vaux for 7 days without water. Honorable surrender June 7.",
+      "role": "Fort Vaux siege mission",
+      "key_moments": [
+        "Rallies garrison (June 1)",
+        "Refuses surrender demands (June 2-6)",
+        "Honors his surrender (June 7): 'We could no longer defend'"
+      ],
+      "voice_direction": "Hoarse from thirst, dignified, defiant.",
+      "historical_note": "Actual historical figure. Germans honored his defense."
+    }
+  },
+
+  "enemy_characters": {
+    "german_officer_leutnant_weber": {
+      "character_id": "npc_german_weber",
+      "type": "enemy_npc",
+      "historical_accuracy": "composite",
+      "rank": "Leutnant",
+      "unit": "German Infantry (unspecified regiment)",
+      "age": 26,
+      "hometown": "München, Germany",
+      "background": "Mirror of French officers. Also trying to survive. Represents shared humanity.",
+      "personality": "Professional soldier. Not a monster. Just following orders.",
+      "role": "Humanizes the enemy",
+      "key_moments": [
+        "Player sees him across no-man's-land",
+        "Possible mercy encounter",
+        "Shared moment of humanity?"
+      ],
+      "voice_direction": "German accent, weary like French soldiers.",
+      "note": "Player never kills named enemies - maintains respect"
+    }
+  },
+
+  "supporting_cast": {
+    "père_antoine": {
+      "character_id": "npc_pere_antoine",
+      "type": "chaplain",
+      "historical_accuracy": "composite",
+      "rank": "Aumônier militaire (Military Chaplain)",
+      "unit": "Attached to Verdun sector",
+      "age": 55,
+      "hometown": "Bretagne, France",
+      "background": "Parish priest before war. Administers last rites. Questions God in face of horror.",
+      "personality": "Faithful but troubled. Offers spiritual comfort. Own faith tested.",
+      "role": "Moral/philosophical anchor",
+      "key_moments": [
+        "Last rites for dying soldier",
+        "Crisis of faith monologue",
+        "Final prayer if player dies"
+      ],
+      "voice_direction": "Solemn, Breton accent, gentle."
+    },
+
+    "madeleine_moreau": {
+      "character_id": "npc_madeleine_moreau",
+      "type": "civilian",
+      "historical_accuracy": "composite",
+      "rank": "N/A",
+      "unit": "N/A",
+      "age": 22,
+      "hometown": "Lyon, France",
+      "background": "Player's sister. Works in munitions factory. Letters from home.",
+      "personality": "Worried for brother. Keeps spirits up with news from home.",
+      "role": "Connection to normal world, motivation to survive",
+      "key_moments": [
+        "Letters throughout campaign",
+        "Voice-over reading letters",
+        "Final reunion if player survives"
+      ],
+      "voice_direction": "Lyonnais accent, warm, loving, increasingly worried."
+    }
+  },
+
+  "narrator": {
+    "narrator_voice": {
+      "character_id": "narrator",
+      "type": "narrator",
+      "historical_accuracy": "N/A",
+      "role": "Chapter introductions, historical context, death screens",
+      "voice_direction": "Somber, respectful, French-accented English or native French. Think Ken Burns documentary.",
+      "key_moments": [
+        "Campaign opening",
+        "Phase transitions",
+        "Death screen: 'Jean Moreau. Age 24. Died at Verdun, [date]'",
+        "Victory screen: 'Jean Moreau survived 303 days...'"
+      ]
+    }
+  },
+
+  "statistics": {
+    "total_named_characters": 20,
+    "player_character": 1,
+    "squad_mates": 4,
+    "medics": 2,
+    "officers": 2,
+    "historical_figures": 3,
+    "enemy_characters": 1,
+    "supporting_cast": 2,
+    "narrator": 1,
+    "additional_background_npcs": "~50-100 (soldiers, civilians, unnamed wounded)"
+  },
+
+  "voice_acting_requirements": {
+    "french_language_lines": "~5,000 lines",
+    "german_language_lines": "~500 lines",
+    "english_narration": "~200 lines",
+    "combat_barks": "~1,000 variations",
+    "ambient_chatter": "~500 variations",
+    "estimated_total_lines": "~7,200 lines",
+    "estimated_recording_time": "50-70 hours studio time"
+  }
+}
