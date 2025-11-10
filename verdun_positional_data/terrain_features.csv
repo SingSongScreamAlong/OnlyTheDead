@@ -1,0 +1,6 @@
+ID,Name,Type,Latitude,Longitude,Elevation_m,Description,Strategic_Value
+hill_mort_homme,Le Mort-Homme (Dead Man's Hill),strategic_hill,49.23,5.28,295,Small hamlet and forested hill,Very High
+ridge_cote_304,Côte 304 (Hill 304),strategic_hill,49.22,5.25,304,Forested ridge named for elevation,Very High
+river_meuse,Meuse River,major_river,49.1667,5.3833,200,Major river dividing battlefield,High
+forest_haumont,Bois d'Haumont,woodland,49.27,5.38,285,Dense forest - site of intense combat,Medium
+forest_caures,Bois des Caures,woodland,49.25,5.41,305,Dense forest - Col. Driant's last stand,High

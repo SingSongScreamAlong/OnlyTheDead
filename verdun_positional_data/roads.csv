@@ -1,0 +1,7 @@
+ID,Name,Point_Name,Latitude,Longitude,Elevation_m,Description,Road_Type
+road_voie_sacree,La Voie Sacrée,Bar-le-Duc (start),48.77,5.16,188,Southern terminus - railway hub,dirt_road
+road_voie_sacree,La Voie Sacrée,Naives-Rosières,48.85,5.22,195,Along route,dirt_road
+road_voie_sacree,La Voie Sacrée,Érize-la-Grande,48.95,5.28,210,Along route,dirt_road
+road_voie_sacree,La Voie Sacrée,Souilly,49.06,5.32,220,Major headquarters location,dirt_road
+road_voie_sacree,La Voie Sacrée,Moulin-Brûlé,49.123286,5.295498,195,Memorial location - 8km from Verdun,dirt_road
+road_voie_sacree,La Voie Sacrée,Verdun (end),49.1667,5.3833,200,Northern terminus,dirt_road

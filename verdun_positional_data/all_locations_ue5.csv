@@ -1,0 +1,17 @@
+ID,Name,Category,UE5_X,UE5_Y,UE5_Z,Description
+fort_douaumont,Fort Douaumont,forts,558470.18,400317.88,19200.0,Largest and highest fort in the Verdun ring of fortifications
+fort_vaux,Fort Vaux,forts,376150.28,631255.05,12000.0,Important fort on the eastern edge of the Verdun defensive ring
+village_beaumont,Beaumont-en-Verdunois,destroyed_villages,1060879.6,179507.25,13000.0,
+village_bezonvaux,Bezonvaux,destroyed_villages,779240.0,611923.5,8500.0,
+village_cumieres,Cumières-le-Mort-Homme,destroyed_villages,735825.2,-744700.73,6500.0,
+village_douaumont,Douaumont,destroyed_villages,623302.94,380628.04,16000.0,
+village_fleury,Fleury-devant-Douaumont,destroyed_villages,349644.99,323149.39,10500.0,
+village_haumont,Haumont-près-Samogneux,destroyed_villages,1261255.6,-96657.75,8000.0,
+village_louvemont,Louvemont-Côte-du-Poivre,destroyed_villages,791485.2,109303.2,9500.0,
+village_ornes,Ornes,destroyed_villages,964031.2,652984.88,11000.0,
+village_vaux,Vaux-devant-Damloup,destroyed_villages,482349.56,634525.42,11500.0,
+city_verdun,Verdun,towns_cities,0.0,0.0,0.0,
+hill_mort_homme,Le Mort-Homme (Dead Man's Hill),terrain_features,704655.6,-750732.75,9500.0,
+ridge_cote_304,Côte 304 (Hill 304),terrain_features,593335.6,-968757.75,10400.0,
+forest_haumont,Bois d'Haumont (Haumont Woods),forests,1149935.6,-23982.75,8500.0,
+forest_caures,Bois des Caures (Caures Woods),forests,927295.6,194042.25,10500.0,

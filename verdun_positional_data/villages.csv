@@ -1,0 +1,10 @@
+ID,Name,Type,Latitude,Longitude,Elevation_m,Population_1914,Houses,Church,Farms,Shops,School,Diameter_m,Status
+village_beaumont,Beaumont-en-Verdunois,village,49.262,5.408,330,288,45,1,8,0,0,300,destroyed
+village_bezonvaux,Bezonvaux,village,49.2367,5.4675,285,187,32,1,6,0,0,250,destroyed
+village_cumieres,Cumières-le-Mort-Homme,village,49.2328,5.28083,265,212,38,1,7,0,0,270,destroyed
+village_douaumont,Douaumont,village,49.222692,5.435674,360,288,45,1,9,0,0,300,destroyed
+village_fleury,Fleury-devant-Douaumont,village,49.198109,5.427765,305,422,68,1,12,4,0,350,destroyed
+village_haumont,Haumont-près-Samogneux,village,49.28,5.37,280,245,42,1,8,0,0,280,destroyed
+village_louvemont,Louvemont-Côte-du-Poivre,village,49.2378,5.39834,295,198,34,1,6,0,0,240,destroyed
+village_ornes,Ornes,village,49.2533,5.47315,310,632,95,1,18,8,1,450,destroyed
+village_vaux,Vaux-devant-Damloup,village,49.21003,5.47061,315,289,46,1,9,0,0,300,destroyed

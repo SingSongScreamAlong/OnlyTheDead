@@ -1,0 +1,10 @@
+ID,Name,Type,Latitude,Longitude,Elevation_m,UE5_X,UE5_Y,UE5_Z,Population_1914,Houses,Diameter_m
+village_beaumont,Beaumont-en-Verdunois,village,49.262,5.408,330,1060879.6,179507.25,13000.0,288,45,300
+village_bezonvaux,Bezonvaux,village,49.2367,5.4675,285,779240.0,611923.5,8500.0,187,32,250
+village_cumieres,Cumières-le-Mort-Homme,village,49.2328,5.28083,265,735825.2,-744700.73,6500.0,212,38,270
+village_douaumont,Douaumont,village,49.222692,5.435674,360,623302.94,380628.04,16000.0,288,45,300
+village_fleury,Fleury-devant-Douaumont,village,49.198109,5.427765,305,349644.99,323149.39,10500.0,422,68,350
+village_haumont,Haumont-près-Samogneux,village,49.28,5.37,280,1261255.6,-96657.75,8000.0,245,42,280
+village_louvemont,Louvemont-Côte-du-Poivre,village,49.2378,5.39834,295,791485.2,109303.2,9500.0,198,34,240
+village_ornes,Ornes,village,49.2533,5.47315,310,964031.2,652984.88,11000.0,632,95,450
+village_vaux,Vaux-devant-Damloup,village,49.21003,5.47061,315,482349.56,634525.42,11500.0,289,46,300

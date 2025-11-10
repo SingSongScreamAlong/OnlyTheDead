@@ -1,0 +1,3 @@
+ID,Name,Type,Latitude,Longitude,Elevation_m,UE5_X,UE5_Y,UE5_Z,Length_m,Width_m,Height_m
+fort_douaumont,Fort Douaumont,major_fort,49.216868,5.4383833,392,558470.18,400317.88,19200.0,400,300,10
+fort_vaux,Fort Vaux,major_fort,49.20049,5.47016,320,376150.28,631255.05,12000.0,300,200,8

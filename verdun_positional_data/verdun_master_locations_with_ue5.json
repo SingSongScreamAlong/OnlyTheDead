@@ -1,0 +1,784 @@
+{
+  "metadata": {
+    "title": "Verdun Pre-Bombardment Positional Data",
+    "description": "Historical geographic data for Verdun battlefield BEFORE the 1916 bombardment",
+    "coordinate_system": "WGS84",
+    "datum": "World Geodetic System 1984",
+    "notes": [
+      "All coordinates are in decimal degrees (DD) format",
+      "Latitude: positive values are North",
+      "Longitude: positive values are East",
+      "Elevation data is approximate and may need field verification",
+      "Data compiled from historical maps, IGN sources, and battlefield archives"
+    ],
+    "conversion_notes": {
+      "ue5_coordinate_system": "UE5 uses centimeters as base unit",
+      "recommended_origin": {
+        "latitude": 49.1667,
+        "longitude": 5.3833,
+        "description": "Verdun city center - use as world origin for UE5"
+      },
+      "conversion_formula": "Convert lat/long to local coordinates relative to origin, then scale appropriately"
+    },
+    "date_compiled": "2025-11-10",
+    "historical_date": "Pre-February 1916"
+  },
+  "forts": [
+    {
+      "id": "fort_douaumont",
+      "name": "Fort Douaumont",
+      "type": "fortification",
+      "category": "major_fort",
+      "coordinates": {
+        "latitude": 49.216868,
+        "longitude": 5.4383833,
+        "elevation_meters": 392
+      },
+      "description": "Largest and highest fort in the Verdun ring of fortifications",
+      "status_pre_1916": "Active fort, garrisoned",
+      "historical_notes": "Fell to German forces February 25, 1916 with minimal resistance due to reduced garrison",
+      "ue5_notes": {
+        "structure_type": "concrete_fort",
+        "recommended_asset": "large_fortification",
+        "footprint_meters": {
+          "length": 400,
+          "width": 300,
+          "height": 10
+        },
+        "key_features": [
+          "artillery_positions",
+          "underground_galleries",
+          "observation_posts",
+          "barracks"
+        ]
+      },
+      "ue5_coordinates": {
+        "x": 558470.18,
+        "y": 400317.88,
+        "z": 19200.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "fort_vaux",
+      "name": "Fort Vaux",
+      "type": "fortification",
+      "category": "major_fort",
+      "coordinates": {
+        "latitude": 49.20049,
+        "longitude": 5.47016,
+        "elevation_meters": 320
+      },
+      "description": "Important fort on the eastern edge of the Verdun defensive ring",
+      "status_pre_1916": "Active fort, garrisoned",
+      "historical_notes": "Site of intense fighting and siege in June 1916, famous for pigeon 'Vaillant'",
+      "ue5_notes": {
+        "structure_type": "concrete_fort",
+        "recommended_asset": "medium_fortification",
+        "footprint_meters": {
+          "length": 300,
+          "width": 200,
+          "height": 8
+        },
+        "key_features": [
+          "artillery_positions",
+          "underground_cisterns",
+          "observation_posts",
+          "defensive_ditches"
+        ]
+      },
+      "ue5_coordinates": {
+        "x": 376150.28,
+        "y": 631255.05,
+        "z": 12000.0,
+        "units": "centimeters"
+      }
+    }
+  ],
+  "destroyed_villages": [
+    {
+      "id": "village_beaumont",
+      "name": "Beaumont-en-Verdunois",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.262,
+        "longitude": 5.408,
+        "elevation_meters": 330
+      },
+      "population_1914": 288,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Captured by Germans February 23, 1916. Never rebuilt. Official status: 'Mort pour la France'",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 45,
+          "church": 1,
+          "farms": 8,
+          "municipal_buildings": 2
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 300
+        }
+      },
+      "ue5_coordinates": {
+        "x": 1060879.6,
+        "y": 179507.25,
+        "z": 13000.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_bezonvaux",
+      "name": "Bezonvaux",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.2367,
+        "longitude": 5.4675,
+        "elevation_meters": 285
+      },
+      "population_1914": 187,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Completely destroyed during 1916 battle. Never rebuilt. Red Zone area",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 32,
+          "church": 1,
+          "farms": 6,
+          "municipal_buildings": 1
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 250
+        }
+      },
+      "ue5_coordinates": {
+        "x": 779240.0,
+        "y": 611923.5,
+        "z": 8500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_cumieres",
+      "name": "Cumières-le-Mort-Homme",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.2328,
+        "longitude": 5.28083,
+        "elevation_meters": 265
+      },
+      "population_1914": 212,
+      "status_pre_1916": "Active farming village near Mort-Homme hill",
+      "historical_notes": "Destroyed during fierce fighting for Mort-Homme. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 38,
+          "church": 1,
+          "farms": 7,
+          "municipal_buildings": 2
+        },
+        "layout": "traditional_french_village",
+        "proximity_note": "Near Mort-Homme strategic hill",
+        "footprint_meters": {
+          "diameter": 270
+        }
+      },
+      "ue5_coordinates": {
+        "x": 735825.2,
+        "y": -744700.73,
+        "z": 6500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_douaumont",
+      "name": "Douaumont",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.222692,
+        "longitude": 5.435674,
+        "elevation_meters": 360
+      },
+      "population_1914": 288,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "In total ruins by March 4, 1916. Located northwest of Fort Douaumont. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 45,
+          "church": 1,
+          "farms": 9,
+          "municipal_buildings": 2
+        },
+        "layout": "traditional_french_village",
+        "proximity_note": "Northwest of Fort Douaumont",
+        "footprint_meters": {
+          "diameter": 300
+        }
+      },
+      "ue5_coordinates": {
+        "x": 623302.94,
+        "y": 380628.04,
+        "z": 16000.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_fleury",
+      "name": "Fleury-devant-Douaumont",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.198109,
+        "longitude": 5.427765,
+        "elevation_meters": 305
+      },
+      "population_1914": 422,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Captured and recaptured 16 times during 1916. Completely destroyed. Memorial chapel remains",
+      "ue5_notes": {
+        "village_size": "medium",
+        "recommended_buildings": {
+          "houses": 68,
+          "church": 1,
+          "farms": 12,
+          "municipal_buildings": 3,
+          "shops": 4
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 350
+        },
+        "strategic_importance": "Very high - site of intense fighting"
+      },
+      "ue5_coordinates": {
+        "x": 349644.99,
+        "y": 323149.39,
+        "z": 10500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_haumont",
+      "name": "Haumont-près-Samogneux",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.28,
+        "longitude": 5.37,
+        "elevation_meters": 280
+      },
+      "population_1914": 245,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Destroyed in opening days of Battle of Verdun. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 42,
+          "church": 1,
+          "farms": 8,
+          "municipal_buildings": 2
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 280
+        }
+      },
+      "ue5_coordinates": {
+        "x": 1261255.6,
+        "y": -96657.75,
+        "z": 8000.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_louvemont",
+      "name": "Louvemont-Côte-du-Poivre",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.2378,
+        "longitude": 5.39834,
+        "elevation_meters": 295
+      },
+      "population_1914": 198,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Completely destroyed during 1916 battle. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 34,
+          "church": 1,
+          "farms": 6,
+          "municipal_buildings": 1
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 240
+        }
+      },
+      "ue5_coordinates": {
+        "x": 791485.2,
+        "y": 109303.2,
+        "z": 9500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_ornes",
+      "name": "Ornes",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.2533,
+        "longitude": 5.47315,
+        "elevation_meters": 310
+      },
+      "population_1914": 632,
+      "status_pre_1916": "Active farming village",
+      "historical_notes": "Largest of the destroyed villages. Completely destroyed. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "large",
+        "recommended_buildings": {
+          "houses": 95,
+          "church": 1,
+          "farms": 18,
+          "municipal_buildings": 4,
+          "shops": 8,
+          "school": 1
+        },
+        "layout": "traditional_french_village",
+        "footprint_meters": {
+          "diameter": 450
+        }
+      },
+      "ue5_coordinates": {
+        "x": 964031.2,
+        "y": 652984.88,
+        "z": 11000.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "village_vaux",
+      "name": "Vaux-devant-Damloup",
+      "type": "village",
+      "category": "destroyed_village",
+      "coordinates": {
+        "latitude": 49.21003,
+        "longitude": 5.47061,
+        "elevation_meters": 315
+      },
+      "population_1914": 289,
+      "status_pre_1916": "Active farming village near Fort Vaux",
+      "historical_notes": "Destroyed during fighting around Fort Vaux. Never rebuilt",
+      "ue5_notes": {
+        "village_size": "small",
+        "recommended_buildings": {
+          "houses": 46,
+          "church": 1,
+          "farms": 9,
+          "municipal_buildings": 2
+        },
+        "layout": "traditional_french_village",
+        "proximity_note": "Near Fort Vaux",
+        "footprint_meters": {
+          "diameter": 300
+        }
+      },
+      "ue5_coordinates": {
+        "x": 482349.56,
+        "y": 634525.42,
+        "z": 11500.0,
+        "units": "centimeters"
+      }
+    }
+  ],
+  "towns_cities": [
+    {
+      "id": "city_verdun",
+      "name": "Verdun",
+      "type": "city",
+      "category": "major_city",
+      "coordinates": {
+        "latitude": 49.1667,
+        "longitude": 5.3833,
+        "elevation_meters": 200
+      },
+      "population_1914": 18000,
+      "status_pre_1916": "Active fortified city, military garrison",
+      "historical_notes": "Ancient fortress city on the Meuse River. Heavily damaged but survived the battle",
+      "ue5_notes": {
+        "city_size": "large",
+        "recommended_use": "world_origin_point",
+        "key_features": [
+          "medieval_citadel",
+          "cathedral",
+          "bridges_over_meuse",
+          "military_barracks",
+          "railway_station",
+          "urban_buildings"
+        ],
+        "footprint_meters": {
+          "diameter": 2000
+        },
+        "importance": "Strategic command center and supply hub"
+      },
+      "ue5_coordinates": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "centimeters"
+      }
+    }
+  ],
+  "roads": [
+    {
+      "id": "road_voie_sacree",
+      "name": "La Voie Sacrée (The Sacred Way)",
+      "type": "road",
+      "category": "major_supply_route",
+      "route_points": [
+        {
+          "name": "Bar-le-Duc (start)",
+          "coordinates": {
+            "latitude": 48.77,
+            "longitude": 5.16,
+            "elevation_meters": 188
+          },
+          "description": "Southern terminus, railway hub",
+          "ue5_coordinates": {
+            "x": -4416064.4,
+            "y": -1622832.75,
+            "z": -1200.0,
+            "units": "centimeters"
+          }
+        },
+        {
+          "name": "Naives-Rosières",
+          "coordinates": {
+            "latitude": 48.85,
+            "longitude": 5.22,
+            "elevation_meters": 195
+          },
+          "ue5_coordinates": {
+            "x": -3525504.4,
+            "y": -1186782.75,
+            "z": -500.0,
+            "units": "centimeters"
+          }
+        },
+        {
+          "name": "Érize-la-Grande",
+          "coordinates": {
+            "latitude": 48.95,
+            "longitude": 5.28,
+            "elevation_meters": 210
+          },
+          "ue5_coordinates": {
+            "x": -2412304.4,
+            "y": -750732.75,
+            "z": 1000.0,
+            "units": "centimeters"
+          }
+        },
+        {
+          "name": "Souilly",
+          "coordinates": {
+            "latitude": 49.06,
+            "longitude": 5.32,
+            "elevation_meters": 220
+          },
+          "description": "Major headquarters location",
+          "ue5_coordinates": {
+            "x": -1187784.4,
+            "y": -460032.75,
+            "z": 2000.0,
+            "units": "centimeters"
+          }
+        },
+        {
+          "name": "Moulin-Brûlé",
+          "coordinates": {
+            "latitude": 49.123286,
+            "longitude": 5.295498,
+            "elevation_meters": 195
+          },
+          "description": "Memorial location, 8km from Verdun",
+          "ue5_coordinates": {
+            "x": -483284.65,
+            "y": -638101.03,
+            "z": -500.0,
+            "units": "centimeters"
+          }
+        },
+        {
+          "name": "Verdun (end)",
+          "coordinates": {
+            "latitude": 49.1667,
+            "longitude": 5.3833,
+            "elevation_meters": 200
+          },
+          "description": "Northern terminus",
+          "ue5_coordinates": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": "centimeters"
+          }
+        }
+      ],
+      "total_length_km": 56,
+      "status_pre_1916": "Unpaved country road",
+      "historical_notes": "Widened and improved during battle to handle massive supply traffic. Named by Maurice Barrès in 1916",
+      "ue5_notes": {
+        "road_type": "dirt_road",
+        "width_meters": 5,
+        "surface": "unpaved_earth",
+        "recommended_asset": "narrow_country_road",
+        "traffic_type": [
+          "supply_trucks",
+          "troop_movement",
+          "ambulances"
+        ],
+        "condition": "poor_to_moderate"
+      }
+    }
+  ],
+  "terrain_features": [
+    {
+      "id": "hill_mort_homme",
+      "name": "Le Mort-Homme (Dead Man's Hill)",
+      "type": "terrain",
+      "category": "strategic_hill",
+      "coordinates": {
+        "latitude": 49.23,
+        "longitude": 5.28,
+        "elevation_meters": 295
+      },
+      "status_pre_1916": "Small hamlet, forested hill",
+      "historical_notes": "Scene of some of the fiercest fighting at Verdun. Named before WWI",
+      "ue5_notes": {
+        "terrain_type": "wooded_hill",
+        "strategic_value": "Very high - dominates western approaches",
+        "vegetation": "dense_forest",
+        "slope": "moderate_to_steep",
+        "footprint_meters": {
+          "diameter": 1000
+        }
+      },
+      "ue5_coordinates": {
+        "x": 704655.6,
+        "y": -750732.75,
+        "z": 9500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "ridge_cote_304",
+      "name": "Côte 304 (Hill 304)",
+      "type": "terrain",
+      "category": "strategic_hill",
+      "coordinates": {
+        "latitude": 49.22,
+        "longitude": 5.25,
+        "elevation_meters": 304
+      },
+      "status_pre_1916": "Forested ridge",
+      "historical_notes": "Named for its elevation (304 meters). Key defensive position",
+      "ue5_notes": {
+        "terrain_type": "wooded_ridge",
+        "strategic_value": "Very high - artillery observation point",
+        "vegetation": "dense_forest",
+        "slope": "moderate",
+        "footprint_meters": {
+          "length": 1200,
+          "width": 600
+        }
+      },
+      "ue5_coordinates": {
+        "x": 593335.6,
+        "y": -968757.75,
+        "z": 10400.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "river_meuse",
+      "name": "Meuse River",
+      "type": "water",
+      "category": "major_river",
+      "route_points": [
+        {
+          "description": "Flows north through Verdun",
+          "coordinates": {
+            "latitude": 49.1667,
+            "longitude": 5.3833
+          }
+        }
+      ],
+      "status_pre_1916": "Active waterway, bridges at Verdun",
+      "historical_notes": "Divides battlefield into left bank (Rive Gauche) and right bank (Rive Droite)",
+      "ue5_notes": {
+        "water_type": "river",
+        "width_meters": 40,
+        "depth_meters": 3,
+        "flow": "moderate",
+        "key_features": [
+          "bridges",
+          "banks",
+          "floodplain"
+        ]
+      }
+    }
+  ],
+  "forests": [
+    {
+      "id": "forest_haumont",
+      "name": "Bois d'Haumont (Haumont Woods)",
+      "type": "forest",
+      "category": "woodland",
+      "coordinates": {
+        "latitude": 49.27,
+        "longitude": 5.38,
+        "elevation_meters": 285
+      },
+      "status_pre_1916": "Dense forest",
+      "historical_notes": "Site of intense combat in opening phase of battle",
+      "ue5_notes": {
+        "forest_type": "mixed_deciduous",
+        "density": "dense",
+        "tree_types": [
+          "oak",
+          "beech",
+          "hornbeam"
+        ],
+        "footprint_meters": {
+          "length": 2000,
+          "width": 1500
+        }
+      },
+      "ue5_coordinates": {
+        "x": 1149935.6,
+        "y": -23982.75,
+        "z": 8500.0,
+        "units": "centimeters"
+      }
+    },
+    {
+      "id": "forest_caures",
+      "name": "Bois des Caures (Caures Woods)",
+      "type": "forest",
+      "category": "woodland",
+      "coordinates": {
+        "latitude": 49.25,
+        "longitude": 5.41,
+        "elevation_meters": 305
+      },
+      "status_pre_1916": "Dense forest with French defensive positions",
+      "historical_notes": "Site of Col. Driant's heroic last stand, February 21-22, 1916",
+      "ue5_notes": {
+        "forest_type": "mixed_deciduous",
+        "density": "very_dense",
+        "tree_types": [
+          "oak",
+          "beech"
+        ],
+        "military_features": [
+          "dugouts",
+          "trenches",
+          "observation_posts"
+        ],
+        "footprint_meters": {
+          "length": 1800,
+          "width": 1200
+        }
+      },
+      "ue5_coordinates": {
+        "x": 927295.6,
+        "y": 194042.25,
+        "z": 10500.0,
+        "units": "centimeters"
+      }
+    }
+  ],
+  "pre_1916_trenches": {
+    "note": "Pre-bombardment trench systems were less extensive than later in the war. Main defenses were the forts and field fortifications",
+    "systems": [
+      {
+        "id": "trench_system_front_line",
+        "name": "French Front Line Positions",
+        "type": "trench_system",
+        "category": "defensive_line",
+        "description": "Field fortifications and preliminary trenches connecting forts",
+        "approximate_line": [
+          {
+            "latitude": 49.28,
+            "longitude": 5.37
+          },
+          {
+            "latitude": 49.26,
+            "longitude": 5.4
+          },
+          {
+            "latitude": 49.24,
+            "longitude": 5.43
+          },
+          {
+            "latitude": 49.22,
+            "longitude": 5.46
+          }
+        ],
+        "status_pre_1916": "Preliminary defenses, not heavily fortified yet",
+        "ue5_notes": {
+          "trench_type": "field_fortification",
+          "depth_meters": 1.5,
+          "width_meters": 1.0,
+          "style": "early_war_trench",
+          "condition": "moderate",
+          "features": [
+            "firing_steps",
+            "basic_dugouts",
+            "communication_trenches"
+          ]
+        },
+        "ue5_approximate_line": [
+          {
+            "x": 1261255.6,
+            "y": -96657.75,
+            "z": 0.0
+          },
+          {
+            "x": 1038615.6,
+            "y": 121367.25,
+            "z": 0.0
+          },
+          {
+            "x": 815975.6,
+            "y": 339392.25,
+            "z": 0.0
+          },
+          {
+            "x": 593335.6,
+            "y": 557417.25,
+            "z": 0.0
+          }
+        ]
+      }
+    ]
+  },
+  "ue5_conversion": {
+    "origin_latitude": 49.1667,
+    "origin_longitude": 5.3833,
+    "origin_elevation": 200.0,
+    "units": "centimeters",
+    "coordinate_system": "X=North, Y=East, Z=Up"
+  }
+}
