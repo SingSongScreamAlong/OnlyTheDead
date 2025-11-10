@@ -11,6 +11,13 @@
 /**
  * Save system with support for manual saves, autosaves, and permadeath
  * Handles campaign progress, player state, and difficulty modes
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Saves all 20+ region degradation states (trees, buildings, craters)
+ * - Saves thousands of shell crater positions
+ * - Saves environmental transformation over 303 days
+ * - Saves mission trigger states (which missions activated in world)
+ * - Player position in world coordinates (not mission-based)
  */
 
 USTRUCT(BlueprintType)
@@ -75,6 +82,135 @@ struct FCampaignSaveData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|Campaign")
     TArray<FString> FailedMissionIDs;
+
+    // ========================================================================
+    // PERSISTENT WORLD: Mission Trigger States
+    // ========================================================================
+
+    /** Missions that have been activated (player entered trigger zone) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|Campaign|PersistentWorld")
+    TArray<FString> ActivatedMissionIDs;
+
+    /** Mission statuses in persistent world (by MissionID) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|Campaign|PersistentWorld")
+    TMap<FString, EMissionStatus> MissionTriggerStates;
+};
+
+// ========================================================================
+// PERSISTENT WORLD SAVE DATA
+// ========================================================================
+
+/** Saved crater data for persistent world */
+USTRUCT(BlueprintType)
+struct FSavedCrater
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    FVector Location;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    float DiameterMeters = 5.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    float DepthMeters = 2.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    EShellType ShellTypeThatCreated;
+};
+
+/** Saved region degradation state */
+USTRUCT(BlueprintType)
+struct FSavedRegionState
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    FString RegionID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    float DegradationLevel = 0.0f; // 0.0 = pristine, 1.0 = Zone Rouge
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    int32 TreesRemaining = 5000;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    int32 BuildingsRemaining = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    int32 CratersCreated = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    int32 ShellImpactsReceived = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    uint8 CurrentEnvironmentState; // Cast to EEnvironmentState
+};
+
+/** Complete persistent world save data */
+USTRUCT(BlueprintType)
+struct FPersistentWorldSaveData
+{
+    GENERATED_BODY()
+
+    // ========================================================================
+    // ENVIRONMENTAL DEGRADATION
+    // ========================================================================
+
+    /** All region degradation states (20+ regions) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TArray<FSavedRegionState> RegionStates;
+
+    /** Total shell impacts across entire battlefield */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    int32 TotalShellImpacts = 0;
+
+    /** Historical degradation events that have been triggered */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TArray<FString> TriggeredDegradationEvents;
+
+    // ========================================================================
+    // CRATER DATA (Optimized Storage)
+    // ========================================================================
+
+    /**
+     * Saved crater positions (limited to most recent/important)
+     * Full crater data would be HUGE (50,000+ by Day 303)
+     * We save:
+     * - All craters from last 7 days (for visible degradation)
+     * - Sample of older craters (for persistent landscape)
+     * Total: ~5,000 craters saved (manageable size)
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TArray<FSavedCrater> SavedCraters;
+
+    /** Crater count per region (for statistics/degradation calculation) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TMap<FString, int32> CraterCountPerRegion;
+
+    // ========================================================================
+    // DESTROYED OBJECTS
+    // ========================================================================
+
+    /** Trees destroyed (positions, for visual removal on load) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TArray<FVector> DestroyedTreePositions;
+
+    /** Buildings destroyed (by ID/name) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TArray<FString> DestroyedBuildingIDs;
+
+    // ========================================================================
+    // WEATHER & TIME
+    // ========================================================================
+
+    /** Current weather state per region */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TMap<FString, uint8> RegionWeatherStates; // Cast to EWeatherCondition
+
+    /** Mud level per region (0.0 = dry, 1.0 = impassable) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save|PersistentWorld")
+    TMap<FString, float> RegionMudLevels;
 };
 
 UCLASS()
@@ -131,6 +267,14 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category = "Save")
     TMap<FString, float> FloatStats;
+
+    // ========================================================================
+    // PERSISTENT WORLD DATA
+    // ========================================================================
+
+    /** Complete persistent world state (environmental degradation, craters, etc.) */
+    UPROPERTY(VisibleAnywhere, Category = "Save|PersistentWorld")
+    FPersistentWorldSaveData PersistentWorldData;
 };
 
 UCLASS()

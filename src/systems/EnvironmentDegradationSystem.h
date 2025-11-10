@@ -197,6 +197,14 @@ public:
     FText GetTransformationDescription(int32 CurrentDay) const;
 
     // ========================================================================
+    // SAVE/LOAD (PERSISTENT WORLD)
+    // ========================================================================
+
+    /** Restore environment visuals from loaded save data */
+    UFUNCTION(BlueprintCallable, Category = "Environment|SaveLoad")
+    void RestoreEnvironmentFromSave();
+
+    // ========================================================================
     // REGIONAL MANAGEMENT
     // ========================================================================
 

@@ -12,6 +12,12 @@
  * Inventory and equipment management system
  * Realistic carrying capacity based on French soldier loadout
  * Weight affects stamina depletion
+ *
+ * PERSISTENT WORLD SUPPORT:
+ * - Physical supply depots at GPS coordinates
+ * - Resupply points (field kitchens, ammunition dumps, medical stations)
+ * - Player must travel to depots to resupply (can't carry 303 days of supplies)
+ * - Depot accessibility changes as battle progresses
  */
 
 UENUM(BlueprintType)
@@ -75,6 +81,79 @@ struct FInventoryItem
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Medical")
     TArray<EInjuryType> TreatsInjuryTypes;
+};
+
+// ========================================================================
+// PERSISTENT WORLD: SUPPLY DEPOTS
+// ========================================================================
+
+UENUM(BlueprintType)
+enum class ESupplyDepotType : uint8
+{
+    AmmunitionDump      UMETA(DisplayName = "Ammunition Dump"),
+    FieldKitchen        UMETA(DisplayName = "Field Kitchen"),
+    MedicalStation      UMETA(DisplayName = "Medical Station"),
+    WaterPoint          UMETA(DisplayName = "Water Point"),
+    QuartermasterPost   UMETA(DisplayName = "Quartermaster Post (All Supplies)"),
+    ForwardPost         UMETA(DisplayName = "Forward Supply Post"),
+    RearEchelon         UMETA(DisplayName = "Rear Echelon Supply")
+};
+
+UENUM(BlueprintType)
+enum class ESupplyDepotStatus : uint8
+{
+    Active              UMETA(DisplayName = "Active (Available)"),
+    LowSupply           UMETA(DisplayName = "Low Supply"),
+    Depleted            UMETA(DisplayName = "Depleted"),
+    UnderBombardment    UMETA(DisplayName = "Under Bombardment"),
+    Captured            UMETA(DisplayName = "Captured by Enemy"),
+    Destroyed           UMETA(DisplayName = "Destroyed")
+};
+
+USTRUCT(BlueprintType)
+struct FSupplyDepot
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    FString DepotID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    FText DepotName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    ESupplyDepotType DepotType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    ESupplyDepotStatus Status = ESupplyDepotStatus::Active;
+
+    /** World coordinates in persistent map */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot|Location")
+    FVector WorldLocation = FVector::ZeroVector;
+
+    /** Original GPS coordinates (for reference) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot|Location")
+    FVector2D GPS_Coordinates = FVector2D::ZeroVector; // (Lat, Lon)
+
+    /** Interaction radius (meters) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot|Location")
+    float InteractionRadiusMeters = 50.0f;
+
+    /** Distance to front line (affects supply quality) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    float DistanceToFrontKM = 5.0f;
+
+    /** Supply levels per category (0.0 = empty, 1.0 = fully stocked) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot|Inventory")
+    TMap<EItemCategory, float> SupplyLevels;
+
+    /** Last resupply time (for replenishment simulation) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    FDateTime LastResupplyTime;
+
+    /** Historical notes */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepot")
+    FText HistoricalNotes;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -178,6 +257,46 @@ public:
     /** Refill canteen */
     UFUNCTION(BlueprintCallable, Category = "Inventory|Rations")
     bool RefillCanteen(bool bFromContaminatedSource = false);
+
+    // ========================================================================
+    // SUPPLY DEPOTS (PERSISTENT WORLD)
+    // ========================================================================
+
+    /** All supply depots in persistent world */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupplyDepots")
+    TMap<FString, FSupplyDepot> SupplyDepots;
+
+    /** Initialize all supply depot locations */
+    UFUNCTION(BlueprintCallable, Category = "SupplyDepots")
+    void InitializeSupplyDepots();
+
+    /** Find nearest supply depot to location */
+    UFUNCTION(BlueprintPure, Category = "SupplyDepots")
+    FSupplyDepot GetNearestSupplyDepot(FVector PlayerLocation, ESupplyDepotType DepotType = ESupplyDepotType::QuartermasterPost) const;
+
+    /** Check if player is within interaction range of any depot */
+    UFUNCTION(BlueprintPure, Category = "SupplyDepots")
+    bool IsNearSupplyDepot(FVector PlayerLocation, float& OutDistance, FString& OutDepotID) const;
+
+    /** Interact with supply depot (resupply) */
+    UFUNCTION(BlueprintCallable, Category = "SupplyDepots")
+    bool InteractWithDepot(const FString& DepotID);
+
+    /** Resupply specific item category from depot */
+    UFUNCTION(BlueprintCallable, Category = "SupplyDepots")
+    bool ResupplyFromDepot(const FString& DepotID, EItemCategory Category, int32 Amount);
+
+    /** Update depot supply levels (simulates resupply convoys) */
+    UFUNCTION(BlueprintCallable, Category = "SupplyDepots")
+    void UpdateDepotSupplyLevels(float DeltaTime);
+
+    /** Get depot status description for UI */
+    UFUNCTION(BlueprintPure, Category = "SupplyDepots")
+    FText GetDepotStatusText(const FString& DepotID) const;
+
+    /** Mark depot as captured/destroyed (historical events) */
+    UFUNCTION(BlueprintCallable, Category = "SupplyDepots")
+    void SetDepotStatus(const FString& DepotID, ESupplyDepotStatus NewStatus);
 
 protected:
     void InitializeStartingLoadout();

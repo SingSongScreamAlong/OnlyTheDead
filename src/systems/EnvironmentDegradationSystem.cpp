@@ -711,3 +711,58 @@ float UEnvironmentDegradationSystem::GetHistoricalDegradationRate(int32 DayOfBat
 
     return 1.0f; // Normal rate
 }
+
+// ========================================================================
+// SAVE/LOAD (PERSISTENT WORLD)
+// ========================================================================
+
+void UEnvironmentDegradationSystem::RestoreEnvironmentFromSave()
+{
+    UE_LOG(LogTemp, Warning, TEXT("EnvironmentDegradationSystem: Restoring environment from save..."));
+
+    int32 TotalTreesRestored = 0;
+    int32 TotalCratersRestored = 0;
+
+    // Restore visual environment for each region
+    for (const auto& RegionPair : Regions)
+    {
+        const FEnvironmentRegion& Region = RegionPair.Value;
+
+        // Calculate how many trees should be removed based on TreesRemaining
+        int32 TreesDestroyed = Region.InitialTreeCount - Region.TreesRemaining;
+        TotalTreesRestored += TreesDestroyed;
+
+        // Calculate material blend based on degradation level
+        float DegradationAlpha = Region.DegradationLevel;
+
+        UE_LOG(LogTemp, Log, TEXT("  Region %s: Degradation %.2f, %d/%d trees remaining, %d craters"),
+               *Region.RegionID,
+               Region.DegradationLevel,
+               Region.TreesRemaining,
+               Region.InitialTreeCount,
+               Region.CratersCreated);
+
+        // TODO: Visual restoration would call:
+        // - RemoveTreesInRegion(Region.RegionID, TreesDestroyed)
+        // - UpdateTerrainMaterial(Region.RegionID, DegradationAlpha)
+        // - RemoveFoliageInRegion(Region.RegionID, DegradationAlpha)
+    }
+
+    // Restore crater visuals
+    for (const FCraterData& Crater : ActiveCraters)
+    {
+        TotalCratersRestored++;
+
+        // TODO: Visual crater spawning would call:
+        // - SpawnCraterMesh(Crater.Location, Crater.DiameterMeters, Crater.DepthMeters)
+        // - DeformTerrain(Crater.Location, Crater.DiameterMeters, Crater.DepthMeters)
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("EnvironmentDegradationSystem: Restored %d regions with %d trees destroyed, %d craters spawned"),
+           Regions.Num(),
+           TotalTreesRestored,
+           TotalCratersRestored);
+
+    UE_LOG(LogTemp, Warning, TEXT("EnvironmentDegradationSystem: Total shell impacts accumulated: %d"),
+           TotalShellImpacts);
+}

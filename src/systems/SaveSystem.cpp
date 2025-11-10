@@ -8,6 +8,8 @@
 #include "InventorySystem.h"
 #include "MissionSystem.h"
 #include "ProgressionSystem.h"
+#include "EnvironmentDegradationSystem.h"
+#include "WeatherSystem.h"
 
 UOnlyTheDeadSaveGame::UOnlyTheDeadSaveGame()
 {
@@ -367,7 +369,116 @@ void USaveSystem::PopulateSaveData(UOnlyTheDeadSaveGame* SaveGame)
         SaveGame->Difficulty = ProgressionSystem->CurrentDifficulty;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("SaveSystem: Save data populated"));
+    // ========================================================================
+    // PERSISTENT WORLD: Save environmental degradation state
+    // ========================================================================
+
+    UEnvironmentDegradationSystem* EnvDegradationSystem = PlayerPawn->FindComponentByClass<UEnvironmentDegradationSystem>();
+    if (!EnvDegradationSystem)
+    {
+        // Try finding it on GameState
+        AGameStateBase* GameState = GWorld->GetGameState();
+        if (GameState)
+        {
+            EnvDegradationSystem = GameState->FindComponentByClass<UEnvironmentDegradationSystem>();
+        }
+    }
+
+    if (EnvDegradationSystem)
+    {
+        // Save all region states
+        SaveGame->PersistentWorldData.RegionStates.Empty();
+        for (const auto& RegionPair : EnvDegradationSystem->Regions)
+        {
+            const FEnvironmentRegion& Region = RegionPair.Value;
+
+            FSavedRegionState SavedRegion;
+            SavedRegion.RegionID = Region.RegionID;
+            SavedRegion.DegradationLevel = Region.DegradationLevel;
+            SavedRegion.TreesRemaining = Region.TreesRemaining;
+            SavedRegion.BuildingsRemaining = Region.BuildingsRemaining;
+            SavedRegion.CratersCreated = Region.CratersCreated;
+            SavedRegion.ShellImpactsReceived = Region.ShellImpactsReceived;
+            SavedRegion.CurrentEnvironmentState = (uint8)Region.CurrentState;
+
+            SaveGame->PersistentWorldData.RegionStates.Add(SavedRegion);
+        }
+
+        // Save total shell impacts
+        SaveGame->PersistentWorldData.TotalShellImpacts = EnvDegradationSystem->TotalShellImpacts;
+
+        // Save triggered degradation events
+        SaveGame->PersistentWorldData.TriggeredDegradationEvents = EnvDegradationSystem->TriggeredHistoricalEvents;
+
+        // Save craters (limited to most recent ~5,000 for performance)
+        SaveGame->PersistentWorldData.SavedCraters.Empty();
+        int32 MaxCratersToSave = 5000;
+        int32 CratersSaved = 0;
+
+        for (const auto& Crater : EnvDegradationSystem->ActiveCraters)
+        {
+            if (CratersSaved >= MaxCratersToSave)
+            {
+                break;
+            }
+
+            FSavedCrater SavedCrater;
+            SavedCrater.Location = Crater.Location;
+            SavedCrater.DiameterMeters = Crater.DiameterMeters;
+            SavedCrater.DepthMeters = Crater.DepthMeters;
+            SavedCrater.ShellTypeThatCreated = Crater.ShellTypeThatCreated;
+
+            SaveGame->PersistentWorldData.SavedCraters.Add(SavedCrater);
+            CratersSaved++;
+        }
+
+        // Save crater counts per region
+        SaveGame->PersistentWorldData.CraterCountPerRegion.Empty();
+        for (const auto& RegionPair : EnvDegradationSystem->Regions)
+        {
+            SaveGame->PersistentWorldData.CraterCountPerRegion.Add(
+                RegionPair.Key,
+                RegionPair.Value.CratersCreated
+            );
+        }
+
+        UE_LOG(LogTemp, Log, TEXT("SaveSystem: Saved %d regions, %d craters, %d total shell impacts"),
+               SaveGame->PersistentWorldData.RegionStates.Num(),
+               SaveGame->PersistentWorldData.SavedCraters.Num(),
+               SaveGame->PersistentWorldData.TotalShellImpacts);
+    }
+
+    // Save mission trigger states (persistent world)
+    if (MissionSystem)
+    {
+        SaveGame->CampaignData.ActivatedMissionIDs.Empty();
+        SaveGame->CampaignData.MissionTriggerStates.Empty();
+
+        for (const auto& MissionPair : MissionSystem->MissionDatabase)
+        {
+            const FMissionData& Mission = MissionPair.Value;
+
+            if (Mission.Status != EMissionStatus::NotStarted)
+            {
+                SaveGame->CampaignData.ActivatedMissionIDs.Add(Mission.MissionID);
+                SaveGame->CampaignData.MissionTriggerStates.Add(Mission.MissionID, Mission.Status);
+            }
+        }
+    }
+
+    // Save weather state per region
+    UWeatherSystem* WeatherSystem = PlayerPawn->FindComponentByClass<UWeatherSystem>();
+    if (WeatherSystem)
+    {
+        SaveGame->PersistentWorldData.RegionWeatherStates.Empty();
+        SaveGame->PersistentWorldData.RegionMudLevels.Empty();
+
+        // Would save regional weather/mud data here
+        // For now, save global state
+        SaveGame->PersistentWorldData.RegionMudLevels.Add(TEXT("Global"), WeatherSystem->MudLevel);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("SaveSystem: Save data populated (PERSISTENT WORLD MODE)"));
 }
 
 void USaveSystem::ApplySaveData(const UOnlyTheDeadSaveGame* SaveGame)
@@ -442,5 +553,103 @@ void USaveSystem::ApplySaveData(const UOnlyTheDeadSaveGame* SaveGame)
         ProgressionSystem->CurrentDifficulty = SaveGame->Difficulty;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("SaveSystem: Save data applied to game"));
+    // ========================================================================
+    // PERSISTENT WORLD: Restore environmental degradation state
+    // ========================================================================
+
+    UEnvironmentDegradationSystem* EnvDegradationSystem = PlayerPawn->FindComponentByClass<UEnvironmentDegradationSystem>();
+    if (!EnvDegradationSystem)
+    {
+        // Try finding it on GameState
+        AGameStateBase* GameState = GWorld->GetGameState();
+        if (GameState)
+        {
+            EnvDegradationSystem = GameState->FindComponentByClass<UEnvironmentDegradationSystem>();
+        }
+    }
+
+    if (EnvDegradationSystem)
+    {
+        // Restore all region states
+        EnvDegradationSystem->Regions.Empty();
+        for (const FSavedRegionState& SavedRegion : SaveGame->PersistentWorldData.RegionStates)
+        {
+            FEnvironmentRegion RestoredRegion;
+            RestoredRegion.RegionID = SavedRegion.RegionID;
+            RestoredRegion.DegradationLevel = SavedRegion.DegradationLevel;
+            RestoredRegion.TreesRemaining = SavedRegion.TreesRemaining;
+            RestoredRegion.BuildingsRemaining = SavedRegion.BuildingsRemaining;
+            RestoredRegion.CratersCreated = SavedRegion.CratersCreated;
+            RestoredRegion.ShellImpactsReceived = SavedRegion.ShellImpactsReceived;
+            RestoredRegion.CurrentState = (EEnvironmentState)SavedRegion.CurrentEnvironmentState;
+
+            EnvDegradationSystem->Regions.Add(SavedRegion.RegionID, RestoredRegion);
+        }
+
+        // Restore total shell impacts
+        EnvDegradationSystem->TotalShellImpacts = SaveGame->PersistentWorldData.TotalShellImpacts;
+
+        // Restore triggered degradation events
+        EnvDegradationSystem->TriggeredHistoricalEvents = SaveGame->PersistentWorldData.TriggeredDegradationEvents;
+
+        // Restore craters
+        EnvDegradationSystem->ActiveCraters.Empty();
+        for (const FSavedCrater& SavedCrater : SaveGame->PersistentWorldData.SavedCraters)
+        {
+            FCraterData RestoredCrater;
+            RestoredCrater.Location = SavedCrater.Location;
+            RestoredCrater.DiameterMeters = SavedCrater.DiameterMeters;
+            RestoredCrater.DepthMeters = SavedCrater.DepthMeters;
+            RestoredCrater.ShellTypeThatCreated = SavedCrater.ShellTypeThatCreated;
+
+            EnvDegradationSystem->ActiveCraters.Add(RestoredCrater);
+        }
+
+        UE_LOG(LogTemp, Log, TEXT("SaveSystem: Restored %d regions, %d craters, %d total shell impacts"),
+               EnvDegradationSystem->Regions.Num(),
+               EnvDegradationSystem->ActiveCraters.Num(),
+               EnvDegradationSystem->TotalShellImpacts);
+
+        // Trigger visual restoration of degraded environment
+        // This would:
+        // 1. Remove trees at DestroyedTreePositions
+        // 2. Destroy buildings in DestroyedBuildingIDs
+        // 3. Spawn crater meshes/deformations at SavedCraters positions
+        // 4. Update terrain materials based on DegradationLevel per region
+        EnvDegradationSystem->RestoreEnvironmentFromSave();
+    }
+
+    // Restore mission trigger states (persistent world)
+    if (MissionSystem)
+    {
+        // Restore mission statuses
+        for (const FString& ActivatedMissionID : SaveGame->CampaignData.ActivatedMissionIDs)
+        {
+            if (SaveGame->CampaignData.MissionTriggerStates.Contains(ActivatedMissionID))
+            {
+                EMissionStatus Status = SaveGame->CampaignData.MissionTriggerStates[ActivatedMissionID];
+
+                // Update mission status in database
+                if (MissionSystem->MissionDatabase.Contains(ActivatedMissionID))
+                {
+                    MissionSystem->MissionDatabase[ActivatedMissionID].Status = Status;
+                }
+            }
+        }
+    }
+
+    // Restore weather state
+    UWeatherSystem* WeatherSystem = PlayerPawn->FindComponentByClass<UWeatherSystem>();
+    if (WeatherSystem)
+    {
+        // Restore mud levels
+        if (SaveGame->PersistentWorldData.RegionMudLevels.Contains(TEXT("Global")))
+        {
+            WeatherSystem->MudLevel = SaveGame->PersistentWorldData.RegionMudLevels[TEXT("Global")];
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("SaveSystem: Save data applied to game (PERSISTENT WORLD MODE)"));
+    UE_LOG(LogTemp, Warning, TEXT("SaveSystem: World state restored to Day %d/303"),
+           SaveGame->CampaignData.DaysSurvived);
 }
