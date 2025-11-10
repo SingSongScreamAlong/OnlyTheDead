@@ -1,0 +1,155 @@
+WWI BATTLE OF VERDUN REFERENCE IMAGES - DOWNLOAD SUMMARY
+========================================================
+Date: November 10, 2025
+Project: Only The Dead - Game Development Reference Collection
+
+OVERVIEW
+--------
+Successfully downloaded 78 high-quality public domain WWI images (126MB total)
+All images are authentic historical photographs from 1914-1918 era
+Primary focus: Battle of Verdun (1916) and related WWI Western Front
+
+SOURCES USED
+------------
+1. Internet Archive - "The War Illustrated" (Jan-Jun 1916, Jul-Dec 1916)
+   - British weekly magazine with extensive WWI photographic coverage
+   - Images: archive.org/details/TWI1916pt1 and TWI1916pt2
+
+2. Internet Archive - "L'Illustration" No. 3825 (June 24, 1916)
+   - French illustrated weekly published during Battle of Verdun
+   - High-resolution scans (up to 7201x9600 pixels)
+   - Images: archive.org/details/lillustration_no3825_24juin1916
+
+3. Internet Archive - "Ypres to Verdun" by Sir A.B.W. Kennedy (1921)
+   - Photographic collection of WWI battlefields including Verdun
+   - Post-war documentation of destruction
+   - Images: archive.org/details/yprestoverduncol00kenn
+
+4. Internet Archive - Michelin "The Battle of Verdun (1914-1918)"
+   - Contemporary guidebook with battlefield photographs
+   - Images: archive.org/details/cu31924027945991
+
+5. Library of Congress - Selected WWI photographs
+   - Additional historical images from LOC collections
+
+CATEGORY BREAKDOWN
+------------------
+
+1. BATTLEFIELD LANDSCAPES & AERIAL VIEWS (10 images)
+   - Verdun battlefield panoramas
+   - Aerial reconnaissance photographs
+   - No-man's land views
+   - Destroyed terrain documentation
+   Location: /reference_images/battlefield/
+
+2. FORTIFICATIONS: Fort Douaumont, Fort Vaux, etc. (7 images)
+   - Fort exteriors and ruins
+   - Fortification details
+   - Battle damage documentation
+   - Defensive structures
+   Location: /reference_images/fortifications/
+
+3. FRENCH TRENCHES & TRENCH SYSTEMS (9 images)
+   - Trench construction details
+   - Dugout systems
+   - French defensive positions
+   - Trench warfare scenes
+   Location: /reference_images/trenches/
+
+4. FRENCH POILU SOLDIERS (14 images) *** LARGEST COLLECTION ***
+   - Soldiers in full uniform with equipment
+   - Portrait and action shots
+   - Infantry formations
+   - Verdun-specific units
+   - Equipment details (rifles, helmets, packs)
+   Location: /reference_images/soldiers/french/
+
+5. GERMAN SOLDIERS (6 images)
+   - 1916 German uniforms
+   - German positions and troops
+   - Infantry soldiers
+   - Combat scenes
+   Location: /reference_images/soldiers/german/
+
+6. COLONIAL SOLDIERS/TIRAILLEURS (5 images)
+   - French colonial troops
+   - Tirailleurs in action
+   - Colonial force documentation
+   Location: /reference_images/soldiers/colonial/
+
+7. ARTILLERY (11 images)
+   - French 75mm guns in action
+   - Heavy artillery and howitzers
+   - Artillery positions
+   - Big guns and siege weapons
+   - Gun crews and operations
+   Location: /reference_images/artillery/
+
+8. MEDICAL FACILITIES & FIELD HOSPITALS (7 images)
+   - Field hospitals
+   - Ambulance services
+   - Medical care scenes
+   - Wounded evacuation
+   Location: /reference_images/medical/
+
+9. LA VOIE SACRÉE SUPPLY ROUTE (3 images)
+   - Supply convoys
+   - Transport operations
+   - Road conditions
+   Location: /reference_images/supply_routes/
+
+10. SHELL CRATERS & DESTROYED LANDSCAPES (6 images)
+    - Artillery bombardment damage
+    - Shell crater fields
+    - Destroyed towns and villages
+    - Devastation documentation
+    Location: /reference_images/destroyed_areas/
+
+IMAGE QUALITY DETAILS
+---------------------
+- Format: JPEG
+- Resolution range: 1,551x2,353 to 7,201x9,600 pixels
+- File sizes: 87KB to 4.2MB per image
+- Average file size: ~1.6MB
+- All images verified as authentic JPEG files (not HTML errors)
+
+TOTAL COLLECTION SIZE
+---------------------
+- Total images: 78
+- Total storage: 126 MB
+- All images PUBLIC DOMAIN (pre-1924 publications)
+
+USAGE NOTES FOR GAME DEVELOPERS
+--------------------------------
+1. All images are historical photographs - authentic reference material
+2. High resolution suitable for detailed study and texture creation
+3. Images show actual uniforms, equipment, terrain, and conditions
+4. Mix of combat scenes, portraits, and documentation photography
+5. Particularly strong collection for:
+   - French Poilu soldier appearance and equipment
+   - Artillery positions and weapons
+   - Trench construction and layout
+   - Battlefield devastation and terrain
+
+RECOMMENDED ADDITIONAL RESEARCH
+--------------------------------
+For specific gaps identified:
+- More German soldier close-ups (only 6 images)
+- Specific Big Bertha artillery (mentioned but limited images found)
+- More La Voie Sacrée route documentation (only 3 images)
+
+Additional public domain sources to explore:
+- Flickr Commons (various national archives)
+- Europeana Collections (European cultural heritage)
+- National Library of France (Gallica)
+- German Federal Archives (Bundesarchiv)
+
+VERIFICATION
+------------
+All downloaded files verified as:
+- Valid JPEG image files (not HTML error pages)
+- Appropriate historical content
+- Public domain status (pre-1924 publications)
+- Suitable resolution for game development reference
+
+END OF SUMMARY
