@@ -1,0 +1,190 @@
+[
+  {
+    "MissionID": "M01_TheGunsBegin",
+    "MissionTitle": "The Guns Begin",
+    "MissionType": "Tutorial",
+    "HistoricalDate": {
+      "Year": 1916,
+      "Month": 2,
+      "Day": 21,
+      "Hour": 7,
+      "Minute": 15
+    },
+    "LocationSector": "Bois des Caures",
+    "DurationDays": 1,
+    "EstimatedPlaytimeMinutes": 25,
+    "IsHistoricalEvent": true,
+    "HistoricalContext": "Opening bombardment of Battle of Verdun. 1,400 German guns fire 2 million shells over 9 hours.",
+    "Objectives": [
+      {
+        "ObjectiveID": "M01_OBJ01",
+        "Description": "Survive the initial bombardment (07:15-12:00)",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M01_OBJ02",
+        "Description": "Learn shell recognition from Caporal Dubois",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M01_OBJ03",
+        "Description": "Reach dugout shelter",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M01_OBJ04",
+        "Description": "Help wounded comrade to safety",
+        "IsOptional": true
+      },
+      {
+        "ObjectiveID": "M01_OBJ05",
+        "Description": "Maintain morale above 25",
+        "IsOptional": true
+      }
+    ],
+    "TutorialElements": [
+      "Movement and controls",
+      "Survival meters introduction",
+      "Shell recognition audio cues",
+      "Taking cover mechanics",
+      "Using shelters",
+      "Medical system basics"
+    ],
+    "UnlocksOnCompletion": ["M02_FirstDaysNight"],
+    "RewardsXP": 100
+  },
+  {
+    "MissionID": "M02_FirstDaysNight",
+    "MissionTitle": "First Day's Night",
+    "MissionType": "Tutorial",
+    "HistoricalDate": {
+      "Year": 1916,
+      "Month": 2,
+      "Day": 21,
+      "Hour": 18,
+      "Minute": 0
+    },
+    "LocationSector": "Bois des Caures trenches",
+    "DurationDays": 1,
+    "EstimatedPlaytimeMinutes": 30,
+    "IsHistoricalEvent": true,
+    "HistoricalContext": "German infantry assault begins at dusk. French defenders fight in darkness.",
+    "Objectives": [
+      {
+        "ObjectiveID": "M02_OBJ01",
+        "Description": "Defend trench against German assault (20:00-22:00)",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M02_OBJ02",
+        "Description": "Survive night watch until dawn",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M02_OBJ03",
+        "Description": "Complete resupply run to forward position",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M02_OBJ04",
+        "Description": "Rescue isolated French squad",
+        "IsOptional": true
+      }
+    ],
+    "TutorialElements": [
+      "Night visibility mechanics",
+      "Combat basics (rifle, grenades)",
+      "Stamina management",
+      "Alertness system",
+      "AI squad commands"
+    ],
+    "UnlocksOnCompletion": ["M03_DriantsLastStand"],
+    "RewardsXP": 150
+  },
+  {
+    "MissionID": "M12_DouaumontRecapture",
+    "MissionTitle": "The Recapture - Fort Douaumont",
+    "MissionType": "ClimaxMission",
+    "HistoricalDate": {
+      "Year": 1916,
+      "Month": 10,
+      "Day": 24,
+      "Hour": 11,
+      "Minute": 40
+    },
+    "LocationSector": "Fort Douaumont",
+    "DurationDays": 5,
+    "EstimatedPlaytimeMinutes": 75,
+    "IsHistoricalEvent": true,
+    "HistoricalContext": "French recapture Fort Douaumont after 242 days of German occupation. Moroccan Colonial Infantry leads assault after 4-day bombardment (1.15 million shells).",
+    "Objectives": [
+      {
+        "ObjectiveID": "M12_OBJ01",
+        "Description": "Endure preparatory bombardment (Oct 20-23)",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M12_OBJ02",
+        "Description": "Assault across no-man's-land at H-Hour (11:40)",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M12_OBJ03",
+        "Description": "Storm Fort Douaumont exterior",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M12_OBJ04",
+        "Description": "Clear fort interior",
+        "IsOptional": false
+      },
+      {
+        "ObjectiveID": "M12_OBJ05",
+        "Description": "Reach fort summit - raise French flag",
+        "IsOptional": true
+      },
+      {
+        "ObjectiveID": "M12_OBJ06",
+        "Description": "All original squad members survive",
+        "IsOptional": true
+      }
+    ],
+    "MissionPhases": [
+      {
+        "PhaseID": 1,
+        "PhaseName": "Preparation (Oct 20-23)",
+        "DurationMinutes": 15,
+        "Description": "Endure 4-day bombardment preparation"
+      },
+      {
+        "PhaseID": 2,
+        "PhaseName": "H-Hour Assault (Oct 24, 11:40)",
+        "DurationMinutes": 20,
+        "Description": "Cross no-man's-land under fire"
+      },
+      {
+        "PhaseID": 3,
+        "PhaseName": "Fort Exterior Assault",
+        "DurationMinutes": 25,
+        "Description": "Storm fort defenses"
+      },
+      {
+        "PhaseID": 4,
+        "PhaseName": "Victory and Cost",
+        "DurationMinutes": 15,
+        "Description": "Fort secured, count casualties, mourn Dubois"
+      }
+    ],
+    "ScriptedEvents": [
+      {
+        "EventID": "Dubois_Death",
+        "TriggerPhase": 2,
+        "Description": "Caporal Dubois dies heroically during assault",
+        "EmotionalBeat": "Mentor's death, player assumes command"
+      }
+    ],
+    "UnlocksOnCompletion": ["M13_AfterTheStorm", "Achievement_VeteranLevel"],
+    "RewardsXP": 1000,
+    "Rewards": ["Promotion_Caporal"]
+  }
+]

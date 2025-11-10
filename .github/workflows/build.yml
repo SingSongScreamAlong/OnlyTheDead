@@ -1,0 +1,135 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop, 'claude/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        configuration: [Development, Shipping]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Setup C++17
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Cache UE5 Build
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.ue5
+          ./Intermediate
+          ./Saved
+        key: ${{ runner.os }}-ue5-${{ hashFiles('**/*.uproject') }}
+        restore-keys: |
+          ${{ runner.os }}-ue5-
+
+    - name: Validate JSON Data Tables
+      run: |
+        python -m json.tool Content/Data/DT_ShellTypes.json > /dev/null
+        python -m json.tool Content/Data/DT_Missions.json > /dev/null
+        python -m json.tool Content/Data/DT_FoodItems.json > /dev/null
+      shell: bash
+
+    - name: Check Markdown Documentation
+      run: |
+        python -c "import sys; sys.exit(0 if open('README.md').read() else 1)"
+        python -c "import sys; sys.exit(0 if open('ONLY_THE_DEAD_DEVELOPMENT_BOOK.md').read() else 1)"
+      shell: bash
+
+    - name: Build Documentation
+      run: |
+        pip install mkdocs mkdocs-material
+        # mkdocs build (if we add mkdocs.yml)
+
+    - name: Lint C++ Code (if available)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get install -y clang-tidy
+        # clang-tidy src/**/*.cpp (would need compile_commands.json)
+
+    - name: Count Lines of Code
+      run: |
+        echo "Counting lines of code..."
+        find src -name "*.h" -o -name "*.cpp" | xargs wc -l
+      shell: bash
+
+    - name: Archive Build Artifacts
+      if: matrix.configuration == 'Shipping'
+      uses: actions/upload-artifact@v3
+      with:
+        name: only-the-dead-${{ matrix.os }}-${{ matrix.configuration }}
+        path: |
+          Binaries/
+          Content/
+          Config/
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Build Documentation Site
+      run: |
+        pip install mkdocs mkdocs-material
+        echo "Documentation build would happen here"
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Would deploy docs to GitHub Pages"
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Check Code Style
+      run: |
+        echo "Code style checks would run here"
+        # Could use clang-format, cpplint, etc.
+
+    - name: Security Scan
+      run: |
+        echo "Security scanning would happen here"
+        # Could use CodeQL, Snyk, etc.
+
+    - name: Complexity Analysis
+      run: |
+        pip install lizard
+        lizard src/ -l cpp -w
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build, documentation, code-quality]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Release notes for Only The Dead
+          - See CHANGELOG.md for details
+        draft: false
+        prerelease: false
