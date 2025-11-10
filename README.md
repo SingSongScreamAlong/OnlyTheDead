@@ -129,17 +129,42 @@ python export_for_houdini.py        # For Houdini
 - ✅ Historical verification system
 - ⏳ Need: Real primary sources, German perspective
 
-### Development Book (~10% Complete)
+### Development Book (~15% Complete)
 - ✅ Core vision and design pillars
 - ✅ Survival systems (exact specifications)
-- 🔄 Mission designs (in progress)
-- ⏳ Need: 30+ missions, dialogue, audio bible, progression, etc.
+- ✅ Combat & artillery systems (complete)
+- 🔄 Mission designs (4 detailed examples, 30+ planned)
+- ⏳ Need: Remaining missions, dialogue, audio bible, progression, etc.
 
-**Total Documentation**: ~220,000 words across 55+ files
+### Technical Implementation (~5% Complete)
+- ✅ **Camera & Cover System** (Hellblade 2-style, complete)
+- ✅ **Character & Movement** (posture, stamina, survival integration)
+- ✅ **7 Survival Meters Component** (all formulas implemented)
+- ✅ **Artillery Shelter Detection** (procedural cover system)
+- ✅ **Exposure Heatmap** (AI targeting, emergent gameplay)
+- ⏳ Need: Combat, weapons, AI, missions, audio, visuals
+
+**Total Documentation**: ~230,000 words across 70+ files
+**Source Code**: ~3,500 lines C++ (UE5)
 
 ---
 
 ## 🗺️ KEY FEATURES
+
+### Camera & Cover System (**NEW - Implemented Nov 2025**)
+**Hellblade 2-inspired hybrid camera** with WWI trench warfare integration:
+- **4 Contextual Modes**: Guided Walk, Survival OTS, Precision ADS, Set Piece
+- **Shoulder-Swap OTS**: Smooth left/right camera transitions
+- **Posture System**: Standing, Crouching, Prone (stamina-gated)
+- **Artillery Shelter Detection**: Procedural cover (60%-99% protection)
+- **Exposure Heatmap**: Visible players attract artillery/snipers
+- **Accessibility**: Fixed horizon, camera lag adjustments, disable set-pieces
+
+**Design Philosophy**: Non-sticky cover (situational awareness), artillery survival (not PvP), emergent trench craft learning
+
+See: [Implementation Guide](CAMERA_COVER_IMPLEMENTATION_GUIDE.md) | [System Summary](CAMERA_SYSTEM_SUMMARY.md)
+
+---
 
 ### 7 Survival Meters
 - **Hunger** - Depletion: 3-8/hour, death in 7 days
@@ -174,11 +199,22 @@ python export_for_houdini.py        # For Houdini
 ## 🛠️ TECHNICAL
 
 **Engine**: Unreal Engine 5
+**Language**: C++ with Blueprint integration
 **Platforms**: PC (Steam/Epic), PS5, Xbox Series X|S
 **Performance**: 60 FPS @ 1440p (PC), 30-60 FPS (consoles)
 **Audio**: 3D spatial audio (critical for shell recognition)
 **Languages**: French/German voice, English subtitles
 **Game Length**: 15-60 hours depending on mode
+
+### Implemented Systems
+- **Camera**: Hellblade 2-style hybrid camera (4 modes, shoulder-swap OTS)
+- **Character**: Posture system (Standing/Crouching/Prone), stamina-gated movement
+- **Survival**: All 7 meters with exact formulas, cascading failures, disease system
+- **Cover**: Procedural artillery shelter detection (6 cover types, 60%-99% protection)
+- **Exposure**: AI targeting heatmap (attracts artillery/snipers when exposed)
+- **Input**: Enhanced Input system (KB/M + Gamepad, accessibility options)
+
+See: [`CAMERA_COVER_IMPLEMENTATION_GUIDE.md`](CAMERA_COVER_IMPLEMENTATION_GUIDE.md) for integration details
 
 ---
 
@@ -187,6 +223,20 @@ python export_for_houdini.py        # For Houdini
 ### Root Level
 - **README.md** (this file) - Project overview
 - **ONLY_THE_DEAD_DEVELOPMENT_BOOK.md** - Game design bible
+- **CAMERA_COVER_IMPLEMENTATION_GUIDE.md** - Complete UE5 integration guide
+- **CAMERA_SYSTEM_SUMMARY.md** - Camera/cover system overview
+
+### Source/OnlyTheDead/
+- **Camera/** - Custom camera manager with 4 contextual modes
+- **Character/** - Player character with posture/survival integration
+- **Survival/** - 7 survival meters component
+- **Cover/** - Procedural artillery shelter detection
+- **Combat/** - Exposure heatmap for AI targeting
+
+### Content/
+- **Input/** - Enhanced Input configuration (KB/M + Gamepad)
+- **Blueprints/** - (Future) Character, GameMode, UI widgets
+- **DataAssets/** - (Future) Camera mode configurations
 
 ### verdun_anthology/
 - **README_ANTHOLOGY_VS_DEVELOPMENT.md** - Explains two-document structure
@@ -261,6 +311,11 @@ This project can be used for:
 - [Anthology vs. Development Explanation](verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md)
 - [Historical Accuracy Statement](verdun_anthology/HISTORICAL_ACCURACY_STATEMENT.md)
 
+**Implementation Guides**:
+- [Camera & Cover System Guide](CAMERA_COVER_IMPLEMENTATION_GUIDE.md) - **NEW**
+- [Camera System Summary](CAMERA_SYSTEM_SUMMARY.md) - **NEW**
+- [Enhanced Input Setup](Content/Input/InputActions_README.md) - **NEW**
+
 **Geographic Tools**:
 - [Geographic Data Package](verdun_anthology/geographic_data/)
 - [UE5 Import Guide](verdun_anthology/geographic_data/UE5_Import/)
@@ -281,10 +336,14 @@ This project can be used for:
 - ⏳ Dialogue and narrative content
 - ⏳ Audio/visual design bible
 
-**Phase III: Implementation** (Future)
-- ⏳ UE5 prototype (core systems)
+**Phase III: Implementation** (In Progress - Started Nov 2025)
+- ✅ Camera & Cover System (Hellblade 2-style, complete)
+- ✅ Character & Movement (posture, stamina, survival)
+- ✅ 7 Survival Meters (all formulas implemented)
+- ⏳ Combat system (weapons, aiming, melee)
+- ⏳ AI & Artillery (EQS targeting, shell impacts)
+- ⏳ Mission framework (triggers, objectives, narrative)
 - ⏳ Alpha (vertical slice - one full mission)
-- ⏳ Beta (full campaign playable)
 
 **Phase IV: Production** (Future)
 - ⏳ Full asset production
@@ -320,4 +379,4 @@ This project can be used for:
 
 ---
 
-*Last Updated: November 6, 2025*
+*Last Updated: November 10, 2025*
