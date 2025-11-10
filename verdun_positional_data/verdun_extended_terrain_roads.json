@@ -1,0 +1,376 @@
+{
+  "metadata": {
+    "title": "Verdun Extended Terrain, Roads, and Natural Features",
+    "description": "Complete road network, paths, streams, and terrain micro-features",
+    "source": "Historical maps, IGN topographic data, period photographs",
+    "date_compiled": "2025-11-10",
+    "note": "Supplements verdun_master_locations.json with complete terrain detail"
+  },
+
+  "road_network": {
+    "primary_roads": [
+      {
+        "id": "road_voie_sacree",
+        "name": "La Voie Sacrée (RN 35, now D1916)",
+        "reference": "See verdun_master_locations.json for full route"
+      },
+      {
+        "id": "road_verdun_north",
+        "name": "Route de Verdun à Étain (D964)",
+        "type": "major_road",
+        "description": "Main road north from Verdun",
+        "route_points": [
+          {"name": "Verdun", "coordinates": {"latitude": 49.1667, "longitude": 5.3833}},
+          {"name": "Bras-sur-Meuse", "coordinates": {"latitude": 49.212, "longitude": 5.376}},
+          {"name": "Continues north to Étain", "coordinates": {"latitude": 49.28, "longitude": 5.38}}
+        ],
+        "status_pre_1916": "Paved road (macadam)",
+        "width_meters": 6,
+        "strategic_importance": "Very high - main northern approach",
+        "ue5_notes": {
+          "road_type": "macadam_paved",
+          "surface": "crushed_stone",
+          "condition": "good"
+        }
+      },
+      {
+        "id": "road_verdun_douaumont",
+        "name": "Route de Douaumont",
+        "type": "major_road",
+        "description": "Road from Verdun to Fort Douaumont area",
+        "route_points": [
+          {"name": "Verdun", "coordinates": {"latitude": 49.1667, "longitude": 5.3833}},
+          {"name": "Fleury-devant-Douaumont", "coordinates": {"latitude": 49.198109, "longitude": 5.427765}},
+          {"name": "Fort Douaumont", "coordinates": {"latitude": 49.216868, "longitude": 5.4383833}}
+        ],
+        "status_pre_1916": "Secondary paved road",
+        "width_meters": 5,
+        "strategic_importance": "High - connects to fort",
+        "ue5_notes": {
+          "road_type": "paved_secondary",
+          "surface": "cobblestone_and_gravel"
+        }
+      }
+    ],
+
+    "secondary_roads": [
+      {
+        "id": "road_chattancourt_esnes",
+        "name": "Chattancourt to Esnes",
+        "type": "village_connector",
+        "start": {"name": "Chattancourt", "coordinates": {"latitude": 49.219, "longitude": 5.266}},
+        "end": {"name": "Esnes-en-Argonne", "coordinates": {"latitude": 49.2089, "longitude": 5.21222}},
+        "width_meters": 4,
+        "surface": "dirt_gravel",
+        "status": "unpaved_country_road"
+      },
+      {
+        "id": "road_avocourt_mort_homme",
+        "name": "Avocourt to Mort-Homme area",
+        "type": "local_road",
+        "start": {"name": "Avocourt", "coordinates": {"latitude": 49.2068, "longitude": 5.1424}},
+        "passes_near": {"name": "Mort-Homme", "coordinates": {"latitude": 49.23, "longitude": 5.28}},
+        "width_meters": 3.5,
+        "surface": "dirt",
+        "status": "unpaved_local_road"
+      },
+      {
+        "id": "road_fleury_vaux",
+        "name": "Fleury to Vaux area",
+        "type": "village_connector",
+        "start": {"name": "Fleury", "coordinates": {"latitude": 49.198109, "longitude": 5.427765}},
+        "end": {"name": "Vaux-devant-Damloup", "coordinates": {"latitude": 49.21003, "longitude": 5.47061}},
+        "width_meters": 4,
+        "surface": "dirt_gravel",
+        "status": "unpaved_village_road"
+      }
+    ],
+
+    "farm_tracks": {
+      "description": "Unpaved tracks connecting farms to fields",
+      "typical_width": "2.5-3 meters",
+      "surface": "rutted_dirt",
+      "pattern": "radiate_from_villages_to_surrounding_fields",
+      "ue5_implementation": {
+        "per_village": "4-8 tracks leading to fields",
+        "length": "200-800 meters",
+        "appearance": "two_parallel_ruts_grass_center"
+      }
+    },
+
+    "footpaths": {
+      "description": "Narrow walking paths through fields and forests",
+      "typical_width": "0.5-1 meter",
+      "surface": "packed_earth",
+      "uses": ["walking_to_fields", "shortcuts_between_villages", "forest_paths"],
+      "ue5_implementation": {
+        "appearance": "worn_earth_path",
+        "frequency": "connecting_all_villages_and_farms"
+      }
+    }
+  },
+
+  "water_features": {
+    "meuse_river": {
+      "reference": "See verdun_master_locations.json",
+      "enhanced_details": {
+        "flow_direction": "north_through_verdun",
+        "width_at_verdun": "35-50 meters",
+        "depth": "2-4 meters average",
+        "current": "moderate_flow",
+        "banks": "grassy_some_trees",
+        "bridges_at_verdun": "3 stone bridges",
+        "strategic_importance": "Divides battlefield into left and right banks"
+      }
+    },
+
+    "streams_and_brooks": [
+      {
+        "name": "Ruisseau de Tavannes",
+        "description": "Small stream near Fort Tavannes",
+        "approximate_route": "Flows southeast to Meuse",
+        "width": "2-4 meters",
+        "seasonal": "Can dry in summer",
+        "ue5_note": "Small stream bed, may have water depending on season"
+      },
+      {
+        "name": "Various unnamed brooks",
+        "description": "Small brooks in ravines (ravin)",
+        "pattern": "Flow down from hills into valleys",
+        "width": "0.5-2 meters",
+        "appearance": "Often in wooded ravines"
+      }
+    ],
+
+    "ponds_and_springs": {
+      "village_ponds": {
+        "description": "Small ponds for livestock watering",
+        "per_village": "0-2 ponds",
+        "size": "10-30 meters diameter",
+        "location": "Edge of village or common area"
+      },
+      "springs": {
+        "description": "Natural springs",
+        "usage": "Some villages built around springs for water",
+        "appearance": "Small stone-lined basins"
+      }
+    }
+  },
+
+  "terrain_microfeatures": [
+    {
+      "type": "ravines",
+      "french_name": "ravins",
+      "description": "Steep-sided valleys cutting through terrain",
+      "common_areas": ["between_hills", "drainage_patterns"],
+      "typical_dimensions": {
+        "width": "20-100 meters",
+        "depth": "10-30 meters",
+        "length": "200-1000 meters"
+      },
+      "vegetation": "Often wooded",
+      "tactical_importance": "Cover and concealment, difficult terrain",
+      "ue5_implementation": "Use_terrain_sculpting_and_landscape_splines"
+    },
+    {
+      "type": "ridges",
+      "french_name": "crêtes",
+      "description": "Elevated ridgelines",
+      "examples": [
+        {"name": "Côte de Froideterre", "elevation": "~345m"},
+        {"name": "Côte du Poivre", "elevation": "~295m"}
+      ],
+      "tactical_importance": "Observation posts, defensive positions",
+      "appearance": "Open hilltops or wooded ridges"
+    },
+    {
+      "type": "plateaus",
+      "description": "Flat elevated areas",
+      "examples": ["Argonne plateau edge"],
+      "strategic_value": "Easier movement, good fields of fire"
+    },
+    {
+      "type": "slopes",
+      "description": "Hillsides between valleys and ridges",
+      "gradient": "Moderate to steep (10-30 degrees)",
+      "vegetation": "Mix of forest and open ground",
+      "tactical": "Difficult assault terrain"
+    }
+  ],
+
+  "forest_extended_data": {
+    "bois_des_caures": {
+      "reference": "See verdun_master_locations.json",
+      "enhanced_details": {
+        "area_hectares": 220,
+        "tree_composition": {
+          "oak": "40%",
+          "beech": "35%",
+          "hornbeam": "15%",
+          "other": "10%"
+        },
+        "density": "very_dense",
+        "understory": "thick_undergrowth",
+        "paths": "narrow_footpaths_and_firebreaks",
+        "military_use": "French defensive positions under Col. Driant",
+        "ue5_implementation": {
+          "tree_spacing": "4-8 meters",
+          "trees_per_hectare": "~180-250",
+          "total_trees_estimate": "40,000-50,000",
+          "height": "15-25 meters mature trees",
+          "undergrowth_density": "high_visibility_under_20m"
+        }
+      }
+    },
+    "bois_d_haumont": {
+      "reference": "See verdun_master_locations.json",
+      "enhanced_details": {
+          "area_hectares": 300,
+          "tree_composition": {
+            "oak": "45%",
+            "beech": "30%",
+            "other_deciduous": "25%"
+          },
+          "density": "dense",
+          "ue5_implementation": {
+            "tree_spacing": "5-10 meters",
+            "trees_per_hectare": "~150-200",
+            "total_trees_estimate": "45,000-60,000",
+            "height": "15-25 meters"
+          }
+        }
+    },
+    "bois_bourrus": {
+      "id": "bois_bourrus",
+      "name": "Bois-Bourrus (Wood of Bourrus)",
+      "type": "forest",
+      "category": "woodland",
+      "approximate_location": {
+        "description": "Near Fort du Bois-Bourrus, northern sector",
+        "latitude": 49.25,
+        "longitude": 5.36
+      },
+      "area_hectares": 180,
+      "density": "moderate_to_dense",
+      "tree_types": ["oak", "beech", "mixed_deciduous"],
+      "ue5_implementation": {
+        "tree_spacing": "6-10 meters",
+        "trees_estimate": "25,000-35,000"
+      }
+    },
+    "foret_argonne_edge": {
+      "id": "foret_argonne_edge",
+      "name": "Argonne Forest (western edge)",
+      "type": "major_forest",
+      "category": "large_woodland",
+      "description": "Edge of vast Argonne forest, west of battlefield",
+      "approximate_area": {
+        "western_edge": "Visible from Avocourt westward",
+        "latitude_range": "49.15 to 49.25",
+        "longitude_range": "5.05 to 5.15"
+      },
+      "character": "Dense_ancient_forest",
+      "historical_note": "Major forest region, distinct battles fought here",
+      "ue5_note": "Background_forest_distant_treeline_if_modeling_full_area"
+    }
+  },
+
+  "trench_systems_detailed": {
+    "note": "Trench systems evolved rapidly. This represents pre-Feb 1916 preliminary positions",
+
+    "french_defensive_lines": {
+      "first_position": {
+        "description": "Forward defensive line",
+        "left_bank_line": [
+          {"location": "Avocourt Wood", "coordinates": {"latitude": 49.21, "longitude": 5.14}},
+          {"location": "Malancourt slopes", "coordinates": {"latitude": 49.22, "longitude": 5.18}},
+          {"location": "Béthincourt front", "coordinates": {"latitude": 49.23, "longitude": 5.22}},
+          {"location": "Forges", "coordinates": {"latitude": 49.24, "longitude": 5.26}}
+        ],
+        "right_bank_line": [
+          {"location": "Bois des Caures", "coordinates": {"latitude": 49.25, "longitude": 5.41}},
+          {"location": "Herbebois", "coordinates": {"latitude": 49.26, "longitude": 5.43}},
+          {"location": "Wavrille area", "coordinates": {"latitude": 49.27, "longitude": 5.45}}
+        ],
+        "trench_type": "field_fortifications",
+        "depth": "1.5-2 meters",
+        "width": "1 meter",
+        "features": ["firing_steps", "basic_dugouts", "communication_trenches"],
+        "condition": "incomplete_pre_battle"
+      },
+
+      "second_position": {
+        "description": "Secondary defensive line",
+        "key_points": [
+          {"location": "Mort-Homme massif", "coordinates": {"latitude": 49.23, "longitude": 5.28}},
+          {"location": "Côte 304", "coordinates": {"latitude": 49.22, "longitude": 5.25}},
+          {"location": "Douaumont-Vaux ridge", "latitude_range": "49.20 to 49.22", "longitude_range": "5.43 to 5.47"}
+        ],
+        "trench_type": "intermediate_fortifications",
+        "status": "partially_constructed"
+      },
+
+      "third_position": {
+        "description": "Final defensive line closer to Verdun",
+        "status": "under_construction_january_1916",
+        "note": "Being built when battle started February 21"
+      }
+    },
+
+    "connecting_trenches": {
+      "boyaux": {
+        "description": "Communication trenches (boyaux)",
+        "purpose": "Connect front line to rear areas",
+        "typical_length": "100-500 meters",
+        "depth": "1.5 meters",
+        "width": "0.8 meters",
+        "zig_zag_pattern": "Every 10-15 meters to limit enfilade fire"
+      }
+    },
+
+    "fortified_positions": {
+      "description": "Concrete blockhouses and shelters",
+      "locations": "Near forts and ouvrages",
+      "types": [
+        "observation_posts",
+        "machine_gun_positions",
+        "artillery_shelters",
+        "command_posts"
+      ],
+      "construction": "concrete_and_steel"
+    },
+
+    "ue5_implementation": {
+      "approach": "Procedural or manual placement along defensive lines",
+      "first_line_trenches": "Continuous_system_with_firing_bays",
+      "communication_trenches": "Zig_zag_pattern_splines",
+      "dugouts": "Small_shelters_every_30-50_meters",
+      "barbed_wire": "In_front_of_trenches_10-20_meters_deep",
+      "detail_level": "Can_be_simplified_since_will_be_destroyed"
+    }
+  },
+
+  "battlefield_sectors": {
+    "description": "French military organization of Verdun battlefield",
+    "left_bank": {
+      "command": "General de Bazelaire",
+      "extent": "Avocourt to Meuse River",
+      "key_positions": ["Mort-Homme", "Côte 304", "Cumières", "Chattancourt"]
+    },
+    "right_bank": {
+      "command": "Various sector commanders",
+      "extent": "Meuse River to Woëvre plain",
+      "key_positions": ["Fort Douaumont", "Fort Vaux", "Fleury", "Thiaumont"]
+    }
+  },
+
+  "summary": {
+    "primary_roads": 3,
+    "secondary_roads": 3,
+    "water_features": "Meuse River + streams",
+    "forests": 4,
+    "terrain_microfeatures": "ravines, ridges, slopes",
+    "trench_lines": "3 defensive positions (incomplete)",
+    "total_geographic_completeness": "comprehensive"
+  }
+}

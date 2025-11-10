@@ -1,0 +1,415 @@
+{
+  "metadata": {
+    "title": "Verdun Extended Villages Dataset - Authentic Lorraine Layouts",
+    "description": "Complete village data with authentic French Lorraine architectural styles and layouts",
+    "source": "Historical archives, pre-war photographs, Lorraine architectural studies",
+    "date_compiled": "2025-11-10",
+    "historical_period": "Pre-February 1916",
+    "note": "Supplements verdun_master_locations.json with authentic village characteristics"
+  },
+
+  "lorraine_village_architecture": {
+    "traditional_layout": {
+      "type": "street-village (village-rue)",
+      "description": "Two lines of houses stretching along main street, carefully aligned",
+      "orientation": "Houses face south/sun for warmth",
+      "pattern": "Linear along road, fostering conviviality and interaction",
+      "spacing": "Houses close together on street, with large rear gardens",
+      "communal_spaces": "Wide spaces for storing wood and agricultural tools"
+    },
+    "building_materials": {
+      "walls": [
+        "Half-timber (colombage) - exposed wooden framework",
+        "Local limestone - from Meuse quarries",
+        "Puddled clay - rammed earth",
+        "Stone and timber combination"
+      ],
+      "roofs": [
+        "Clay tiles (most common by 1900)",
+        "Slate (wealthier buildings)",
+        "Thatch (older farm buildings, declining by 1914)"
+      ],
+      "colors": "Natural stone grey, white lime-wash, earth tones"
+    },
+    "typical_buildings": {
+      "maison_lorraine": {
+        "description": "Traditional Lorraine house",
+        "features": [
+          "2-3 stories",
+          "Half-timbered upper floors",
+          "Stone ground floor",
+          "Large barn door (porte charretière)",
+          "Living quarters above stables/storage"
+        ],
+        "dimensions": "8-12m wide, 12-18m deep, 8-10m tall"
+      },
+      "ferme_lorraine": {
+        "description": "Traditional Lorraine farm",
+        "layout": "U-shape or rectangular courtyard",
+        "features": [
+          "Living quarters",
+          "Barn (grange)",
+          "Stable (étable)",
+          "Courtyard (cour)",
+          "Large gate entrance"
+        ],
+        "dimensions": "15-25m wide, 20-35m deep"
+      },
+      "eglise_village": {
+        "description": "Village church",
+        "style": "Romanesque or Neo-Gothic (19th century)",
+        "features": [
+          "Stone construction",
+          "Bell tower (clocher)",
+          "Nave and apse",
+          "Often on elevated ground"
+        ],
+        "dimensions": "20-30m long, 8-12m wide, tower 15-25m tall"
+      }
+    }
+  },
+
+  "left_bank_villages": [
+    {
+      "id": "village_avocourt",
+      "name": "Avocourt",
+      "type": "village",
+      "category": "left_bank_active_village",
+      "coordinates": {
+        "latitude": 49.2068,
+        "longitude": 5.1424,
+        "elevation_meters": 245
+      },
+      "population_1914": 156,
+      "status_pre_1916": "Active farming village",
+      "status_post_1916": "Heavily damaged but rebuilt",
+      "historical_notes": "West of Meuse, near Argonne forest. Scene of heavy fighting for Mort-Homme and Côte 304",
+      "ue5_notes": {
+        "village_size": "small",
+        "layout_type": "street-village",
+        "recommended_buildings": {
+          "houses": 28,
+          "church": 1,
+          "farms": 5,
+          "municipal_buildings": 1,
+          "layout_pattern": "linear_along_road"
+        },
+        "architectural_style": "lorraine_traditional",
+        "building_materials": ["limestone", "half-timber"],
+        "footprint_meters": {
+          "length": 400,
+          "width": 150
+        },
+        "orientation": "main_street_north_south"
+      }
+    },
+    {
+      "id": "village_chattancourt",
+      "name": "Chattancourt",
+      "type": "village",
+      "category": "left_bank_active_village",
+      "coordinates": {
+        "latitude": 49.219,
+        "longitude": 5.266,
+        "elevation_meters": 252
+      },
+      "population_1914": 168,
+      "status_pre_1916": "Active farming village",
+      "status_post_1916": "Heavily damaged but rebuilt",
+      "historical_notes": "Strategic position near Mort-Homme. German artillery bombardment base",
+      "ue5_notes": {
+        "village_size": "small",
+        "layout_type": "street-village",
+        "recommended_buildings": {
+          "houses": 30,
+          "church": 1,
+          "farms": 6,
+          "municipal_buildings": 1,
+          "inn": 1,
+          "layout_pattern": "linear_along_road"
+        },
+        "architectural_style": "lorraine_traditional",
+        "building_materials": ["limestone", "half-timber"],
+        "footprint_meters": {
+          "length": 450,
+          "width": 160
+        },
+        "terrain_note": "Surrounded by hills"
+      }
+    },
+    {
+      "id": "village_bras",
+      "name": "Bras-sur-Meuse",
+      "type": "village",
+      "category": "left_bank_active_village",
+      "coordinates": {
+        "latitude": 49.212,
+        "longitude": 5.376,
+        "elevation_meters": 195
+      },
+      "population_1914": 284,
+      "status_pre_1916": "Active village, Meuse crossing point",
+      "status_post_1916": "Damaged but rebuilt",
+      "historical_notes": "On main D964 road north from Verdun. Meuse River crossing. Important communications point",
+      "ue5_notes": {
+        "village_size": "medium",
+        "layout_type": "street-village_with_river",
+        "recommended_buildings": {
+          "houses": 48,
+          "church": 1,
+          "farms": 8,
+          "municipal_buildings": 2,
+          "inn": 1,
+          "mill": 1,
+          "layout_pattern": "along_river_and_road"
+        },
+        "architectural_style": "lorraine_traditional",
+        "building_materials": ["limestone", "half-timber"],
+        "footprint_meters": {
+          "length": 600,
+          "width": 200
+        },
+        "key_features": ["meuse_river_crossing", "bridge", "riverside_location"]
+      }
+    },
+    {
+      "id": "village_esnes",
+      "name": "Esnes-en-Argonne",
+      "type": "village",
+      "category": "left_bank_active_village",
+      "coordinates": {
+        "latitude": 49.2089,
+        "longitude": 5.21222,
+        "elevation_meters": 238
+      },
+      "population_1914": 342,
+      "status_pre_1916": "Active farming village",
+      "status_post_1916": "Heavily damaged but rebuilt",
+      "historical_notes": "Near Argonne forest edge. Left bank communications",
+      "ue5_notes": {
+        "village_size": "medium",
+        "layout_type": "street-village",
+        "recommended_buildings": {
+          "houses": 58,
+          "church": 1,
+          "farms": 10,
+          "municipal_buildings": 2,
+          "inn": 1,
+          "school": 1,
+          "layout_pattern": "linear_with_secondary_street"
+        },
+        "architectural_style": "lorraine_traditional",
+        "building_materials": ["limestone", "half-timber"],
+        "footprint_meters": {
+          "length": 700,
+          "width": 250
+        }
+      }
+    }
+  ],
+
+  "destroyed_villages_enhanced_layouts": [
+    {
+      "id": "village_fleury_enhanced",
+      "name": "Fleury-devant-Douaumont",
+      "reference_base_data": "See verdun_master_locations.json",
+      "enhanced_layout": {
+        "village_type": "Medium Lorraine street-village",
+        "main_street": {
+          "orientation": "northwest_to_southeast",
+          "length_meters": 500,
+          "width_meters": 8,
+          "surface": "dirt_and_cobbles"
+        },
+        "building_placement": {
+          "north_side_houses": 34,
+          "south_side_houses": 34,
+          "spacing_between_houses": "2-4 meters",
+          "setback_from_street": "0-2 meters (houses front directly on street)"
+        },
+        "church_location": {
+          "position": "center_of_village",
+          "set_back": "small_square_in_front",
+          "orientation": "altar_faces_east"
+        },
+        "farms": {
+          "count": 12,
+          "locations": "perimeter_of_village",
+          "type": "u_shaped_courtyard_farms"
+        },
+        "gardens": {
+          "location": "rear_of_houses",
+          "dimensions": "10-20m deep per house",
+          "use": "vegetables_fruit_trees_chickens"
+        },
+        "communal_spaces": {
+          "church_square": "40m x 30m",
+          "village_fountain": "center_or_near_church",
+          "cemetery": "beside_church"
+        },
+        "architectural_details": {
+          "house_style": "lorraine_maison",
+          "materials": ["local_limestone", "half_timber"],
+          "roof_material": "clay_tiles_red_orange",
+          "typical_colors": "white_lime_wash_walls",
+          "barn_doors": "large_porte_charretière"
+        }
+      }
+    },
+    {
+      "id": "village_ornes_enhanced",
+      "name": "Ornes (Largest destroyed village)",
+      "reference_base_data": "See verdun_master_locations.json",
+      "enhanced_layout": {
+        "village_type": "Large Lorraine street-village with crossroads",
+        "main_street": {
+          "orientation": "north_south",
+          "length_meters": 800,
+          "width_meters": 10,
+          "secondary_street": "east_west_crossroads"
+        },
+        "building_placement": {
+          "main_street_houses": 60,
+          "secondary_street_houses": 35,
+          "spacing_between_houses": "3-5 meters"
+        },
+        "church_location": {
+          "position": "at_crossroads",
+          "prominence": "elevated_slightly",
+          "square_size": "50m x 40m"
+        },
+        "commercial": {
+          "shops": 8,
+          "type": ["bakery", "butcher", "general_store", "blacksmith", "wheelwright", "cobbler", "tobacco", "café"],
+          "location": "near_church_and_crossroads"
+        },
+        "farms": {
+          "count": 18,
+          "locations": "outer_edges_and_scattered"
+        },
+        "municipal_buildings": {
+          "mairie": "town_hall_near_church",
+          "school": "separate_building_with_yard",
+          "teacher_residence": "attached_to_school"
+        },
+        "footprint_meters": {
+          "diameter": 600,
+          "pattern": "elongated_along_main_street"
+        }
+      }
+    }
+  ],
+
+  "agricultural_features": {
+    "description": "Pre-war Lorraine agriculture - open field system",
+    "system_type": "assolement triennal (three-field rotation)",
+    "field_types": [
+      {
+        "type": "wheat_fields",
+        "description": "Primary grain crop",
+        "location": "surrounding_villages_in_rotation",
+        "typical_size": "1-5 hectares per field",
+        "season": "planted_autumn_harvested_summer",
+        "appearance": "golden_wheat_june_july"
+      },
+      {
+        "type": "barley_oats",
+        "description": "Secondary grains",
+        "location": "rotation_with_wheat",
+        "typical_size": "1-3 hectares"
+      },
+      {
+        "type": "fallow_fields",
+        "description": "Resting fields (1/3 of land)",
+        "appearance": "grass_grazing_for_animals"
+      },
+      {
+        "type": "vineyard",
+        "description": "Grape cultivation (viticulture)",
+        "location": "south_facing_slopes",
+        "meuse_specialty": true,
+        "typical_size": "0.5-2 hectares",
+        "appearance": "rows_of_vines_on_stakes"
+      },
+      {
+        "type": "orchard",
+        "description": "Fruit trees",
+        "trees": ["apple", "pear", "plum", "cherry"],
+        "location": "near_villages_and_farms",
+        "typical_size": "0.2-1 hectare",
+        "spacing": "6-8 meters between trees"
+      },
+      {
+        "type": "kitchen_gardens",
+        "description": "Vegetable gardens",
+        "location": "behind_every_house",
+        "size": "100-200 sq meters per household",
+        "crops": ["cabbage", "potatoes", "carrots", "onions", "beans"]
+      }
+    ],
+    "field_boundaries": {
+      "type": "open_field_no_hedges",
+      "markers": "stone_markers_boundary_stones",
+      "paths": "dirt_tracks_between_fields"
+    },
+    "ue5_implementation": {
+      "per_village": {
+        "wheat_fields": "3-6 fields of 100-200m diameter surrounding village",
+        "orchards": "2-3 small orchards near village",
+        "vineyards": "1-2 on slopes (if terrain allows)",
+        "gardens": "one per house, 10m x 15m average",
+        "fallow_fields": "1/3 of agricultural land, grass texture"
+      },
+      "visual_appearance_february": "bare_earth_winter_wheat_sprouting",
+      "note": "February 1916 = late winter, fields mostly bare or winter crops"
+    }
+  },
+
+  "village_life_elements": {
+    "animals": {
+      "per_household": {
+        "chickens": "5-15",
+        "pigs": "1-2",
+        "goats": "0-2"
+      },
+      "per_farm": {
+        "cows": "3-8",
+        "horses": "1-3 (draft horses)",
+        "sheep": "0-20"
+      },
+      "placement": "barns_stables_chicken_coops_in_rear_yards"
+    },
+    "village_features": {
+      "fountain": "communal_water_source_stone_basin",
+      "wash_house": "lavoir_for_laundry",
+      "cemetery": "cimetière_beside_church",
+      "calvary": "stone_crucifix_at_crossroads",
+      "bread_oven": "communal_stone_oven"
+    },
+    "roads_and_paths": {
+      "main_road": "dirt_packed_earth_some_cobbles",
+      "village_streets": "dirt_or_cobblestone",
+      "farm_tracks": "rutted_dirt_paths",
+      "field_paths": "narrow_walking_paths"
+    }
+  },
+
+  "seasonal_appearance": {
+    "february_1916": {
+      "fields": "bare_earth_or_winter_wheat_green_sprouts",
+      "trees": "bare_deciduous_leafless",
+      "weather": "cold_muddy_possible_snow",
+      "colors": "browns_greys_some_green"
+    },
+    "note_for_ue5": "Pre-bombardment = late winter appearance"
+  },
+
+  "summary": {
+    "total_left_bank_villages": 4,
+    "total_enhanced_destroyed_villages": 2,
+    "architectural_style": "lorraine_traditional",
+    "layout_type": "street-village (village-rue)",
+    "materials": "limestone and half-timber",
+    "agricultural_system": "open_field_three_crop_rotation"
+  }
+}

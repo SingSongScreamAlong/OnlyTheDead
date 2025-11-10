@@ -1,0 +1,26 @@
+ID,Name,Type,Ring,Latitude,Longitude,Elevation_m,UE5_X,UE5_Y,UE5_Z,Construction_Year,Strategic_Importance
+fort_belleville,Fort de Belleville,fort,inner_ring,49.1808,5.38395,240,156961.2,4723.87,4000.0,1874-1877,medium
+fort_st_michel,Fort de Saint-Michel,fort,inner_ring,49.15,5.42,345,-185904.4,266717.25,14500.0,1874-1879,medium
+fort_souville,Fort de Souville,fort,inner_ring,49.18795,5.43931,388,236555.0,407052.67,18800.0,1876-1879,Critical - furthest German advance
+fort_tavannes,Fort de Tavannes,fort,inner_ring,49.18133,5.46305,350,162861.16,579583.12,15000.0,1874-1877,medium
+fort_belrupt,Fort de Belrupt,fort,inner_ring,49.14,5.39,310,-297224.4,48692.25,11000.0,1876-1880,medium
+fort_haudainville,Fort de Haudainville,fort,inner_ring,49.15,5.45,295,-185904.4,484742.25,9500.0,1875-1879,medium
+fort_dugny,Fort de Dugny,fort,inner_ring,49.2,5.35,260,370695.6,-242007.75,6000.0,1876-1879,medium
+fort_regret,Fort du Regret,fort,inner_ring,49.195,5.32,275,315035.6,-460032.75,7500.0,1876-1880,medium
+fort_chaume,Fort de la Chaume,fort,inner_ring,49.18,5.3,285,148055.6,-605382.75,8500.0,1877-1880,medium
+fort_marre,Fort de la Marre,fort,inner_ring,49.21,5.48,305,482015.6,702767.25,10500.0,1876-1879,medium
+fort_moulainville,Fort de Moulainville,fort,outer_ring,49.16793,5.48454,362,13692.36,735761.7,16200.0,1885-1890,medium
+fort_vacherauville,Fort de Vacherauville,fort,outer_ring,49.20439,5.3418,268,419565.08,-301601.25,6800.0,1910-1914,medium
+fort_choisel,Fort de Choisel,fort,outer_ring,49.17831,5.30314,289,129242.52,-582562.8,8900.0,"1888 (as poste, upgraded to fort)",medium
+fort_bois_bourrus,Fort du Bois-Bourrus,fort,outer_ring,49.25,5.36,295,927295.6,-169332.75,9500.0,1880s,medium
+fort_rozelier,Fort de Rozelier,fort,outer_ring,49.24,5.52,320,815975.6,993467.25,12000.0,1880s,medium
+fort_landrecourt,Fort de Landrecourt,fort,outer_ring,49.27,5.44,285,1149935.6,412067.25,8500.0,1880s,medium
+ouvrage_froideterre,Ouvrage de Froideterre,ouvrage,intermediate_fortification,49.205,5.405,345,426355.6,157704.75,14500.0,1887-1888,Very high - held against attack
+ouvrage_thiaumont,Ouvrage de Thiaumont,ouvrage,intermediate_fortification,49.21,5.42,360,482015.6,266717.25,16000.0,1887-1888,Critical - gateway to Verdun
+ouvrage_la_laufee,Ouvrage de La Laufée,ouvrage,intermediate_fortification,49.215,5.355,310,537675.6,-205670.25,11000.0,1887-1888,medium
+ouvrage_deramee,Ouvrage de Déramée,ouvrage,intermediate_fortification,49.22,5.37,295,593335.6,-96657.75,9500.0,1887-1888,medium
+ouvrage_charny,Ouvrage de Charny,ouvrage,intermediate_fortification,49.205,5.345,280,426355.6,-278345.25,8000.0,1887-1888,medium
+ouvrage_st_symphorien,Ouvrage de Saint-Symphorien,ouvrage,intermediate_fortification,49.18,5.365,265,148055.6,-132995.25,6500.0,1887-1888,medium
+ouvrage_la_falouse,Ouvrage de La Falouse,ouvrage,intermediate_fortification,49.24,5.39,305,815975.6,48692.25,10500.0,1906-1908,medium
+ouvrage_hardaumont,Ouvrage de Hardaumont,ouvrage,infantry_ouvrage,49.225,5.445,335,648995.6,448404.75,13500.0,Late 1880s,medium
+ouvrage_bezonvaux,Ouvrage de Bezonvaux,ouvrage,infantry_ouvrage,49.238,5.468,285,793711.6,615557.25,8500.0,Late 1880s,medium

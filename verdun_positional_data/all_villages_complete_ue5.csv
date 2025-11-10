@@ -1,0 +1,5 @@
+ID,Name,Bank,Latitude,Longitude,Elevation_m,UE5_X,UE5_Y,UE5_Z,Population_1914,Houses,Status,Layout_Type
+village_avocourt,Avocourt,left_bank,49.2068,5.1424,245,446393.2,-1750740.75,4500.0,156,28,Heavily damaged but rebuilt,street-village
+village_chattancourt,Chattancourt,left_bank,49.219,5.266,252,582203.6,-852477.75,5200.0,168,30,Heavily damaged but rebuilt,street-village
+village_bras,Bras-sur-Meuse,left_bank,49.212,5.376,195,504279.6,-53052.75,-500.0,284,48,Damaged but rebuilt,street-village_with_river
+village_esnes,Esnes-en-Argonne,left_bank,49.2089,5.21222,238,469770.4,-1243323.9,3800.0,342,58,Heavily damaged but rebuilt,street-village
