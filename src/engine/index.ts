@@ -300,6 +300,39 @@ export {
 } from './scaleExamples';
 
 // ============================================================================
+// IMPACT-DRIVEN SYSTEM (Realistic: No Visible Projectiles)
+// ============================================================================
+
+export {
+  ImpactScheduler,
+  AudioDelayManager,
+  PlayerAwarenessSystem,
+  calculateSpeedOfSound,
+  getSpeedOfSound,
+  createVerdunImpactScheduler,
+  createAudioDelayManager,
+  createPlayerAwareness
+} from './impactDriven';
+
+export type {
+  ScheduledImpact,
+  ImpactResult,
+  ImpactThreat,
+  EnvironmentalConditions
+} from './impactDriven';
+
+export {
+  ImpactDrivenWeather,
+  ArtilleryGameIntegration,
+  createFebruary21ImpactWeather,
+  createVerdunImpactWeather
+} from './impactWeatherIntegration';
+
+export type {
+  // Impact weather types already exported above
+} from './impactWeatherIntegration';
+
+// ============================================================================
 // EXAMPLES
 // ============================================================================
 
