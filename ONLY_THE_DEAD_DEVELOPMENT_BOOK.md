@@ -1,9 +1,9 @@
 # ONLY THE DEAD - DEVELOPMENT BOOK
 **WWI Survival Game Design Bible**
 
-**Version**: 1.0.0
-**Last Updated**: November 6, 2025
-**Status**: In Development
+**Version**: 1.0.1
+**Last Updated**: November 10, 2025
+**Status**: In Development - Phase III Implementation Started
 
 ---
 
@@ -89,11 +89,14 @@ This Development Book works alongside the **Verdun Research Anthology**:
 24. [AI Behavior Specifications](#ai-behavior)
 25. [Dynamic Weather & Time System](#weather-system)
 
-### PART VII: TECHNICAL IMPLEMENTATION
-26. [Save System & Permadeath](#save-system)
-27. [Performance Targets](#performance)
-28. [Localization Plan](#localization)
-29. [Accessibility Features](#accessibility)
+### PART VII: TECHNICAL IMPLEMENTATION (**IN PROGRESS**)
+26. [Camera & Cover System](#camera-cover-system) ✅ **IMPLEMENTED**
+27. [Character & Movement System](#character-movement) ✅ **IMPLEMENTED**
+28. [Survival Meters Component](#survival-component) ✅ **IMPLEMENTED**
+29. [Save System & Permadeath](#save-system)
+30. [Performance Targets](#performance)
+31. [Localization Plan](#localization)
+32. [Accessibility Features](#accessibility)
 
 ### PART VIII: PRODUCTION
 30. [Asset Lists](#asset-lists)
@@ -3856,10 +3859,24 @@ This is the **LIVING GAME DESIGN DOCUMENT** for Only The Dead. It will be contin
   - Bombardment patterns (harassing, light, heavy, drumfire)
   - Shell recognition minigame
   - Small arms, grenades, melee combat
-- Technical specifications
+- Mission structure & rotation framework
+- **Technical Implementation (Phase III Started - Nov 2025)**
+  - **Camera & Cover System** (~3,500 lines C++, UE5)
+    - Hellblade 2-style hybrid camera (4 contextual modes)
+    - Shoulder-swap OTS camera with smooth blending
+    - Procedural artillery shelter detection (6 cover types, 60%-99% protection)
+    - Exposure heatmap for AI targeting (attracts artillery/snipers)
+    - Posture system (Standing/Crouching/Prone) integrated with stamina
+    - 7 survival meters component (all formulas implemented)
+    - Enhanced Input system (Keyboard/Mouse + Gamepad support)
+    - Accessibility features (fixed horizon, camera lag, set-piece toggles)
+  - **Documentation**: Complete integration guide + system summary
+  - See: [`CAMERA_COVER_IMPLEMENTATION_GUIDE.md`](CAMERA_COVER_IMPLEMENTATION_GUIDE.md)
 
 🔄 In Progress:
-- Mission designs (starting next)
+- Mission designs (4 detailed examples complete, 30+ planned)
+- Combat system implementation (weapons, aiming, melee)
+- AI & Artillery implementation (EQS targeting, shell impacts)
 
 ⏳ Planned:
 - Complete system specifications
