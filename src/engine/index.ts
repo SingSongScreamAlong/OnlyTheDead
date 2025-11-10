@@ -267,6 +267,39 @@ export type {
 } from './artilleryWeather';
 
 // ============================================================================
+// SCALABLE ARTILLERY SYSTEM (Massive Scale Support)
+// ============================================================================
+
+export {
+  ScalableArtilleryManager,
+  createScalableManager,
+  calculateScaleConfig,
+  getPerformanceRecommendations
+} from './artilleryScale';
+
+export type {
+  ScaleConfig
+} from './artilleryScale';
+
+export {
+  ScalableArtilleryWeather,
+  createFebruary21ScalableWeather,
+  createScalableVerdunWeather,
+  createOptimizedWeather
+} from './artilleryWeatherScalable';
+
+export {
+  scaleExample1_February21FullIntensity,
+  scaleExample2_PerformanceScaling,
+  scaleExample3_ZoneTransitions,
+  scaleExample4_StormScaling,
+  scaleExample5_MemoryEfficiency,
+  scaleExample6_RealTimeMonitoring,
+  runAllScaleExamples,
+  printPerformanceSpecs
+} from './scaleExamples';
+
+// ============================================================================
 // EXAMPLES
 // ============================================================================
 
