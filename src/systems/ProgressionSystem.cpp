@@ -445,3 +445,114 @@ void UProgressionSystem::CheckForAchievements()
         UnlockAchievement(TEXT("ach_all_missions"));
     }
 }
+
+// ============================================================================
+// PERSISTENT WORLD - EXPLORATION TRACKING
+// ============================================================================
+
+void UProgressionSystem::DiscoverRegion(FString RegionID)
+{
+    // TODO: Full implementation
+    // Add region to DiscoveredRegions if not already discovered
+    // Trigger UI notification "Discovered: Bois des Caures"
+    // Check exploration achievements
+    if (!DiscoveredRegions.Contains(RegionID))
+    {
+        DiscoveredRegions.Add(RegionID);
+        UE_LOG(LogTemp, Log, TEXT("ProgressionSystem: Discovered region %s (%d/%d)"),
+               *RegionID, DiscoveredRegions.Num(), 20); // Assuming 20 total regions
+
+        CheckExplorationAchievements();
+    }
+}
+
+bool UProgressionSystem::HasDiscoveredRegion(FString RegionID) const
+{
+    // TODO: Full implementation
+    return DiscoveredRegions.Contains(RegionID);
+}
+
+float UProgressionSystem::GetExplorationPercentage() const
+{
+    // TODO: Full implementation
+    // Total regions in Verdun: ~20-25 major regions
+    // Return percentage discovered
+    const int32 TotalRegions = 20;
+    return (float)DiscoveredRegions.Num() / (float)TotalRegions;
+}
+
+void UProgressionSystem::RecordTimeInRegion(FString RegionID, float GameHours)
+{
+    // TODO: Full implementation
+    // Add GameHours to TimeInRegion[RegionID]
+    // Track how long player spends in each region
+    // Used for statistics, achievements
+    float* CurrentTime = TimeInRegion.Find(RegionID);
+    if (CurrentTime)
+    {
+        *CurrentTime += GameHours;
+    }
+    else
+    {
+        TimeInRegion.Add(RegionID, GameHours);
+    }
+
+    // Update days survived in region
+    int32* CurrentDays = DaysSurvivedInRegion.Find(RegionID);
+    int32 DaysToAdd = FMath::FloorToInt(GameHours / 24.0f);
+    if (CurrentDays)
+    {
+        *CurrentDays += DaysToAdd;
+    }
+    else
+    {
+        DaysSurvivedInRegion.Add(RegionID, DaysToAdd);
+    }
+}
+
+FString UProgressionSystem::GetMostVistedRegion() const
+{
+    // TODO: Full implementation
+    // Find region with highest time in TimeInRegion map
+    FString MostVisited = "none";
+    float HighestTime = 0.0f;
+
+    for (const auto& Pair : TimeInRegion)
+    {
+        if (Pair.Value > HighestTime)
+        {
+            HighestTime = Pair.Value;
+            MostVisited = Pair.Key;
+        }
+    }
+
+    return MostVisited;
+}
+
+void UProgressionSystem::CheckExplorationAchievements()
+{
+    // TODO: Full implementation
+    // Check achievements related to exploration:
+    //   - Discovered 5 regions
+    //   - Discovered 10 regions
+    //   - Discovered all 20 regions
+    //   - Survived 7 days in all regions
+    //   - Visited front line regions (Bois des Caures, Fort Douaumont, etc.)
+
+    int32 RegionsDiscovered = DiscoveredRegions.Num();
+
+    if (RegionsDiscovered >= 5 && !IsAchievementUnlocked(TEXT("ach_explore_5")))
+    {
+        UnlockAchievement(TEXT("ach_explore_5"));
+    }
+
+    if (RegionsDiscovered >= 10 && !IsAchievementUnlocked(TEXT("ach_explore_10")))
+    {
+        UnlockAchievement(TEXT("ach_explore_10"));
+    }
+
+    if (RegionsDiscovered >= 20 && !IsAchievementUnlocked(TEXT("ach_explore_all")))
+    {
+        UnlockAchievement(TEXT("ach_explore_all"));
+    }
+}

@@ -515,3 +515,83 @@ bool AAIBehaviorController::IsInShelter() const
 
     return false; // Simplified
 }
+
+// ============================================================================
+// PERSISTENT WORLD - NAVIGATION
+// ============================================================================
+
+void UAIBehaviorSystem::NavigateToWorldLocation(FVector TargetLocation, float AcceptanceRadius)
+{
+    // TODO: Full implementation
+    // Use UE5 navigation system for long-distance pathfinding
+    // Handle navigation across streaming cells
+    // Account for craters, destroyed buildings, mud
+    UE_LOG(LogTemp, Log, TEXT("AIBehaviorSystem: Navigating to world location %s"), *TargetLocation.ToString());
+}
+
+void UAIBehaviorSystem::FollowPlayerAcrossRegions(AActor* PlayerActor)
+{
+    // TODO: Full implementation
+    // Follow player with regional awareness
+    // Update CurrentRegionID as player crosses region boundaries
+    // Maintain formation distance
+    if (PlayerActor)
+    {
+        NavigateToWorldLocation(PlayerActor->GetActorLocation(), 500.0f);
+    }
+}
+
+void UAIBehaviorSystem::SetPatrolRouteFromGPS(TArray<FVector2D> GPS_Waypoints)
+{
+    // TODO: Full implementation
+    // Convert GPS coordinates to world space using MissionSystem::ConvertGPSToWorldSpace
+    // Set PatrolRoute array
+    // Start patrolling waypoints
+    PatrolRoute.Empty();
+    for (const FVector2D& GPS : GPS_Waypoints)
+    {
+        FVector WorldPos = FVector(GPS.X * 100000.0f, GPS.Y * 100000.0f, 0.0f); // Placeholder conversion
+        PatrolRoute.Add(WorldPos);
+    }
+    UE_LOG(LogTemp, Log, TEXT("AIBehaviorSystem: Set patrol route with %d waypoints"), PatrolRoute.Num());
+}
+
+FVector UAIBehaviorSystem::FindNearestCraterCover(FVector FromLocation, float SearchRadius) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for craters near FromLocation
+    // Find crater within SearchRadius
+    // Return crater center position (provides cover from artillery)
+    return FVector::ZeroVector;
+}
+
+bool UAIBehaviorSystem::IsLocationNavigable(FVector Location) const
+{
+    // TODO: Full implementation
+    // Check if location is in crater (may be navigable at edges)
+    // Check if location is in destroyed building rubble
+    // Check navigation mesh validity
+    // Query mud level from WeatherSystem (high mud = not navigable)
+    return true; // Placeholder: assume navigable
+}
+
+float UAIBehaviorSystem::GetTerrainDegradationAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for region degradation at Location
+    // Return degradation level (0.0 = pristine, 1.0 = Zone Rouge)
+    // Affects AI movement speed: pristine = 1.0x, devastated = 0.5x
+    return 0.0f;
+}
+
+void UAIBehaviorSystem::UpdateRegionAwareness()
+{
+    // TODO: Full implementation
+    // Query current region from EnvironmentDegradationSystem
+    // Update CurrentRegionID
+    // Adapt AI behavior based on region state:
+    //   - Pristine regions: normal behavior
+    //   - Devastated regions: more cautious, seek crater cover more often
+    //   - Zone Rouge: extreme caution, hallucinations possible
+    UE_LOG(LogTemp, Log, TEXT("AIBehaviorSystem: Updating region awareness"));
+}

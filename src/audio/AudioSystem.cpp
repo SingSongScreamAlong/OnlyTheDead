@@ -572,3 +572,91 @@ UAudioComponent* UAudioSystem::CreateAudioComponent(FVector Location, bool b3D)
 
     return nullptr;
 }
+
+// ============================================================================
+// PERSISTENT WORLD - TERRAIN OCCLUSION & REGIONAL AUDIO
+// ============================================================================
+
+bool UAudioSystem::IsTerrainOccluding(FVector SoundLocation, FVector ListenerLocation) const
+{
+    // TODO: Full implementation
+    // Perform line trace from SoundLocation to ListenerLocation
+    // Check if terrain or large objects block line of sight
+    // Return true if occluded (muffles sound)
+    return false;
+}
+
+float UAudioSystem::CalculateTerrainOcclusion(FVector SoundLocation, FVector ListenerLocation) const
+{
+    // TODO: Full implementation
+    // Perform line trace to check occlusion
+    // If occluded by:
+    //   - Terrain/hillside: 0.7 occlusion (70% volume reduction)
+    //   - Buildings: 0.8 occlusion
+    //   - Multiple obstacles: 0.9 occlusion
+    // Apply low-pass filter (muffle highs) when occluded
+
+    if (IsTerrainOccluding(SoundLocation, ListenerLocation))
+    {
+        return 0.7f; // 70% occluded
+    }
+    return 0.0f; // Not occluded
+}
+
+FString UAudioSystem::GetRegionalAmbientSoundscape(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for region state at Location
+    // Return appropriate soundscape based on degradation:
+    //   - Pristine: "ambient_forest" (birds, wind through trees, distant sounds)
+    //   - EarlyWar: "ambient_frontline" (distant artillery, occasional shots)
+    //   - Deteriorating: "ambient_battlefield" (constant artillery rumble, no birds)
+    //   - Devastated: "ambient_hellscape" (constant explosions, screams, fire)
+    //   - Apocalyptic: "ambient_zone_rouge" (overwhelming artillery, whistling wind, nothing alive)
+    //   - Zone Rouge: "ambient_silence" (dead silence between barrages, oppressive)
+    return "ambient_frontline";
+}
+
+void UAudioSystem::PlayDistantRegionArtillery(FVector RegionCenter, float DistanceKM)
+{
+    // TODO: Full implementation
+    // Play distant artillery sounds from neighboring regions
+    // Volume based on distance (nearby regions louder)
+    // Apply occlusion if terrain blocks sound path
+    // Use low-pass filter for distant sounds
+
+    float VolumeFalloff = FMath::Clamp(1.0f - (DistanceKM / 20.0f), 0.0f, 1.0f);
+
+    UE_LOG(LogTemp, Log, TEXT("AudioSystem: Playing distant artillery from %.1fkm away (volume %.2f)"),
+           DistanceKM, VolumeFalloff);
+
+    // Would play audio at RegionCenter with volume modulation
+}
+
+void UAudioSystem::GetEnvironmentReverbSettings(FVector Location, float& OutReverbAmount, float& OutDecayTime) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for region state
+    // Set reverb based on environment:
+    //   - Pristine forest: Medium reverb, 1.0s decay (trees absorb sound)
+    //   - Open battlefield: No reverb, 0.3s decay
+    //   - Craters: Short reverb, 0.8s decay (bowl shape reflects sound)
+    //   - Trenches: Strong reverb, 2.0s decay (narrow corridors)
+    //   - Destroyed buildings: Medium reverb, 1.5s decay
+
+    OutReverbAmount = 0.3f;
+    OutDecayTime = 1.0f;
+}
+
+void UAudioSystem::UpdateRegionalAmbience(FString RegionID, float DegradationLevel)
+{
+    // TODO: Full implementation
+    // Update ambient soundscape as region degrades
+    // Transition from forest sounds → battlefield sounds → hellscape
+    // Remove bird sounds as trees are destroyed
+    // Increase artillery rumble as degradation increases
+    // Add gas hissing sounds in contaminated zones
+
+    UE_LOG(LogTemp, Log, TEXT("AudioSystem: Updating ambient audio for region %s (degradation %.2f)"),
+           *RegionID, DegradationLevel);
+}

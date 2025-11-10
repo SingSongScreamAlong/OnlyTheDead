@@ -778,3 +778,107 @@ void UArtillerySystem::FindEnvironmentDegradationSystem()
         UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Successfully linked to EnvironmentDegradationSystem"));
     }
 }
+
+// ============================================================================
+// PERSISTENT WORLD - REGIONAL BOMBARDMENT TRACKING
+// ============================================================================
+
+void UArtillerySystem::FireShellAtGPS(EShellType ShellType, FVector2D GPS_Target, FVector2D GPS_Origin)
+{
+    // TODO: Full implementation
+    // Convert GPS coordinates to world space using MissionSystem::ConvertGPSToWorldSpace
+    // Fire shell from origin to target
+    // This enables historical bombardments using real GPS coordinates
+
+    // Placeholder: convert GPS to world space and call FireShell
+    FVector TargetWorld = FVector(GPS_Target.X * 100000.0f, GPS_Target.Y * 100000.0f, 0.0f);
+    FVector OriginWorld = FVector(GPS_Origin.X * 100000.0f, GPS_Origin.Y * 100000.0f, 0.0f);
+
+    FireShell(ShellType, TargetWorld, OriginWorld);
+
+    UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Fired %s shell from GPS (%.4f, %.4f) to (%.4f, %.4f)"),
+           *UEnum::GetValueAsString(ShellType), GPS_Origin.X, GPS_Origin.Y, GPS_Target.X, GPS_Target.Y);
+}
+
+void UArtillerySystem::StartRegionalBombardment(FString RegionID, EBombardmentIntensity Intensity, float DurationSeconds)
+{
+    // TODO: Full implementation
+    // Set bombardment intensity for specific region
+    // Track region-specific bombardment state
+    // This allows different regions to have different bombardment intensities simultaneously
+
+    RegionalBombardmentIntensity.Add(RegionID, Intensity);
+
+    UE_LOG(LogTemp, Warning, TEXT("ArtillerySystem: Starting %s bombardment in region %s for %.1f seconds"),
+           *UEnum::GetValueAsString(Intensity), *RegionID, DurationSeconds);
+
+    // Start bombardment (existing system)
+    StartBombardment(Intensity, DurationSeconds);
+}
+
+int32 UArtillerySystem::GetShellsFiredInRegion(FString RegionID) const
+{
+    // TODO: Full implementation
+    // Query ShellsPerRegion map
+    const int32* Found = ShellsPerRegion.Find(RegionID);
+    return Found ? *Found : 0;
+}
+
+EBombardmentIntensity UArtillerySystem::GetBombardmentIntensityAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem to get region ID at location
+    // Return regional bombardment intensity
+    // For now, return current global intensity
+    return CurrentIntensity;
+}
+
+bool UArtillerySystem::IsLocationUnderBombardment(FVector Location) const
+{
+    // TODO: Full implementation
+    // Check if location is in active bombardment zone
+    // Query regional bombardment states
+    // Check for active strikes near location
+    return (CurrentIntensity != EBombardmentIntensity::None);
+}
+
+FVector UArtillerySystem::GetNearestBombardmentZone(FVector FromLocation, float& OutDistance) const
+{
+    // TODO: Full implementation
+    // Find nearest region under bombardment
+    // Calculate distance to that region's center
+    // Return region center position
+
+    OutDistance = 10000.0f; // Placeholder: 10km away
+    return FVector::ZeroVector;
+}
+
+void UArtillerySystem::RecordShellImpactInRegion(FVector Location, EShellType ShellType)
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem to get region ID at Location
+    // Increment ShellsPerRegion[RegionID]
+    // Notify EnvironmentDegradationSystem of shell impact for degradation calculations
+
+    if (EnvironmentDegradationSystem)
+    {
+        // Call EnvironmentDegradationSystem->ProcessShellImpact(Location, ShellType)
+        UE_LOG(LogTemp, Log, TEXT("ArtillerySystem: Recorded shell impact at (%s)"),
+               *Location.ToString());
+    }
+
+    // Placeholder: increment global counter
+    // In full implementation, would query region ID and increment ShellsPerRegion[RegionID]
+}
+
+int32 UArtillerySystem::GetTotalShellsFired() const
+{
+    // TODO: Full implementation
+    // Sum all values in ShellsPerRegion map
+    int32 Total = 0;
+    for (const auto& Pair : ShellsPerRegion)
+    {
+        Total += Pair.Value;
+    }
+    return Total;
+}

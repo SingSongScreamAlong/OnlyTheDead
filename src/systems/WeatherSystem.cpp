@@ -498,3 +498,61 @@ FWeatherState UWeatherSystem::GetDefaultWeatherForMonth(int32 Month) const
 
     return Weather;
 }
+
+// ============================================================================
+// PERSISTENT WORLD - REGIONAL WEATHER
+// ============================================================================
+
+FWeatherState UWeatherSystem::GetWeatherAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem to get region ID at Location
+    // Look up regional weather in RegionalWeather map
+    // If no regional weather, return current global weather
+    return CurrentWeather;
+}
+
+float UWeatherSystem::GetMudLevelAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query region ID from EnvironmentDegradationSystem
+    // Look up mud level in RegionalMudLevels map
+    // Mud level affected by:
+    //   - Precipitation (rain/snow increases mud)
+    //   - Crater density (more craters = worse drainage = more mud)
+    //   - Region degradation (destroyed terrain holds water)
+    return 0.0f;
+}
+
+void UWeatherSystem::SetRegionalWeather(FString RegionID, FWeatherState Weather)
+{
+    // TODO: Full implementation
+    // Set weather for specific region
+    // This allows weather fronts, local storms, regional variations
+    RegionalWeather.Add(RegionID, Weather);
+    UE_LOG(LogTemp, Log, TEXT("WeatherSystem: Set regional weather for %s"), *RegionID);
+}
+
+void UWeatherSystem::UpdateRegionalWeather(float DeltaTime)
+{
+    // TODO: Full implementation
+    // Update weather for each region independently
+    // Simulate weather fronts moving across battlefield
+    // Update mud levels based on precipitation
+    for (auto& RegionPair : RegionalWeather)
+    {
+        FString RegionID = RegionPair.Key;
+        FWeatherState& Weather = RegionPair.Value;
+
+        // Update weather progression (simplified)
+        // In full implementation, would simulate weather systems, fronts, etc.
+    }
+}
+
+FString UWeatherSystem::GetRegionIDAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Delegate to EnvironmentDegradationSystem->GetRegionIDAtLocation(Location)
+    // This requires access to EnvironmentDegradationSystem
+    return "default_region";
+}

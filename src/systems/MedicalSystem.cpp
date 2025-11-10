@@ -689,3 +689,67 @@ float UMedicalSystem::GetTreatmentSuccessRate(EInjurySeverity Severity, bool bIs
 
     return BaseSuccessRate;
 }
+
+// ============================================================================
+// PERSISTENT WORLD - FIELD HOSPITALS
+// ============================================================================
+
+void UMedicalSystem::InitializeFieldHospitals()
+{
+    // TODO: Full implementation
+    // Load hospital data from locations_database.csv or data table
+    // Create FFieldHospital entries for each historical medical facility
+    // Convert GPS coordinates to world space
+    // Examples:
+    //   - Bras-sur-Meuse: Base Hospital (10km from front)
+    //   - Verdun City: Field Hospital (5km from front)
+    //   - Souville Fort: Casualty Clearing Station (2km from front)
+    //   - Front line: Aid Stations (0.5km from front)
+    UE_LOG(LogTemp, Log, TEXT("MedicalSystem: Initializing field hospitals"));
+}
+
+FFieldHospital UMedicalSystem::GetNearestHospital(FVector PlayerLocation, EHospitalType PreferredType) const
+{
+    // TODO: Full implementation
+    // Search all field hospitals
+    // Find nearest matching PreferredType
+    // Return hospital info
+    FFieldHospital NearestHospital;
+    NearestHospital.HospitalID = "default_hospital";
+    NearestHospital.HospitalType = EHospitalType::FieldHospital;
+    NearestHospital.WorldLocation = FVector::ZeroVector;
+    NearestHospital.TreatmentQuality = 0.7f;
+    return NearestHospital;
+}
+
+bool UMedicalSystem::IsNearHospital(FVector PlayerLocation, float& OutDistance, FString& OutHospitalID) const
+{
+    // TODO: Full implementation
+    // Check distance to all field hospitals
+    // Return true if within interaction range (100m)
+    OutDistance = 10000.0f;
+    OutHospitalID = "none";
+    return false;
+}
+
+bool UMedicalSystem::SeekTreatmentAtHospital(const FString& HospitalID)
+{
+    // TODO: Full implementation
+    // Query hospital status
+    // Check if hospital is operational (not destroyed, captured, or evacuating)
+    // Apply treatment based on hospital type and treatment quality
+    // Better hospitals = better treatment success rates
+    UE_LOG(LogTemp, Log, TEXT("MedicalSystem: Seeking treatment at hospital %s"), *HospitalID);
+    return true;
+}
+
+float UMedicalSystem::GetTreatmentQualityAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Find nearest hospital
+    // Return treatment quality based on:
+    //   - Hospital type (Aid Station = 0.3, CCS = 0.5, Field = 0.7, Base = 0.9)
+    //   - Distance to hospital (closer = better)
+    //   - Hospital status (operational vs overwhelmed)
+    return 0.5f;
+}

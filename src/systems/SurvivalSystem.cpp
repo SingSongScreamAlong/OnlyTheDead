@@ -425,3 +425,107 @@ void USurvivalSystem::UpdateMeterThresholds()
         MeterPair.Value.bIsCritical = (MeterPair.Value.CurrentValue < 25.0f);
     }
 }
+
+// ============================================================================
+// PERSISTENT WORLD - ENVIRONMENTAL EFFECTS
+// ============================================================================
+
+void USurvivalSystem::UpdateEnvironmentalEffects(FVector CurrentLocation, float DeltaTime)
+{
+    // TODO: Full implementation
+    // Should query EnvironmentDegradationSystem for region state at CurrentLocation
+    // Apply environmental effects based on degradation level, weather, etc.
+
+    float DiseaseRiskMultiplier = GetDiseaseRiskByLocation(CurrentLocation);
+    float ShelterQuality = GetShelterQualityAtLocation(CurrentLocation);
+    float MoralePenalty = GetMoralePenaltyFromDegradation(CurrentLocation);
+
+    // Apply effects to survival meters based on location
+    if (DiseaseRiskMultiplier > 1.0f)
+    {
+        ModifyMeter(ESurvivalMeterType::Hygiene, -0.5f * DeltaTime * DiseaseRiskMultiplier);
+    }
+
+    if (MoralePenalty > 0.0f)
+    {
+        ModifyMeter(ESurvivalMeterType::Morale, -MoralePenalty * DeltaTime);
+    }
+}
+
+bool USurvivalSystem::IsWaterContaminatedAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for crater density, degradation level
+    // Check for nearby corpses, gas contamination, etc.
+    // For now, return contaminated if in heavily degraded areas
+    return false;
+}
+
+float USurvivalSystem::GetDiseaseRiskByLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for region degradation level
+    // Higher degradation = more corpses, stagnant water, rats = higher disease risk
+    // Pristine (0.0) = 1.0x risk, Devastated (0.8) = 3.0x risk, Zone Rouge (1.0) = 5.0x risk
+    return 1.0f;
+}
+
+float USurvivalSystem::GetShelterQualityAtLocation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Check for intact buildings (1.0), damaged buildings (0.5), craters (0.3), open ground (0.0)
+    // Query EnvironmentDegradationSystem for building status at location
+    return 0.5f;
+}
+
+float USurvivalSystem::GetMoralePenaltyFromDegradation(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query EnvironmentDegradationSystem for region state
+    // Witnessing apocalyptic devastation reduces morale
+    // Pristine = 0.0, EarlyWar = -0.5, Devastated = -2.0, Zone Rouge = -5.0 per hour
+    return 0.0f;
+}
+
+bool USurvivalSystem::HasAdequateCover(FVector Location, float& OutCoverQuality) const
+{
+    // TODO: Full implementation
+    // Check for nearby craters, buildings, trenches
+    // Query EnvironmentDegradationSystem for cover locations
+    OutCoverQuality = GetShelterQualityAtLocation(Location);
+    return OutCoverQuality > 0.3f;
+}
+
+float USurvivalSystem::GetTemperatureModifier(FVector Location, bool bIsSheltered) const
+{
+    // TODO: Full implementation
+    // Query WeatherSystem for regional temperature
+    // Apply shelter bonus/penalty based on location
+    // Intact building: +5°C, Crater: -2°C, Open: 0°C
+    float BaseModifier = 0.0f;
+    if (bIsSheltered)
+    {
+        float ShelterQuality = GetShelterQualityAtLocation(Location);
+        BaseModifier = ShelterQuality * 5.0f; // Up to +5°C in intact building
+    }
+    return BaseModifier;
+}
+
+bool USurvivalSystem::IsLocationContaminated(FVector Location) const
+{
+    // TODO: Full implementation
+    // Check for gas contamination zones
+    // Query EnvironmentDegradationSystem for chemical residue
+    // Check for active gas clouds from gas shells
+    return false;
+}
+
+float USurvivalSystem::GetRegionalHygienePenalty(FVector Location) const
+{
+    // TODO: Full implementation
+    // Query WeatherSystem for mud level at location
+    // Higher mud = faster hygiene degradation
+    // Query EnvironmentDegradationSystem for region state
+    // Devastated areas have more filth, rats, corpses = worse hygiene
+    return 1.0f; // 1.0x = normal degradation rate
+}
