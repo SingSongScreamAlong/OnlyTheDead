@@ -201,4 +201,49 @@ protected:
     class UEnvironmentDegradationSystem* EnvironmentDegradationSystem;
 
     void FindEnvironmentDegradationSystem();
+
+public:
+    // ========================================================================
+    // PERSISTENT WORLD - REGIONAL BOMBARDMENT TRACKING
+    // ========================================================================
+
+    /** Shells fired per region (for historical accuracy and degradation) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Artillery|PersistentWorld")
+    TMap<FString, int32> ShellsPerRegion;
+
+    /** Current bombardment intensity per region */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Artillery|PersistentWorld")
+    TMap<FString, EBombardmentIntensity> RegionalBombardmentIntensity;
+
+    /** Fire shell at GPS coordinates (for historical bombardments) */
+    UFUNCTION(BlueprintCallable, Category = "Artillery|PersistentWorld")
+    void FireShellAtGPS(EShellType ShellType, FVector2D GPS_Target, FVector2D GPS_Origin);
+
+    /** Start regional bombardment (affects specific battlefield region) */
+    UFUNCTION(BlueprintCallable, Category = "Artillery|PersistentWorld")
+    void StartRegionalBombardment(FString RegionID, EBombardmentIntensity Intensity, float DurationSeconds);
+
+    /** Get shells fired in region */
+    UFUNCTION(BlueprintPure, Category = "Artillery|PersistentWorld")
+    int32 GetShellsFiredInRegion(FString RegionID) const;
+
+    /** Get current bombardment intensity at location */
+    UFUNCTION(BlueprintPure, Category = "Artillery|PersistentWorld")
+    EBombardmentIntensity GetBombardmentIntensityAtLocation(FVector Location) const;
+
+    /** Check if location is currently under bombardment */
+    UFUNCTION(BlueprintPure, Category = "Artillery|PersistentWorld")
+    bool IsLocationUnderBombardment(FVector Location) const;
+
+    /** Get nearest active bombardment zone */
+    UFUNCTION(BlueprintPure, Category = "Artillery|PersistentWorld")
+    FVector GetNearestBombardmentZone(FVector FromLocation, float& OutDistance) const;
+
+    /** Record shell impact in region (for persistent world tracking) */
+    UFUNCTION(BlueprintCallable, Category = "Artillery|PersistentWorld")
+    void RecordShellImpactInRegion(FVector Location, EShellType ShellType);
+
+    /** Get total shells fired across entire battlefield */
+    UFUNCTION(BlueprintPure, Category = "Artillery|PersistentWorld")
+    int32 GetTotalShellsFired() const;
 };

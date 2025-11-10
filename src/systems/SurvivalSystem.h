@@ -199,6 +199,46 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Survival")
     void ApplyCascadingEffects(float DeltaTime);
 
+    // ========================================================================
+    // PERSISTENT WORLD - ENVIRONMENTAL EFFECTS
+    // ========================================================================
+
+    /** Update survival meters based on current location's environmental state */
+    UFUNCTION(BlueprintCallable, Category = "Survival|PersistentWorld")
+    void UpdateEnvironmentalEffects(FVector CurrentLocation, float DeltaTime);
+
+    /** Check if water source at location is contaminated (shell impacts, corpses) */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    bool IsWaterContaminatedAtLocation(FVector Location) const;
+
+    /** Get disease risk multiplier based on region degradation */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    float GetDiseaseRiskByLocation(FVector Location) const;
+
+    /** Get shelter quality at location (intact buildings vs craters vs open) */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    float GetShelterQualityAtLocation(FVector Location) const;
+
+    /** Calculate morale penalty from witnessing degraded environment */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    float GetMoralePenaltyFromDegradation(FVector Location) const;
+
+    /** Check if location has sufficient cover from environmental hazards */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    bool HasAdequateCover(FVector Location, float& OutCoverQuality) const;
+
+    /** Get temperature modifier based on shelter and region */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    float GetTemperatureModifier(FVector Location, bool bIsSheltered) const;
+
+    /** Check if location is in contaminated zone (gas, chemical residue) */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    bool IsLocationContaminated(FVector Location) const;
+
+    /** Get regional hygiene penalty (mud level affects hygiene degradation) */
+    UFUNCTION(BlueprintPure, Category = "Survival|PersistentWorld")
+    float GetRegionalHygienePenalty(FVector Location) const;
+
 protected:
     // ========================================================================
     // INTERNAL STATE
