@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "tile_id": "N13",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "status": "pending",
+  "inputs": {
+    "trench_curves": "data/incoming/vectors/N13_trenches.geojson",
+    "dem": "data/incoming/rasters/N13_dem.tif",
+    "shell_density": "data/incoming/rasters/N13_shells.tif",
+    "building_footprints": "data/incoming/footprints/N13_buildings.geojson",
+    "debris_catalog": "data/incoming/debris_catalog.csv"
+  },
+  "outputs": {
+    "terrain_mesh": "data/staging/meshes/N13_terrain.fbx",
+    "trench_mesh": "data/staging/meshes/N13_trenches.fbx",
+    "building_mesh": "data/staging/meshes/N13_buildings.fbx",
+    "heightmap": "data/staging/heightmaps/N13_height.png",
+    "weight_maps_dir": "data/staging/weightmaps/N13/",
+    "instance_catalog": "data/staging/catalogs/N13_instances.csv",
+    "metadata": "data/staging/meshes/N13_metadata.json"
+  },
+  "parameters": {
+    "season": "spring",
+    "crater_density_scale": 1.0,
+    "debris_density_scale": 1.0,
+    "trench_width_override": null,
+    "heavy_shelling": false,
+    "seed": 42
+  },
+  "hdas_to_run": [
+    "ShellField",
+    "TrenchBuilder",
+    "DebrisScatter",
+    "BuildingRuinizer"
+  ],
+  "qc_checks": {
+    "max_triangles": 5000000,
+    "required_layers": ["height", "mud", "water", "wood"],
+    "min_file_size_mb": 0.1
+  },
+  "metadata": {
+    "created_by": "pipeline_v1.0",
+    "historical_date": "1916-02-21",
+    "location": "Verdun, France",
+    "battle": "Battle of Verdun",
+    "notes": "Example tile for pipeline testing"
+  }
+}

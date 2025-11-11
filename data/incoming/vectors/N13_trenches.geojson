@@ -1,0 +1,73 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::32631"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [630100.0, 5485200.0, 0],
+          [630150.0, 5485220.0, 0],
+          [630200.0, 5485240.0, 0],
+          [630250.0, 5485260.0, 0],
+          [630300.0, 5485280.0, 0]
+        ]
+      },
+      "properties": {
+        "trench_id": "FR_001",
+        "width": 1.8,
+        "depth": 2.5,
+        "side": "french",
+        "revetment_type": "sandbag",
+        "has_duckboards": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [630120.0, 5485180.0, 0],
+          [630170.0, 5485195.0, 0],
+          [630220.0, 5485210.0, 0],
+          [630270.0, 5485225.0, 0]
+        ]
+      },
+      "properties": {
+        "trench_id": "FR_002",
+        "width": 2.0,
+        "depth": 2.8,
+        "side": "french",
+        "revetment_type": "wood",
+        "has_duckboards": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [630400.0, 5485300.0, 0],
+          [630450.0, 5485310.0, 0],
+          [630500.0, 5485320.0, 0],
+          [630550.0, 5485330.0, 0],
+          [630600.0, 5485340.0, 0]
+        ]
+      },
+      "properties": {
+        "trench_id": "GER_001",
+        "width": 2.2,
+        "depth": 3.0,
+        "side": "german",
+        "revetment_type": "gabion",
+        "has_duckboards": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# Verdun Pipeline Python Dependencies
+# =====================================
+
+# CLI framework
+click>=8.0.0
+
+# Configuration
+PyYAML>=6.0
+
+# Optional: for enhanced file watching
+# watchdog>=2.1.0
+
+# Optional: for advanced CSV/data handling
+# pandas>=1.3.0
+
+# Note: Houdini Python (hython) and UE5 Python have their own
+# embedded interpreters with some packages pre-installed.
+# These requirements are primarily for the orchestrator scripts.

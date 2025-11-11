@@ -1,0 +1,107 @@
+# Verdun Pipeline Configuration
+# =============================
+
+version: "1.0"
+
+# Paths (relative to repo root)
+paths:
+  houdini_root: "houdini"
+  hdas: "houdini/hdas"
+  hip_files: "houdini/hip"
+  ue_root: "ue"
+  data_root: "data"
+  incoming: "data/incoming"
+  staging: "data/staging"
+  published: "data/published"
+  logs: "orchestrator/logs"
+
+# Houdini configuration
+houdini:
+  # Path to Houdini installation (set via env var or override here)
+  houdini_bin: null  # Falls back to $HFS/bin
+  hython: "hython"
+  hbatch: "hbatch"
+
+  # PDG configuration
+  pdg:
+    top_network: "/obj/VERDUN_TOP"
+    scheduler: "localscheduler"
+    max_processors: 8
+    work_item_dir: "data/staging/pdg_work"
+
+  # HDA settings
+  hdas:
+    trench_builder: "TrenchBuilder.hda"
+    shell_field: "ShellField.hda"
+    debris_scatter: "DebrisScatter.hda"
+    building_ruinizer: "BuildingRuinizer.hda"
+
+# Unreal Engine configuration
+unreal:
+  # Path to UE5 editor (set via env var UE5_EDITOR_PATH or override here)
+  editor_path: null  # e.g., "C:/Program Files/Epic Games/UE_5.3/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
+  project_path: null  # e.g., "C:/Projects/VerdunProject/VerdunProject.uproject"
+
+  # Import settings
+  import:
+    base_path: "/Game/Verdun/Tiles"
+    enable_nanite: true
+    collision_preset: "BlockAllDynamic"
+    master_material: "/Game/Verdun/Materials/M_TerrainMaster"
+
+  # HLOD settings
+  hlod:
+    enabled: true
+    auto_rebuild: true
+    cluster_radius: 10000
+
+# Tile configuration
+tiles:
+  grid_size: 1000.0  # meters per tile
+  overlap: 50.0      # meters of overlap between tiles
+  coordinate_system: "UTM_31N"  # For Verdun region
+
+# Procedural generation settings
+generation:
+  # Trench settings
+  trenches:
+    default_width: 1.8
+    default_depth: 2.5
+    revetment_styles: ["sandbag", "wood", "gabion", "earth"]
+    spoil_height: 0.8
+    duckboard_spacing: 2.0
+
+  # Shell crater settings
+  craters:
+    min_radius: 2.0
+    max_radius: 15.0
+    density_scale: 1.0
+    water_fill_threshold: 0.3  # Terrain depression threshold for water
+
+  # Debris settings
+  debris:
+    density_scale: 1.0
+    min_spacing: 0.5
+    catalog: "data/incoming/debris_catalog.csv"
+
+  # Building damage settings
+  buildings:
+    damage_levels: ["light", "moderate", "heavy", "destroyed"]
+    rubble_scale: 1.0
+
+# QC thresholds
+qc:
+  max_triangles_per_tile: 5000000
+  thumbnail_size: 512
+  required_layers: ["height", "mud", "water", "wood"]
+  min_file_size_mb: 0.1
+
+# Job ticket schema version
+job_ticket_version: "1.0"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+  file_max_bytes: 10485760  # 10MB
+  backup_count: 5

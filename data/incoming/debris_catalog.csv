@@ -1,0 +1,21 @@
+asset_path,weight,min_scale,max_scale,tags,description
+/Game/Verdun/Props/Debris/WireReel,1.5,0.8,1.2,"metal industrial",Wire cable reel
+/Game/Verdun/Props/Debris/Sandbag_Torn,3.0,0.9,1.1,"sandbag common",Torn sandbag
+/Game/Verdun/Props/Debris/Sandbag_Stack,2.0,1.0,1.0,"sandbag common",Stack of sandbags
+/Game/Verdun/Props/Debris/WoodPlank_01,4.0,0.8,1.5,"wood common",Broken wood plank
+/Game/Verdun/Props/Debris/WoodPlank_02,4.0,0.7,1.4,"wood common",Splintered plank
+/Game/Verdun/Props/Debris/AmmoCrate_Broken,1.0,0.9,1.1,"wood metal crate",Broken ammunition crate
+/Game/Verdun/Props/Debris/Helmet_French,0.5,0.95,1.05,"metal french",French Adrian helmet
+/Game/Verdun/Props/Debris/Helmet_German,0.5,0.95,1.05,"metal german",German Stahlhelm
+/Game/Verdun/Props/Debris/Barbed_Wire_Coil,2.0,0.9,1.3,"metal wire",Coiled barbed wire
+/Game/Verdun/Props/Debris/Shell_Casing_75mm,1.5,1.0,1.0,"metal ordnance",75mm shell casing
+/Game/Verdun/Props/Debris/Shell_Casing_155mm,0.8,1.0,1.0,"metal ordnance",155mm shell casing
+/Game/Verdun/Props/Debris/Gas_Mask,0.3,0.95,1.05,"rubber equipment",Gas mask
+/Game/Verdun/Props/Debris/Rifle_Broken,0.4,1.0,1.0,"metal wood weapon",Broken rifle
+/Game/Verdun/Props/Debris/Bucket_Dented,1.2,0.9,1.1,"metal common",Dented metal bucket
+/Game/Verdun/Props/Debris/Shovel,0.8,0.95,1.05,"metal wood tool",Entrenching shovel
+/Game/Verdun/Props/Debris/Bottle_Glass,2.5,0.9,1.1,"glass common",Broken glass bottle
+/Game/Verdun/Props/Debris/Tin_Can,2.0,0.8,1.2,"metal common",Tin food can
+/Game/Verdun/Props/Debris/Brick_Rubble,5.0,0.7,1.5,"brick building",Brick fragments
+/Game/Verdun/Props/Debris/Concrete_Chunk,3.0,0.8,2.0,"concrete building",Concrete debris
+/Game/Verdun/Props/Debris/Roof_Tile,2.5,0.9,1.1,"clay building",Broken roof tile

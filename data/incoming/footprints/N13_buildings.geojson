@@ -1,0 +1,71 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::32631"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [630350.0, 5485250.0, 0],
+          [630360.0, 5485250.0, 0],
+          [630360.0, 5485260.0, 0],
+          [630350.0, 5485260.0, 0],
+          [630350.0, 5485250.0, 0]
+        ]]
+      },
+      "properties": {
+        "building_id": "B001",
+        "building_type": "house",
+        "floor_count": 2,
+        "damage_level": 0.7,
+        "hit_direction": [1, 0, 0]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [630380.0, 5485270.0, 0],
+          [630395.0, 5485270.0, 0],
+          [630395.0, 5485285.0, 0],
+          [630380.0, 5485285.0, 0],
+          [630380.0, 5485270.0, 0]
+        ]]
+      },
+      "properties": {
+        "building_id": "B002",
+        "building_type": "barn",
+        "floor_count": 1,
+        "damage_level": 0.9,
+        "hit_direction": [-1, 0.5, 0]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [630420.0, 5485220.0, 0],
+          [630435.0, 5485220.0, 0],
+          [630435.0, 5485240.0, 0],
+          [630420.0, 5485240.0, 0],
+          [630420.0, 5485220.0, 0]
+        ]]
+      },
+      "properties": {
+        "building_id": "B003",
+        "building_type": "church",
+        "floor_count": 1,
+        "damage_level": 0.5,
+        "hit_direction": [0, 1, 0]
+      }
+    }
+  ]
+}
