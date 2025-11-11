@@ -1,0 +1,13 @@
+PLACEHOLDER FOR PLUGIN ICON (128x128 PNG)
+
+To create the actual icon:
+1. Create a 128x128 PNG image
+2. Icon should represent AI + WWI theme
+3. Suggested design:
+   - Helmet outline
+   - With AI circuit/brain pattern
+   - Colors: Military green/brown
+4. Save as Icon128.png in this directory
+5. Delete this .txt file
+
+The plugin will work without the icon, but it will use a default UE5 icon.
