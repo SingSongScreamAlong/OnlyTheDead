@@ -1350,6 +1350,1656 @@ Low Morale → Shell shock → Combat ineffective → Death in battle
 
 **Next Section**: Mission Design (30+ missions using these systems)
 
+<a name="progression"></a>
+### 7. PROGRESSION & META-GAME SYSTEM
+
+**Design Philosophy**: Progression is not about "becoming stronger" - it's about becoming **numb, experienced, and broken**. There's no skill tree or level-ups. The "progression" is psychological transformation from terrified recruit to hollow veteran.
+
+---
+
+#### EXPERIENCE SYSTEM
+
+**No Traditional XP**: Instead, track **days survived**, **shells survived**, **rotations completed**
+
+```json
+{
+  "progression_metrics": {
+    "days_survived": {
+      "tracking": "Cumulative days at Verdun",
+      "display": "Prominently shown in UI",
+      "psychological_meaning": "Each day is a victory"
+    },
+
+    "shells_survived": {
+      "tracking": "Shells landed within 50m",
+      "milestones": {
+        "10_shells": "Novice - still jumps at every sound",
+        "50_shells": "Experienced - faster recognition",
+        "200_shells": "Veteran - numb, automatic reactions",
+        "500_shells": "Hollow - no fear left, just exhaustion"
+      },
+      "mechanical_benefits": {
+        "50_shells": "Reaction time +20%",
+        "200_shells": "Reaction time +40%, panic resistance +30%",
+        "500_shells": "Reaction time +60%, panic immunity, morale depletion +50%"
+      }
+    },
+
+    "rotations_completed": {
+      "tracking": "Full 21-day cycles completed",
+      "significance": "Each rotation = 3 weeks of hell survived",
+      "display": "Medal/ribbon system (cosmetic only)"
+    },
+
+    "missions_completed": {
+      "tracking": "Specific objectives accomplished",
+      "variety": "Counted by type (survival, patrol, defense, etc.)",
+      "no_rewards": "Completion is its own reward"
+    }
+  }
+}
+```
+
+---
+
+#### PSYCHOLOGICAL TRANSFORMATION
+
+**Character Arc**: Fear → Experience → Numbness → Hollowness
+
+```json
+{
+  "transformation_stages": {
+    "stage_1_terror": {
+      "days_0_14": "Initial shock",
+      "characteristics": [
+        "Panics during bombardments",
+        "High morale loss from events",
+        "Slow shell recognition",
+        "Letters home are hopeful/terrified"
+      ],
+      "gameplay_effects": {
+        "shell_recognition": "2-4 seconds",
+        "panic_chance": "40%",
+        "morale_depletion_events": "×1.5"
+      }
+    },
+
+    "stage_2_adaptation": {
+      "days_15_60": "Learning to survive",
+      "characteristics": [
+        "Faster reactions to danger",
+        "Developing coping mechanisms",
+        "Dark humor emerges",
+        "Letters home become mechanical"
+      ],
+      "gameplay_effects": {
+        "shell_recognition": "1-2 seconds",
+        "panic_chance": "20%",
+        "morale_depletion_events": "×1.0"
+      }
+    },
+
+    "stage_3_numbness": {
+      "days_61_150": "Emotional shutdown",
+      "characteristics": [
+        "Automatic reactions (no thought)",
+        "Morale harder to increase",
+        "Indifferent to corpses/horror",
+        "Letters home rare and empty"
+      ],
+      "gameplay_effects": {
+        "shell_recognition": "0.5-1 second",
+        "panic_chance": "5%",
+        "morale_depletion_events": "×0.7",
+        "morale_restoration_events": "×0.5 (harder to feel joy)"
+      }
+    },
+
+    "stage_4_hollow": {
+      "days_151_303": "The walking dead",
+      "characteristics": [
+        "No fear, no hope, just endurance",
+        "Survival instinct only",
+        "Cannot process emotions",
+        "No letters home - nothing to say"
+      ],
+      "gameplay_effects": {
+        "shell_recognition": "Instant (<0.5 sec)",
+        "panic_chance": "0% (immune)",
+        "morale_depletion_events": "×0.5",
+        "morale_restoration_events": "×0.2",
+        "morale_max_reduced": "-30 (cap at 70 instead of 100)"
+      },
+      "narrative_significance": "You survived, but what did you lose?"
+    }
+  }
+}
+```
+
+---
+
+#### UNLOCKS & PROGRESSION
+
+**No Power Creep**: "Unlocks" are knowledge, not abilities
+
+```json
+{
+  "knowledge_unlocks": {
+    "shell_recognition": {
+      "unlock_method": "Experience (automatic after X shells)",
+      "benefit": "Faster identification, better survival",
+      "not_a_skill_tree": "This is learning, not leveling up"
+    },
+
+    "trench_wisdom": {
+      "unlock_method": "Observing events, reading letters, talking to veterans",
+      "examples": [
+        "Rats flee before bombardment (early warning)",
+        "Best crater is the fresh one (won't be hit twice soon)",
+        "Never sleep in same spot twice (artillery patterns)",
+        "Wet socks = trench foot = death (hygiene priority)"
+      ],
+      "implementation": "Contextual tutorial messages unlock as discovered"
+    },
+
+    "relationships": {
+      "unlock_method": "Surviving rotations with same squad",
+      "benefit": "Emotional anchor, morale recovery, coop actions",
+      "tragedy": "When they die, massive morale loss"
+    }
+  },
+
+  "historical_unlocks": {
+    "codex_entries": {
+      "unlock_method": "Discovering locations, events, weapons",
+      "content": "Historical context, photographs, veteran accounts",
+      "purpose": "Educational - tie game events to real history",
+      "examples": [
+        "Fort Douaumont falls (March 25) - unlock full history",
+        "Mort-Homme battle - unlock topography and casualty data",
+        "Gas attack - unlock medical effects and countermeasures"
+      ]
+    }
+  }
+}
+```
+
+---
+
+#### META-GAME SYSTEMS
+
+**Campaign Structure**: 303-day marathon with checkpoints
+
+```json
+{
+  "campaign_progression": {
+    "goal": "Survive all 303 days (Feb 21 - Dec 18, 1916)",
+    "structure": "14-15 rotations of 21 days each",
+    "difficulty_curve": {
+      "phase_1_feb": "Learning curve - highest death rate for players",
+      "phase_2_mar_apr": "Intensifies - Fort Douaumont, Mort-Homme",
+      "phase_3_may_jun": "Peak horror - Fort Vaux, summer heat",
+      "phase_4_jul_aug": "Grinding stalemate - exhaustion phase",
+      "phase_5_sep_oct": "French counter-offensive - renewed danger",
+      "phase_6_nov_dec": "Final push - Douaumont recapture (climax)"
+    },
+
+    "permadeath_structure": {
+      "standard_mode": "One life - death = start from Day 1",
+      "checkpoint_mode": "Death = restart current rotation (21 days lost)",
+      "hardcore_mode": "One life + no HUD + realistic survival rates"
+    },
+
+    "completion_rewards": {
+      "survivor_achievement": "Survived all 303 days",
+      "ending_statistics": {
+        "days_survived": "303",
+        "shells_survived": "Thousands",
+        "rotations_completed": "14-15",
+        "casualties_witnessed": "Hundreds",
+        "morale_final": "Shows psychological cost"
+      },
+      "narrative_payoff": "Final cutscene - December 18, 1916, battle ends, you walk away hollow",
+      "historical_context": "Text epilogue - real casualty numbers, historical outcome"
+    }
+  },
+
+  "new_game_plus": {
+    "option_1_different_character": "Play as different soldier (different regiment/perspective)",
+    "option_2_german_campaign": "See other side (if implemented)",
+    "option_3_historical_scenarios": "Specific famous events (Fort Douaumont assault, etc.)"
+  }
+}
+```
+
+---
+
+#### PLAYER FEEDBACK & PROGRESSION DISPLAY
+
+**UI Elements to Track Progression**:
+
+```json
+{
+  "hud_elements": {
+    "days_survived_counter": {
+      "location": "Top-left corner",
+      "format": "Day 47 / 303",
+      "prominence": "Always visible",
+      "psychological_effect": "Constant reminder of how much remains"
+    },
+
+    "current_rotation_progress": {
+      "location": "Top-left, below days",
+      "format": "Front Line - Day 3/7",
+      "countdown": "Shows when next rotation arrives"
+    },
+
+    "veterancy_indicator": {
+      "location": "Character menu",
+      "display": "Shells survived, transformation stage, reaction bonuses",
+      "purpose": "Show player their psychological state"
+    },
+
+    "journal_system": {
+      "location": "Pause menu",
+      "content": [
+        "Auto-generated entries (major events)",
+        "Statistics (kills, shells, missions)",
+        "Codex unlocks (historical context)",
+        "Letters from home (morale events)"
+      ],
+      "narrative_function": "Document player's journey through hell"
+    }
+  }
+}
+```
+
+---
+
+#### ACHIEVEMENT/TROPHY SYSTEM
+
+**No Silly Achievements**: All achievements are survival-focused and respectful
+
+```json
+{
+  "achievements": {
+    "milestone_achievements": {
+      "first_day": "Survived February 21, 1916",
+      "first_rotation": "Completed 21-day rotation cycle",
+      "100_days": "Survived 100 days of Verdun",
+      "final_day": "Survived to December 18, 1916"
+    },
+
+    "challenge_achievements": {
+      "no_injury": "Completed rotation without taking damage",
+      "shell_master": "Survived 500 artillery shells",
+      "trench_veteran": "Survived 10 rotations",
+      "hollow": "Reached Stage 4 psychological transformation"
+    },
+
+    "historical_achievements": {
+      "fort_douaumont": "Witnessed Fort Douaumont fall",
+      "mort_homme": "Survived Mort-Homme battle",
+      "fort_vaux": "Survived Fort Vaux siege",
+      "douaumont_recapture": "Participated in Douaumont recapture"
+    },
+
+    "NOT_INCLUDED": {
+      "no_kill_counts": "Disrespectful to make 'kill 100 Germans' achievement",
+      "no_silly_challenges": "No '360 noscope' or similar modern FPS nonsense",
+      "no_easter_eggs": "Tone is serious - no breaking immersion"
+    }
+  }
+}
+```
+
+---
+
+## [PROGRESSION SYSTEM COMPLETE]
+
+---
+
+<a name="inventory"></a>
+### 8. INVENTORY & EQUIPMENT SYSTEM
+
+**Design Philosophy**: Inventory is not about hoarding or upgrades - it's about **scarcity, weight, and tough choices**. Every item has weight and purpose. You carry what you need to survive, not what you want.
+
+---
+
+#### INVENTORY STRUCTURE
+
+**Limited Capacity**: Realistic soldier loadout (~30kg maximum)
+
+```json
+{
+  "inventory_system": {
+    "capacity_limit": {
+      "maximum_weight_kg": 30.0,
+      "over_encumbered_penalty": {
+        "30_35kg": "Movement speed -20%, stamina drain +30%",
+        "35_40kg": "Movement speed -40%, stamina drain +60%, cannot sprint",
+        "40kg_plus": "Cannot move, must drop items"
+      },
+      "historical_basis": "French poilu carried ~25-30kg combat load"
+    },
+
+    "inventory_slots": {
+      "worn_equipment": {
+        "helmet": {
+          "required": true,
+          "weight_kg": 0.7,
+          "protection": "Reduces shrapnel headshot lethality by 40%",
+          "historical": "Adrian helmet (1915 pattern)"
+        },
+        "uniform": {
+          "required": true,
+          "weight_kg": 2.0,
+          "variants": ["dry", "wet", "muddy"],
+          "effects": "Wet clothing: warmth depletion ×3.0"
+        },
+        "boots": {
+          "required": true,
+          "weight_kg": 1.5,
+          "condition": "Degrades over time, affects movement",
+          "maintenance": "Must dry/clean to prevent trench foot"
+        },
+        "gas_mask": {
+          "required": true,
+          "weight_kg": 1.2,
+          "uses": "Unlimited, but degrades if damaged",
+          "critical": "Death in 30 seconds without mask during gas attack"
+        }
+      },
+
+      "weapon_slots": {
+        "primary_weapon": {
+          "default": "Lebel Model 1886 rifle",
+          "weight_kg": 4.4,
+          "ammunition_weight": "0.03kg per round (carry 100-200 rounds)"
+        },
+        "sidearm": {
+          "optional": "Revolver (officers/specialists only)",
+          "weight_kg": 1.0,
+          "ammunition": "18-24 rounds typical"
+        },
+        "melee_weapon": {
+          "options": ["bayonet", "trench_knife", "shovel"],
+          "weight_kg": 0.5,
+          "always_carried": "One melee weapon mandatory"
+        },
+        "grenades": {
+          "max_carried": 6,
+          "weight_per_grenade_kg": 0.6,
+          "types": ["F1 defensive", "impact grenade"]
+        }
+      },
+
+      "survival_equipment": {
+        "canteen": {
+          "required": true,
+          "weight_kg": 1.5,
+          "capacity_liters": 2.0,
+          "water_weight": "1.0kg per liter",
+          "critical_item": "Primary water source"
+        },
+        "ration_pouch": {
+          "required": true,
+          "weight_kg": 0.5,
+          "capacity": "3-5 days of food",
+          "food_weight": "Variable (0.5-3.0kg)"
+        },
+        "mess_tin": {
+          "required": true,
+          "weight_kg": 0.3,
+          "use": "Eating, drinking, cooking"
+        },
+        "blanket_coat": {
+          "optional": true,
+          "weight_kg": 2.5,
+          "benefit": "Warmth +10 per hour when resting",
+          "trade_off": "Heavy but crucial in winter"
+        },
+        "shelter_half": {
+          "optional": true,
+          "weight_kg": 1.5,
+          "benefit": "Can create shelter, warmth +5",
+          "historical": "Shared between two soldiers"
+        }
+      },
+
+      "medical_supplies": {
+        "field_dressing": {
+          "max_carried": 3,
+          "weight_kg": 0.1,
+          "use": "Stop bleeding, treat wounds",
+          "critical": "Without it, bleed out from injuries"
+        },
+        "morphine_syrette": {
+          "max_carried": 2,
+          "weight_kg": 0.02,
+          "use": "Severe pain, shock, critical wounds",
+          "limited": "Cannot be restocked easily"
+        },
+        "iodine": {
+          "max_carried": 1,
+          "weight_kg": 0.1,
+          "use": "Disinfect wounds, prevent infection"
+        }
+      },
+
+      "tools_and_misc": {
+        "entrenching_tool": {
+          "required": true,
+          "weight_kg": 2.0,
+          "uses": ["dig shelter", "melee weapon", "various tasks"]
+        },
+        "wire_cutters": {
+          "optional": true,
+          "weight_kg": 0.8,
+          "use": "Cut barbed wire during patrols"
+        },
+        "flashlight": {
+          "optional": true,
+          "weight_kg": 0.5,
+          "battery_life": "Limited - must ration use",
+          "night_missions": "Essential for night patrols"
+        },
+        "matches": {
+          "optional": true,
+          "weight_kg": 0.05,
+          "uses": "Light fires, cigarettes, limited supply"
+        },
+        "personal_items": {
+          "weight_kg": 0.1,
+          "examples": ["letter from home", "photograph", "religious icon"],
+          "mechanical_effect": "Morale +5 when viewed",
+          "narrative_effect": "Humanizing element"
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+#### ITEM MANAGEMENT MECHANICS
+
+```json
+{
+  "item_acquisition": {
+    "ration_distribution": {
+      "frequency": "Daily (if in support/rest area)",
+      "method": "Scripted events, queue for food",
+      "variability": "Rations may be short, spoiled, or delayed",
+      "historical_accuracy": "Based on French supply records"
+    },
+
+    "water_sources": {
+      "supply_depot": {
+        "location": "Support/rest areas",
+        "quality": "Clean water (100% safe)",
+        "availability": "Usually available"
+      },
+      "crater_water": {
+        "location": "Shell craters (everywhere)",
+        "quality": "Contaminated (40% disease risk)",
+        "desperation": "Used when no alternative"
+      },
+      "rainwater": {
+        "method": "Collect with canteen/mess tin",
+        "quality": "Mostly safe (10% risk)",
+        "availability": "Weather-dependent"
+      }
+    },
+
+    "scavenging": {
+      "dead_soldiers": {
+        "options": ["food", "water", "ammunition", "medical supplies"],
+        "morale_cost": -10,
+        "necessity": "Sometimes only way to survive",
+        "ethical_dilemma": "Loot corpses or die?"
+      },
+      "abandoned_equipment": {
+        "locations": "Destroyed trenches, no-man's-land",
+        "danger": "Often in exposed areas (risk vs. reward)"
+      }
+    },
+
+    "supply_drops": {
+      "frequency": "Mission-dependent",
+      "method": "Runners bring supplies to front line",
+      "risk": "Runners may die en route (no supplies)",
+      "player_role": "Sometimes YOU are the runner (mission type)"
+    }
+  },
+
+  "item_degradation": {
+    "clothing": {
+      "degradation_rate": "2% per day in trenches",
+      "effects_of_damage": {
+        "torn_uniform": "Warmth -10%",
+        "damaged_boots": "Movement speed -10%, trench foot risk +20%",
+        "broken_helmet": "No head protection, must replace"
+      },
+      "repair": "Requires time and materials (rare)"
+    },
+
+    "weapon_maintenance": {
+      "rifle_condition": {
+        "degrades_from": ["mud", "water", "use"],
+        "effects": {
+          "dirty_rifle": "Jam chance +30%",
+          "very_dirty": "Jam chance +60%, may explode",
+          "broken": "Unusable until repaired"
+        },
+        "maintenance": "Clean regularly (minigame or time-based)"
+      }
+    },
+
+    "food_spoilage": {
+      "degradation": "Food spoils over time (especially in summer)",
+      "effects": "Eating spoiled food = vomiting, dysentery risk",
+      "preservation": "Eat fresh food first, ration preserved items"
+    }
+  },
+
+  "inventory_decisions": {
+    "weight_vs_benefit": {
+      "scenario_1": "Carry extra food (heavy) or extra ammunition?",
+      "scenario_2": "Carry blanket (warm) or more water (essential)?",
+      "scenario_3": "Take grenade (offensive) or medical supply (survival)?"
+    },
+
+    "sharing_vs_hoarding": {
+      "squadmate_requests": "Share food/water with starving comrade?",
+      "morale_effects": {
+        "share": "Morale +10, relationship +20, your hunger increases",
+        "refuse": "Morale -5, relationship -30, they may die"
+      },
+      "survival_dilemma": "Help others or prioritize self?"
+    },
+
+    "scarcity_moments": {
+      "no_food": "Hunger reaches zero, must scavenge or trade",
+      "no_water": "Thirst critical, drink crater water or die",
+      "no_ammunition": "Enemy attack, must use melee or flee",
+      "no_medical": "Wounded, must find supplies or bleed out"
+    }
+  }
+}
+```
+
+---
+
+#### EQUIPMENT PROGRESSION
+
+**No "Better" Equipment**: Just different situations
+
+```json
+{
+  "equipment_variety": {
+    "weapons": {
+      "no_upgrades": "Your Lebel rifle is your rifle - no 'legendary' weapons",
+      "specialist_weapons": {
+        "chauchat_lmg": {
+          "unlock": "Machine gun specialist role (mission-specific)",
+          "trade_off": "Heavy (9kg), high firepower, jam-prone",
+          "use_case": "Defensive missions only"
+        },
+        "grenade_launcher": {
+          "unlock": "Grenadier role (rare)",
+          "trade_off": "Limited ammunition, heavy, specialized",
+          "use_case": "Specific assault missions"
+        }
+      }
+    },
+
+    "seasonal_equipment": {
+      "winter_gear": {
+        "available": "December - February",
+        "items": ["fur_lined_coat", "wool_gloves", "extra_blanket"],
+        "weight_cost": "+3.0kg total",
+        "benefit": "Warmth depletion -50%",
+        "trade_off": "Heavy but necessary"
+      },
+      "summer_gear": {
+        "available": "June - August",
+        "items": ["light_uniform", "sun_hat"],
+        "weight_cost": "-1.0kg",
+        "benefit": "Stamina depletion -10%",
+        "new_problem": "Heat, thirst increases +20%"
+      },
+      "gas_equipment": {
+        "available": "After first gas attack (Phase 2+)",
+        "items": ["improved_gas_mask", "gas_cape"],
+        "critical": "Better protection, faster donning time"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### UI/UX FOR INVENTORY
+
+```json
+{
+  "inventory_screen": {
+    "layout": "Grid-based with weight display",
+    "visual_design": "Period-appropriate (like actual field pack)",
+    "information_displayed": {
+      "item_weight": "Always visible",
+      "total_weight": "XX.X / 30.0 kg",
+      "item_condition": "Percentage durability",
+      "quantity": "For stackable items (food, ammo)"
+    },
+
+    "quick_access": {
+      "d_pad_radial_menu": {
+        "up": "Food/water",
+        "down": "Medical supplies",
+        "left": "Equipment (flashlight, etc.)",
+        "right": "Weapons/grenades"
+      },
+      "critical_items": "Can be used without opening full inventory"
+    },
+
+    "context_sensitive": {
+      "low_stamina_warning": "Highlights food in inventory",
+      "bleeding": "Highlights medical supplies",
+      "overweight": "Highlights heaviest items for dropping"
+    }
+  }
+}
+```
+
+---
+
+## [INVENTORY & EQUIPMENT SYSTEM COMPLETE]
+
+---
+
+<a name="medical"></a>
+### 9. MEDICAL & INJURY SYSTEM
+
+**Design Philosophy**: Injuries are **permanent, devastating, and historically accurate**. This is not a game where you heal by hiding behind cover. Getting hit by shrapnel means you're maimed. Modern FPS healing mechanics DO NOT APPLY.
+
+---
+
+#### INJURY TYPES & EFFECTS
+
+```json
+{
+  "injury_categories": {
+    "shrapnel_wounds": {
+      "causes": ["artillery", "grenade fragments", "debris"],
+      "frequency": "Most common injury type (70% of wounds)",
+
+      "severity_levels": {
+        "minor_fragments": {
+          "description": "Small metal fragments embedded in flesh",
+          "immediate_effects": {
+            "pain": "Moderate",
+            "bleeding": "Light (1% health per 10 seconds)",
+            "movement": "No penalty",
+            "aim": "-10% accuracy (pain distraction)"
+          },
+          "treatment_required": "Field dressing within 30 minutes",
+          "long_term": {
+            "if_untreated": "Infection risk 40%, sepsis in 2-5 days",
+            "if_treated": "Heals in 7-14 days, may leave fragments",
+            "permanent_effect": "Scar tissue, occasional pain"
+          }
+        },
+
+        "moderate_wounds": {
+          "description": "Deep shrapnel, muscle damage, possible bone fractures",
+          "immediate_effects": {
+            "pain": "Severe",
+            "bleeding": "Moderate (3% health per 10 seconds)",
+            "movement": "-30% speed",
+            "aim": "-40% accuracy (shaking from pain)",
+            "stamina": "Max stamina -50%"
+          },
+          "treatment_required": {
+            "immediate": "Field dressing + morphine",
+            "within_hours": "Medical evacuation or death",
+            "surgery": "Required within 12 hours"
+          },
+          "long_term": {
+            "if_evacuated": "Removed from campaign (mission failure/success)",
+            "if_not_evacuated": "80% chance of death from blood loss/infection",
+            "survival_outcome": "Permanent disability, may return later with penalties"
+          }
+        },
+
+        "severe_wounds": {
+          "description": "Massive trauma, arterial bleeding, organ damage",
+          "immediate_effects": {
+            "pain": "Incapacitating",
+            "bleeding": "Severe (10% health per 10 seconds)",
+            "movement": "Cannot walk, must crawl",
+            "combat": "Cannot fight, can only use sidearm (if conscious)",
+            "consciousness": "Fading (will pass out in 60-120 seconds)"
+          },
+          "treatment_required": {
+            "immediate": "Field dressing + morphine (slows death, doesn't prevent)",
+            "evacuation": "IMMEDIATE or death in minutes",
+            "survival_chance": "30% even with perfect care"
+          },
+          "outcomes": {
+            "evacuated": "Removed from campaign, survival uncertain",
+            "not_evacuated": "Death in 5-15 minutes",
+            "gameplay": "Usually ends current mission (bleed out or evacuation)"
+          }
+        },
+
+        "instantly_fatal": {
+          "description": "Head/chest hit, catastrophic trauma",
+          "immediate_effects": "Screen goes black",
+          "gameplay": "Death - permadeath or checkpoint restart",
+          "no_treatment": "Instant death cannot be prevented",
+          "frequency": "20% of shrapnel hits to vital areas"
+        }
+      }
+    },
+
+    "bullet_wounds": {
+      "causes": ["rifle fire", "machine gun", "sniper"],
+      "frequency": "15-20% of wounds",
+
+      "severity_by_location": {
+        "limb_hit": {
+          "arm": {
+            "effects": "Cannot use two-handed weapons, -80% aim",
+            "bleeding": "Moderate (2% per 10 sec)",
+            "treatment": "Field dressing, splint, evacuation recommended"
+          },
+          "leg": {
+            "effects": "Movement speed -60%, cannot sprint, may need crutch",
+            "bleeding": "Moderate to severe (depends on artery)",
+            "treatment": "Field dressing, tourniquet if arterial, evacuation required"
+          }
+        },
+        "torso_hit": {
+          "chest": {
+            "effects": "Severe pain, breathing difficulty, internal bleeding",
+            "survival": "30% even with treatment",
+            "treatment": "Morphine, pressure bandage, immediate evacuation",
+            "outcome": "Usually fatal or campaign-ending"
+          },
+          "abdomen": {
+            "effects": "Extreme pain, internal organ damage, slow death",
+            "survival": "10-20% (WWI surgery primitive)",
+            "treatment": "Morphine (pain only), evacuation futile",
+            "historical_reality": "Abdominal wounds were usually death sentences"
+          }
+        },
+        "head_hit": {
+          "with_helmet": {
+            "deflection_chance": "40% (grazing shot)",
+            "penetration": "60% = instant death",
+            "concussion": "If deflected, severe concussion, vision blur, unconscious"
+          },
+          "without_helmet": {
+            "instant_death": "100%",
+            "gameplay": "Always fatal"
+          }
+        }
+      }
+    },
+
+    "blast_injuries": {
+      "causes": ["artillery concussion", "grenade blast", "explosion"],
+      "types": {
+        "concussion": {
+          "effects": {
+            "immediate": "Disorientation, tinnitus (ringing ears), vision blur",
+            "short_term": "Headache, nausea, balance problems (1-3 days)",
+            "hearing_loss": "Temporary or permanent (based on proximity)"
+          },
+          "treatment": "Rest (no effective treatment in WWI)",
+          "gameplay_effects": {
+            "audio": "Muffled sound, ringing for 30-60 seconds",
+            "vision": "Blur, double vision",
+            "movement": "Stagger, reduced balance"
+          }
+        },
+        "internal_injuries": {
+          "description": "Blast wave damages internal organs (no visible wound)",
+          "effects": "Internal bleeding, organ rupture, delayed symptoms",
+          "detection": "Player may not realize injury until symptoms appear",
+          "treatment": "None available (WWI doctors couldn't detect/treat)",
+          "outcome": "Slow death over hours/days, or sudden collapse"
+        },
+        "blast_amputation": {
+          "causes": "Close proximity to heavy shell (155mm+)",
+          "effects": "Limb(s) severed by blast",
+          "survival": "Very low (shock + blood loss)",
+          "treatment": "Tourniquet, morphine, immediate evacuation",
+          "gameplay": "Usually instant death or campaign-ending injury"
+        }
+      }
+    },
+
+    "environmental_injuries": {
+      "trench_foot": {
+        "cause": "Prolonged exposure to wet/cold (hygiene + warmth low)",
+        "progression": {
+          "stage_1": {
+            "symptoms": "Numbness, tingling, foot pain",
+            "effects": "Movement -10%, can still fight",
+            "treatment": "Dry socks, warm feet, rest",
+            "reversible": true
+          },
+          "stage_2": {
+            "symptoms": "Swelling, blisters, tissue damage",
+            "effects": "Movement -30%, severe pain",
+            "treatment": "Medical evacuation required",
+            "reversible": "Partially (permanent damage likely)"
+          },
+          "stage_3": {
+            "symptoms": "Gangrene, necrosis, infection",
+            "effects": "Cannot walk, infection spreads",
+            "treatment": "Amputation required",
+            "outcome": "Removed from campaign, permanent disability"
+          }
+        },
+        "prevention": "Keep hygiene >40, change socks, dry feet"
+      },
+
+      "frostbite": {
+        "cause": "Warmth meter at critical (below 20) for extended time",
+        "progression": {
+          "stage_1": "Numb extremities, -10% aim",
+          "stage_2": "Tissue damage, -20% movement, permanent",
+          "stage_3": "Gangrene, amputation required, campaign-ending"
+        },
+        "affected_areas": ["fingers", "toes", "nose", "ears"],
+        "prevention": "Maintain warmth, keep moving, wear gloves"
+      },
+
+      "disease": {
+        "dysentery": {
+          "cause": "Low hygiene, contaminated water/food",
+          "symptoms": "Diarrhea, dehydration, weakness",
+          "effects": {
+            "thirst_depletion": "×3.0",
+            "stamina_max": "-60%",
+            "movement": "-20%"
+          },
+          "duration": "5-7 days",
+          "treatment": "Rest, clean water, medical evacuation if severe",
+          "lethality": "10-20% if untreated"
+        },
+
+        "trench_fever": {
+          "cause": "Lice infestation (hygiene <20 for extended time)",
+          "incubation": "10 days",
+          "symptoms": "High fever, hallucinations, severe weakness",
+          "effects": {
+            "all_stats": "-50%",
+            "hallucinations": "Visual/audio distortions",
+            "fever": "Cannot perform tasks effectively"
+          },
+          "duration": "7-14 days",
+          "treatment": "No cure in WWI, only rest and hope",
+          "outcome": "Usually evacuated, 5% death rate"
+        },
+
+        "gas_poisoning": {
+          "cause": "Gas attack without mask or damaged mask",
+          "types": {
+            "chlorine_gas": {
+              "effects": "Choking, lung damage, drowning sensation",
+              "immediate": "Cannot breathe, stamina drains instantly",
+              "death_time": "30-120 seconds",
+              "treatment": "Escape gas cloud, fresh air, medical evacuation",
+              "survival": "50% if escape fast, 10% if prolonged exposure"
+            },
+            "mustard_gas": {
+              "effects": "Skin blisters, blindness, lung burns",
+              "immediate": "Burning sensation, vision loss",
+              "delayed": "Symptoms worsen over hours",
+              "death_time": "Hours to days (slow, agonizing)",
+              "treatment": "No effective treatment in WWI",
+              "survival": "30-40%, permanent disabilities common"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+#### TREATMENT & HEALING MECHANICS
+
+```json
+{
+  "field_treatment": {
+    "player_self_treatment": {
+      "field_dressing": {
+        "use_time": "10-15 seconds (animation)",
+        "effects": "Stops bleeding, -50% infection risk",
+        "limitations": "Cannot treat severe wounds alone",
+        "supplies_required": "1× field dressing (limited)"
+      },
+
+      "morphine": {
+        "use_time": "5 seconds",
+        "effects": {
+          "pain_relief": "100% for 10 minutes",
+          "combat_effectiveness": "Restored temporarily",
+          "side_effects": "Vision blur, slower reactions after 10 min"
+        },
+        "limitations": "Very limited supply (2-3 doses max)",
+        "addiction_risk": "Historical - not modeled in game"
+      },
+
+      "tourniquet": {
+        "use_time": "15 seconds",
+        "effects": "Stops arterial bleeding in limbs",
+        "limitations": {
+          "max_duration": "2 hours before tissue death",
+          "amputation_risk": "If not removed, limb lost",
+          "temporary_measure": "Buys time for evacuation"
+        }
+      }
+    },
+
+    "squadmate_treatment": {
+      "treat_wounded_ally": {
+        "action": "Use medical supplies on ally",
+        "time_cost": "30-60 seconds (vulnerable while treating)",
+        "morale_bonus": "+15 for helping, +20 relationship",
+        "gameplay_decision": "Risk yourself to save comrade?"
+      },
+
+      "carry_wounded": {
+        "action": "Pick up incapacitated soldier",
+        "effects": {
+          "movement_speed": "-70%",
+          "stamina_drain": "20 per second",
+          "cannot_fight": "No weapons while carrying",
+          "exposure": "Vulnerable to fire"
+        },
+        "heroism_vs_survival": "Save them or save yourself?"
+      }
+    },
+
+    "medical_station_treatment": {
+      "location": "Support line or rest area",
+      "availability": "Only when rotated back from front",
+      "treatment_options": {
+        "minor_wounds": "Treated fully, 1-3 days rest",
+        "moderate_wounds": "Stabilized, may need evacuation",
+        "severe_wounds": "Automatic evacuation, removed from campaign"
+      },
+      "triage_system": {
+        "historical_accuracy": "Worst cases get morphine and left to die",
+        "player_experience": "Witness triage decisions, morale impact",
+        "ethical_horror": "Resources limited, not everyone can be saved"
+      }
+    },
+
+    "evacuation_system": {
+      "trigger": "Severe injury or illness",
+      "process": {
+        "step_1": "Stretcher bearers carry to aid station",
+        "step_2": "Ambulance to field hospital (if available)",
+        "step_3": "Surgery/treatment (success variable)",
+        "step_4": "Recovery or death"
+      },
+      "gameplay_outcome": {
+        "player_character": "Evacuation = mission failure (or success if objective complete)",
+        "permadeath_mode": "Evacuation = campaign over (survival but can't continue)",
+        "checkpoint_mode": "Return after recovery (weeks later, permanent penalties)"
+      },
+      "squadmate_evacuation": {
+        "narrative_impact": "They leave, may never return",
+        "morale_effect": "Loss of friend, -10 morale, relationship ended"
+      }
+    }
+  },
+
+  "healing_over_time": {
+    "no_regenerating_health": "Health does NOT regenerate automatically",
+    "recovery_mechanics": {
+      "minor_wounds": {
+        "healing_time": "7-14 days (real-time in-game)",
+        "requirements": "Rest, clean bandages, no infection",
+        "scar_tissue": "Permanent -2% max health per wound"
+      },
+      "moderate_wounds": {
+        "healing_time": "14-60 days",
+        "requirements": "Medical evacuation and return",
+        "permanent_effects": "Movement -5%, aim -10%, chronic pain"
+      }
+    },
+    "cumulative_damage": {
+      "concept": "Each injury weakens you permanently",
+      "veteran_soldiers": "Late campaign, player has scars and penalties",
+      "realism": "Your body doesn't forget wounds"
+    }
+  }
+}
+```
+
+---
+
+#### PSYCHOLOGICAL TRAUMA FROM INJURIES
+
+```json
+{
+  "witnessing_injuries": {
+    "see_friend_wounded": {
+      "morale_cost": -10,
+      "helplessness": "Watch them scream, can't always help",
+      "guilt": "Survived when they didn't"
+    },
+
+    "see_dismemberment": {
+      "morale_cost": -20,
+      "shell_shock_risk": "+30%",
+      "visual_trauma": "Flashbacks, nightmares (screen effects)"
+    },
+
+    "see_own_injury": {
+      "severed_limb_visual": "Player sees own mutilation (graphic but respectful)",
+      "panic_reaction": "Screaming, shock, possible unconsciousness",
+      "morale_cost": -30,
+      "permanent_psychological_damage": "PTSD effects even after physical recovery"
+    }
+  },
+
+  "medical_horror": {
+    "field_hospital_scenes": {
+      "environmental_narrative": "Piles of amputated limbs, screaming wounded, blood everywhere",
+      "morale_drain": "-5 per minute in field hospital",
+      "player_realization": "This is what awaits if you're hit",
+      "respect_for_medics": "Highlight heroism of medical personnel"
+    }
+  }
+}
+```
+
+---
+
+#### UI/UX FOR MEDICAL SYSTEM
+
+```json
+{
+  "injury_indicators": {
+    "visual_hud": {
+      "body_diagram": "Shows injury locations (head, torso, limbs)",
+      "color_coding": {
+        "green": "Healthy",
+        "yellow": "Minor injury",
+        "orange": "Moderate wound",
+        "red": "Severe/life-threatening"
+      },
+      "bleeding_indicator": "Pulsing red if actively bleeding"
+    },
+
+    "audio_cues": {
+      "heavy_breathing": "When injured",
+      "heartbeat": "When critically wounded (getting faster = death approaching)",
+      "pain_groans": "Character makes pain sounds"
+    },
+
+    "screen_effects": {
+      "blood_loss": "Edges of screen darken, vision tunnels",
+      "pain": "Vision blur, shaking",
+      "shock": "Black and white, muted audio, sluggish controls",
+      "death_approach": "Screen fading to black, sounds distant"
+    }
+  },
+
+  "treatment_ui": {
+    "medical_menu": "Quick access to bandages, morphine, etc.",
+    "treatment_animations": "Player applies bandage (vulnerable during animation)",
+    "success_feedback": "Bleeding stopped, pain reduced (visual confirmation)"
+  }
+}
+```
+
+---
+
+## [MEDICAL & INJURY SYSTEM COMPLETE]
+
+---
+
+<a name="morale"></a>
+### 10. PSYCHOLOGICAL & MORALE SYSTEM (EXPANDED)
+
+**Design Philosophy**: Morale is not just a meter - it's the **core emotional experience** of the game. Shell shock, trauma, and psychological breakdown are as dangerous as artillery. The game models the **psychological destruction of war**.
+
+---
+
+#### MORALE SYSTEM (Full Specification)
+
+**Basic Morale Meter**: Already specified in Section 5 (Survival Systems)
+
+```json
+{
+  "morale_meter_recap": {
+    "range": "0-100",
+    "depletion_rate": "0.5 per hour baseline",
+    "critical_threshold": 30,
+    "breakdown_threshold": 0,
+    "note": "See Section 5 for basic mechanics - this section EXPANDS psychological systems"
+  }
+}
+```
+
+---
+
+#### SHELL SHOCK SYSTEM
+
+**Historical Accuracy**: WWI "shell shock" = modern PTSD, combat fatigue, traumatic brain injury
+
+```json
+{
+  "shell_shock_mechanics": {
+    "accumulation_system": {
+      "trauma_points": {
+        "tracking": "Hidden meter (0-1000 points)",
+        "sources": {
+          "artillery_near_miss": "+5 points",
+          "artillery_very_close": "+15 points",
+          "friend_death_witnessed": "+30 points",
+          "dismemberment_witnessed": "+50 points",
+          "own_severe_injury": "+80 points",
+          "buried_alive": "+100 points",
+          "prolonged_bombardment": "+2 per minute"
+        },
+        "reduction": {
+          "rest_area_rotation": "-50 points per day",
+          "letter_from_home": "-20 points",
+          "positive_event": "-10 points",
+          "time": "Slowly decreases when safe (1 point per hour)"
+        }
+      },
+
+      "threshold_system": {
+        "0_200_points": {
+          "status": "Stable",
+          "effects": "Normal functioning",
+          "symptoms": "Occasional jumpiness"
+        },
+        "200_400_points": {
+          "status": "Stressed",
+          "effects": {
+            "morale_max": "-10 (cap at 90)",
+            "panic_chance": "+10%",
+            "sleep_quality": "-20%"
+          },
+          "symptoms": "Nightmares, startle easily, irritable"
+        },
+        "400_700_points": {
+          "status": "Traumatized",
+          "effects": {
+            "morale_max": "-30 (cap at 70)",
+            "panic_chance": "+30%",
+            "flashbacks": "Occasional (triggered by sounds)",
+            "hand_tremors": "Aim shake +20%"
+          },
+          "symptoms": "Severe anxiety, cannot relax, hypervigilance"
+        },
+        "700_1000_points": {
+          "status": "Shell Shocked (Breaking)",
+          "effects": {
+            "morale_max": "-50 (cap at 50)",
+            "panic_attacks": "Frequent and debilitating",
+            "dissociation": "Feel detached from reality",
+            "paralysis_risk": "May freeze during combat (40% chance)",
+            "mutism": "Temporarily unable to speak (10% chance)"
+          },
+          "symptoms": "Severe PTSD, emotional numbness, suicidal thoughts"
+        },
+        "1000_plus_points": {
+          "status": "Complete Breakdown",
+          "outcome": "Player loses control of character",
+          "manifestations": [
+            "Catatonic state (cannot move)",
+            "Uncontrollable shaking",
+            "Screaming/crying fits",
+            "Running away from battlefield (desertion)",
+            "Suicide attempt"
+          ],
+          "gameplay": "Mission failure, medical evacuation, possibly campaign over",
+          "historical_treatment": "Sent to asylum, 'rest cure', or executed for cowardice (early war)"
+        }
+      }
+    },
+
+    "acute_breakdown_events": {
+      "triggers": {
+        "traumatic_threshold": "Morale < 30 AND high trauma points (>700)",
+        "sudden_trauma": "Extreme event (e.g., buried alive, friend killed beside you)",
+        "cumulative_stress": "Prolonged combat without rest"
+      },
+
+      "breakdown_types": {
+        "panic_attack": {
+          "trigger": "Sudden loud noise or danger",
+          "effects": {
+            "player_control": "Lost for 10-30 seconds",
+            "character_behavior": "Hyperventilating, cannot move effectively",
+            "combat_effectiveness": "Zero (cannot fight)",
+            "danger": "Vulnerable to enemy fire"
+          },
+          "recovery": "Gradually regain control, but shaken",
+          "morale_cost": -15
+        },
+
+        "flashback": {
+          "trigger": "Specific stimuli (shell whistle, explosion, screams)",
+          "effects": {
+            "visual_overlay": "Previous traumatic event replays on screen",
+            "audio_distortion": "Sounds of past trauma overlap present",
+            "disorientation": "Player confuses past and present",
+            "duration": "5-15 seconds"
+          },
+          "danger": "May not react to real present danger",
+          "frequency": "Increases with trauma points"
+        },
+
+        "dissociative_episode": {
+          "trigger": "High trauma + low morale + exhaustion",
+          "effects": {
+            "emotional_detachment": "Colors desaturate, sounds muffled",
+            "numbness": "Feel nothing - not even fear",
+            "autopilot": "Can perform tasks but no emotional response",
+            "duration": "30-60 minutes game time"
+          },
+          "gameplay_impact": {
+            "positive": "Immune to morale loss during episode",
+            "negative": "Cannot make good decisions, risky behavior",
+            "aftermath": "Crash afterwards, massive morale drain"
+          }
+        },
+
+        "paralytic_shell_shock": {
+          "trigger": "Sudden extreme trauma (e.g., shell lands 5m away but doesn't kill)",
+          "effects": {
+            "cannot_move": "Character frozen in place",
+            "cannot_speak": "Mutism",
+            "conscious": "Aware but unable to respond",
+            "duration": "Variable (30 seconds to permanent)"
+          },
+          "recovery": {
+            "self_recovery": "20% chance after 1-2 minutes",
+            "squadmate_help": "Ally can snap you out of it (if available)",
+            "medical_evacuation": "If permanent, removed from campaign"
+          },
+          "historical_accuracy": "Common WWI phenomenon - 'paralyzed by shock'"
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+#### COPING MECHANISMS
+
+```json
+{
+  "player_coping_actions": {
+    "letters_home": {
+      "action": "Write/read letters from family",
+      "availability": "Rest area only",
+      "morale_gain": "+15-25 (variable content)",
+      "trauma_reduction": "-20 trauma points",
+      "narrative_function": {
+        "early_campaign": "Letters are hopeful, talk about returning",
+        "mid_campaign": "Letters become mechanical, avoiding truth",
+        "late_campaign": "Few letters, nothing left to say, or lies to protect family"
+      },
+      "player_choice": "Can choose what to write (affects morale differently)"
+    },
+
+    "dark_humor": {
+      "trigger": "Squadmate dialogue, environmental moments",
+      "examples": [
+        "Gallows humor about shells",
+        "Mocking death/danger",
+        "Absurdist jokes about situation"
+      ],
+      "morale_gain": "+5 (small but frequent)",
+      "psychological_function": "Defense mechanism - normalize horror",
+      "historical_basis": "Actual WWI soldier humor (bitter, dark, coping)"
+    },
+
+    "rituals_and_superstitions": {
+      "types": {
+        "lucky_charm": {
+          "item": "Personal item (photograph, religious icon, etc.)",
+          "morale_effect": "+5 when used before mission",
+          "psychological": "Illusion of control in chaos",
+          "loss": "If lost, -20 morale (devastating)"
+        },
+        "pre_mission_ritual": {
+          "examples": ["Prayer", "specific routine", "touching trench wall"],
+          "morale_effect": "+3 per ritual",
+          "frequency": "Can perform before each mission",
+          "narrative": "Shows desperation for control"
+        },
+        "superstitions": {
+          "examples": [
+            "Never light three cigarettes with one match (sniper will see)",
+            "Don't pick up German helmet (bad luck)",
+            "Always enter trench left foot first"
+          ],
+          "morale_penalty": "-10 if broken",
+          "historical_accuracy": "Real WWI superstitions"
+        }
+      }
+    },
+
+    "alcohol_tobacco": {
+      "wine_ration": {
+        "availability": "Issued daily (French army provided wine)",
+        "immediate_effect": "Warmth +10, morale +8",
+        "temporary_numbness": "Reduces anxiety for 10 minutes",
+        "overuse": "If used excessively, morale dependency (needs it to function)"
+      },
+      "cigarettes": {
+        "availability": "Common, can scrounge/trade",
+        "immediate_effect": "Morale +3, alertness +5 (nicotine)",
+        "social_function": "Sharing with squadmates builds relationships",
+        "period_accuracy": "Ubiquitous in WWI, no health warnings"
+      }
+    },
+
+    "prayer_spirituality": {
+      "action": "Pray at makeshift shrine or alone",
+      "morale_gain": "+10-15",
+      "trauma_reduction": "-10 trauma points",
+      "character_dependent": "More effective for religious characters",
+      "environmental": "Shrines in trenches (historical accuracy)",
+      "narrative_moments": {
+        "before_battle": "Pray for survival",
+        "after_trauma": "Pray for meaning/forgiveness",
+        "loss_of_faith": "Late game, prayers may stop working (crisis of faith)"
+      }
+    },
+
+    "music_singing": {
+      "squadmate_activity": "Soldiers sing together (rest area)",
+      "morale_gain": "+12 (group bonding)",
+      "trauma_reduction": "-15 trauma points",
+      "historical_basis": "French soldiers sang 'La Madelon', 'Chant du Départ'",
+      "gameplay": "Mini-scene, not interactive, but powerful narrative moment"
+    }
+  },
+
+  "negative_coping": {
+    "emotional_shutdown": {
+      "trigger": "High trauma, repeated losses",
+      "effect": "Stop caring - morale frozen at low level",
+      "gameplay": {
+        "immunity": "Cannot lose more morale (already broken)",
+        "cost": "Cannot gain morale either (numb)",
+        "narrative": "Becomes hollow, empty, dead inside"
+      },
+      "late_game": "This becomes the norm for veteran players"
+    },
+
+    "survivor_guilt": {
+      "trigger": "Squadmate dies, you survive",
+      "morale_cost": -20,
+      "trauma_points": +30,
+      "duration": "Persistent (doesn't fade quickly)",
+      "manifestation": "Flashbacks to their death, intrusive thoughts"
+    },
+
+    "fatalism": {
+      "trigger": "Late campaign, many near-deaths",
+      "mentality": "I'm already dead, just waiting for it",
+      "gameplay_effect": {
+        "morale": "Frozen at 20-30 (can't go lower or higher)",
+        "fear_immunity": "No panic, no shock (already expecting death)",
+        "reckless_behavior": "Player may take more risks (nothing to lose)"
+      },
+      "narrative": "Final psychological state - acceptance of death"
+    }
+  }
+}
+```
+
+---
+
+#### SQUADMATE RELATIONSHIPS & MORALE
+
+```json
+{
+  "squad_bonding_system": {
+    "relationship_mechanic": {
+      "tracking": "Individual relationship values with each squadmate (0-100)",
+      "affected_by": {
+        "shared_rotations": "+5 per rotation together",
+        "sharing_resources": "+10 per instance",
+        "saving_life": "+40",
+        "conversations": "+3 per meaningful interaction"
+      },
+      "morale_link": {
+        "high_relationship": "Their presence gives +5 morale passively",
+        "low_relationship": "Neutral or -2 morale if hostile",
+        "death_impact": {
+          "stranger": "-5 morale",
+          "acquaintance": "-15 morale",
+          "friend": "-30 morale",
+          "close_friend": "-50 morale, +80 trauma points"
+        }
+      }
+    },
+
+    "squadmate_personalities": {
+      "archetypes": {
+        "veteran_sergeant": {
+          "personality": "Gruff, experienced, protective",
+          "morale_effect": "Calming presence (+3 morale when near)",
+          "dialogue": "Practical advice, dark humor, war wisdom",
+          "death_impact": "Devastating - lost the 'dad' of the group"
+        },
+        "young_recruit": {
+          "personality": "Terrified, naive, looks up to player",
+          "morale_effect": "Reminds you of innocence (+2 morale when safe)",
+          "dialogue": "Asks questions, seeks reassurance, homesick",
+          "death_impact": "Guilt - feels like you failed to protect him"
+        },
+        "cynic": {
+          "personality": "Bitter, sarcastic, nihilistic",
+          "morale_effect": "Dark humor (+5 morale in bad situations)",
+          "dialogue": "Mocking officers, absurdist jokes, fatalism",
+          "death_impact": "Expected it all along - less shocking but still sad"
+        },
+        "optimist": {
+          "personality": "Refuses to give up hope, encouraging",
+          "morale_effect": "+8 morale (infectious positivity)",
+          "dialogue": "Talks about home, plans for after war, keeps spirits up",
+          "death_impact": "Crushing - hope dies with them"
+        }
+      },
+
+      "dynamic_changes": {
+        "personality_evolution": "Characters change over time (optimist becomes cynic, etc.)",
+        "trauma_visible": "Squadmates show signs of shell shock too",
+        "mutual_support": "They also depend on you for morale"
+      }
+    },
+
+    "squad_cohesion": {
+      "group_morale": {
+        "mechanic": "Squad morale affects individual morale",
+        "high_cohesion": "Everyone's morale +10%",
+        "low_cohesion": "Everyone's morale -10%, may desert or break"
+      },
+
+      "shared_trauma": {
+        "concept": "Going through hell together bonds you",
+        "gameplay": "Surviving bombardment together strengthens relationships",
+        "narrative": "Only they understand what you've been through"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### OFFICER INTERACTIONS & MORALE
+
+```json
+{
+  "authority_figures": {
+    "competent_officer": {
+      "personality": "Cares about men, makes smart decisions",
+      "morale_effect": "+5 passive (trust in leadership)",
+      "gameplay": "Missions better planned, casualties lower",
+      "player_relationship": "Can respect and follow"
+    },
+
+    "incompetent_officer": {
+      "personality": "Coward, sends men to die, poor tactics",
+      "morale_effect": "-10 passive (resentment, fear)",
+      "gameplay": "Missions poorly planned, unnecessary danger",
+      "player_relationship": "Hatred, potential disobedience",
+      "historical_basis": "Many WWI officers were incompetent, led to mutinies"
+    },
+
+    "cruel_officer": {
+      "personality": "Disciplinarian, executes deserters, no mercy",
+      "morale_effect": "-15 (fear and hatred)",
+      "gameplay": "Harsh punishments for minor failures",
+      "player_choice": "Obey or risk execution for disobedience?",
+      "historical_basis": "French army executed ~600 soldiers for 'cowardice'"
+    }
+  },
+
+  "discipline_vs_morale": {
+    "execution_of_deserter": {
+      "event": "Witness squadmate executed for desertion/cowardice",
+      "morale_effect": -25,
+      "trauma_points": +60,
+      "message": "Even your own side can kill you",
+      "player_thought": "Will I be next if I break?"
+    },
+
+    "punishment_for_failure": {
+      "examples": ["Extra duty", "ration reduction", "humiliation"],
+      "morale_effect": -5 to -15,
+      "resentment": "Increases hatred of officers"
+    }
+  }
+}
+```
+
+---
+
+#### MORALE VISUAL/AUDIO FEEDBACK
+
+```json
+{
+  "psychological_state_indicators": {
+    "visual_effects": {
+      "high_morale_70_plus": {
+        "colors": "Normal saturation",
+        "vision": "Clear",
+        "posture": "Upright, alert"
+      },
+      "moderate_morale_40_69": {
+        "colors": "Slightly desaturated",
+        "vision": "Occasional blur (stress)",
+        "posture": "Slumped, tired"
+      },
+      "low_morale_20_39": {
+        "colors": "Heavily desaturated (graying out)",
+        "vision": "Frequent blur, tunnel vision",
+        "posture": "Hunched, defeated",
+        "environmental": "World feels oppressive, darker"
+      },
+      "critical_morale_below_20": {
+        "colors": "Nearly black and white",
+        "vision": "Constant blur, hallucinations",
+        "posture": "Barely upright, trembling",
+        "breakdown_imminent": "Screen shakes, heartbeat pounding"
+      }
+    },
+
+    "audio_effects": {
+      "high_morale": {
+        "dialogue": "Confident voice",
+        "breathing": "Normal",
+        "ambient": "Full audio"
+      },
+      "moderate_morale": {
+        "dialogue": "Shaky voice",
+        "breathing": "Slightly heavy",
+        "ambient": "Muffled slightly"
+      },
+      "low_morale": {
+        "dialogue": "Weak, terrified voice",
+        "breathing": "Rapid, panicked",
+        "ambient": "Heavily muffled, tinnitus ringing",
+        "intrusive_sounds": "Whispers, screams (PTSD)"
+      },
+      "critical_morale": {
+        "dialogue": "Cannot speak (mutism)",
+        "breathing": "Hyperventilating or gasping",
+        "ambient": "Distorted, nightmarish",
+        "heartbeat": "Loud, pounding, irregular"
+      }
+    },
+
+    "character_animations": {
+      "idle_stance": "Changes based on morale (upright vs. slumped)",
+      "hand_tremors": "Visible when aiming (low morale)",
+      "facial_expressions": "Dead eyes, thousand-yard stare (late game)",
+      "movement": "Shuffling, exhausted gait (low morale)"
+    }
+  }
+}
+```
+
+---
+
+#### HISTORICAL ACCURACY NOTE
+
+```json
+{
+  "historical_context": {
+    "ww1_shell_shock": {
+      "reality": "80,000+ British soldiers treated for shell shock",
+      "treatments": {
+        "early_war": "Execution for 'cowardice' (seen as weakness)",
+        "mid_war": "'Rest cure', electric shock therapy (barbaric)",
+        "late_war": "Gradual recognition as legitimate injury"
+      },
+      "long_term": "Many suffered PTSD for life, called 'neurasthenia' or 'war neurosis'"
+    },
+
+    "game_approach": {
+      "respect": "Treat shell shock seriously, not as game mechanic exploit",
+      "education": "Codex entries explain historical reality",
+      "tribute": "Honor those who suffered psychological destruction"
+    }
+  }
+}
+```
+
+---
+
+## [PSYCHOLOGICAL & MORALE SYSTEM COMPLETE]
+
 ---
 
 <a name="mission-structure"></a>
