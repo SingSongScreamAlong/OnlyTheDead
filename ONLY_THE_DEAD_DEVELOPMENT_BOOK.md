@@ -1344,11 +1344,1876 @@ Low Morale → Shell shock → Combat ineffective → Death in battle
 
 ---
 
-## [COMBAT SYSTEMS COMPLETE]
+<a name="small-arms-weather"></a>
+### SMALL ARMS WEATHER ENGINE
 
-**Status**: Combat & Artillery Systems FULLY SPECIFIED
+**Design Philosophy**: Small arms fire is not just direct combat—it is an **atmospheric environmental system** parallel to artillery. While artillery is random chaos from above, small arms fire creates a **predatory, patterned threat topology** that soldiers must learn to read and navigate.
 
-**Next Section**: Mission Design (30+ missions using these systems)
+**Core Concept**:
+- **Artillery = Weather** (random, omnipresent, environmental)
+- **Small Arms = Predator** (patterned, watchful, reactive)
+
+The small arms "weather" captures the historical reality of Verdun: bullets weren't constant streams, but **constant threat**. The presence, anticipation, and unpredictability broke men as much as the fire itself.
+
+---
+
+#### SMALL ARMS WEATHER INTENSITY LEVELS
+
+```json
+{
+  "intensity_levels": {
+    "sector_quiet": {
+      "description": "Uncanny silence, occasional distant crack",
+      "frequency": "1-2 shots per 5 minutes (distant sectors only)",
+      "purpose": "Psychological tension - silence is suspicious",
+      "player_experience": "Unnerving calm, waiting for violence",
+      "audio_design": "Distant pops (500m+), wind, breathing, tinnitus",
+      "morale_effect": -5,
+      "alertness_effect": +10,
+      "gameplay_note": "Silence often precedes attack or means enemy repositioning"
+    },
+
+    "harassing_fire": {
+      "description": "Sporadic rifle/MG bursts to prevent rest and movement",
+      "frequency": "5-15 shots per minute (sector-wide)",
+      "duration": "Constant (can last hours or all night)",
+      "purpose": "Deny movement, prevent resupply, psychological wear",
+      "player_experience": "Cannot relax, constant background threat, no safe moment",
+      "audio_design": {
+        "rifle_fire": "Single cracks every 30-90 seconds",
+        "mg_bursts": "2-5 round bursts every 2-4 minutes",
+        "spatial": "Directional - player can locate sources"
+      },
+      "morale_effect": -2,
+      "alertness_effect": +5,
+      "movement_penalty": "Slow and deliberate only",
+      "historical_note": "This was the default state at Verdun - never truly quiet"
+    },
+
+    "suppressive_pattern": {
+      "description": "Coordinated machine gun sweeps, interlocking fire",
+      "frequency": "30-60 rounds per minute (concentrated on player sector)",
+      "duration": "5-20 minutes (defensive posture or pre-assault prep)",
+      "purpose": "Pin defenders, prevent reinforcement, dominate no-man's-land",
+      "player_experience": "Pinned down, movement is death, must learn patterns",
+      "audio_design": {
+        "mg_sweeps": "Predictable traversing arcs every 2-5 minutes",
+        "enfilade_fire": "Fire down length of trench",
+        "supersonic_cracks": "Close misses create snap-crack overhead",
+        "impact_sounds": "Dirt spray, sandbag thumps, ricochets"
+      },
+      "morale_effect": -10,
+      "alertness_effect": +20,
+      "movement_penalty": "Only in cover, between sweeps",
+      "gameplay_mechanic": "Player must time MG patterns to move safely"
+    },
+
+    "fire_storm": {
+      "description": "Assault or defense - near-continuous rifle + MG fire",
+      "frequency": "100-300 rounds per minute (entire sector)",
+      "duration": "10 minutes - 2 hours (peak combat)",
+      "purpose": "Repel assault OR suppress defenders during attack",
+      "player_experience": "Auditory overload, chaos, survival instinct only",
+      "audio_design": {
+        "layered_fire": "Rifles + multiple MGs + grenades = continuous roar",
+        "direction_blur": "Too much fire to identify sources",
+        "psychological": "Like canvas tearing without end (historical description)"
+      },
+      "morale_effect": -20,
+      "alertness_effect": 100,
+      "movement_penalty": "Impossible - head down, pray",
+      "casualties": "5-15% of exposed soldiers per minute",
+      "historical_examples": [
+        "Fort Douaumont assaults",
+        "Mort-Homme slope attacks",
+        "Thiaumont redoubt fighting"
+      ]
+    }
+  }
+}
+```
+
+---
+
+#### SMALL ARMS FIRE TYPES & SIGNATURES
+
+Each fire type has distinct audio signature, threat profile, and required player response:
+
+```json
+{
+  "fire_types": {
+    "rifle_fire_single": {
+      "audio": {
+        "distant": "Sharp crack (500m+)",
+        "close": "Supersonic snap-crack (bullet arrives before sound)",
+        "impact": "Thud (dirt), thwack (wood), ping (metal)"
+      },
+      "frequency": "Sporadic - 5-10 shots per minute per sector",
+      "purpose": "Harassment, target of opportunity, sniper work",
+      "threat_level": "Low unless aimed at player",
+      "player_response": "Duck, assess direction, wait 3-5 seconds, move",
+      "recognition_time": "Instant (single crack)",
+      "psychological": "Unpredictable - any moment could be YOUR bullet",
+      "habituation": "Veterans tune out distant fire, react only to close cracks"
+    },
+
+    "rifle_fire_volley": {
+      "audio": "Rippling cracks, 10-50 rifles firing in sequence",
+      "frequency": "Rare - used to repel assaults or on command",
+      "purpose": "Concentrated firepower, morale demonstration",
+      "threat_level": "High - area saturation",
+      "player_response": "Get down immediately, stay down",
+      "recognition_time": "1-2 seconds (builds rapidly)",
+      "psychological": "Shows coordinated enemy action - attack or defense",
+      "historical_note": "Mad Minute - British trained 15 rounds/min, devastating"
+    },
+
+    "machine_gun_burst": {
+      "audio": {
+        "sound": "Ripping canvas, 5-30 round bursts",
+        "rate": "450-600 RPM during burst",
+        "distinct": "Instantly recognizable vs. rifle fire"
+      },
+      "frequency": "Pattern-based - sweeps every 2-5 minutes",
+      "purpose": "Area denial, no-man's-land lockdown, enfilade trenches",
+      "threat_level": "Extreme in cone of fire, safe outside arc",
+      "player_response": "Learn pattern, predict sweeps, move between bursts",
+      "recognition_time": "Instant (veteran), 1-2 sec (novice)",
+      "psychological": "Predatory - it's HUNTING for you, systematic",
+      "gameplay_mechanic": "Player learns to time MG #3 fires every 240 seconds"
+    },
+
+    "machine_gun_sustained": {
+      "audio": "Continuous ripping, 100-200+ round bursts",
+      "frequency": "During assaults, defensive crisis",
+      "purpose": "Mass casualty, break assault waves",
+      "threat_level": "Absolute in fire cone",
+      "player_response": "Cannot move, must wait for barrel change/resupply",
+      "recognition_time": "Instant",
+      "psychological": "Industrial slaughter, not combat",
+      "morale_impact": -15,
+      "historical_note": "MG crews felt guilt - killed 20+ men in 30 seconds"
+    },
+
+    "sniper_fire": {
+      "audio": {
+        "warning": "None - supersonic bullet arrives before sound",
+        "impact": "Crack (miss) or wet thump (hit)",
+        "source": "Single distant crack, often not heard if close"
+      },
+      "frequency": "1-5 shots per hour (targeted)",
+      "purpose": "Eliminate officers, MG crews, observers, careless soldiers",
+      "threat_level": "Lethal if targeted, low if random",
+      "player_response": "Stay low, don't silhouette, avoid patterns, vary routine",
+      "recognition_time": "Only after first shot (if you survive it)",
+      "psychological": "Personal - someone is watching YOU specifically",
+      "gameplay_mechanic": {
+        "player_behavior": "Silhouetting on skyline = 60% sniper chance",
+        "patterns": "Using same path 3+ times = marked by sniper",
+        "visibility": "Standing in open >5 seconds = targeted"
+      },
+      "historical_note": "Snipers killed 200+ at Verdun, psychological impact huge"
+    },
+
+    "enfilade_fire": {
+      "audio": "Sustained fire down the LENGTH of trench, not across",
+      "frequency": "When enemy captures position with trench line-of-sight",
+      "purpose": "Exploit linear trench geometry, multiple casualties",
+      "threat_level": "Extreme - entire trench section exposed",
+      "player_response": "Get to traverse, around corner, into dugout NOW",
+      "recognition_time": "Immediate panic - bullets coming down the trench",
+      "psychological": "Trapped - the trench (your safety) is now a shooting gallery",
+      "gameplay_mechanic": "Player must memorize traverse locations beforehand",
+      "casualties": "Can kill 5-10 men in seconds if they don't react"
+    },
+
+    "grazing_fire": {
+      "audio": "Low supersonic cracks, very close to ground",
+      "frequency": "Machine gun technique for no-man's-land",
+      "purpose": "Create 'lawnmower' effect 6-18 inches above ground",
+      "threat_level": "100% lethal if not flat on ground",
+      "player_response": "Absolutely flat, cannot crawl, wait for cessation",
+      "recognition_time": "Distinct low angle, dirt spray pattern",
+      "psychological": "Pinned absolutely - cannot move at all",
+      "historical_note": "This technique made daylight no-man's-land crossing suicidal"
+    }
+  }
+}
+```
+
+---
+
+#### AUDIO LAYERING SYSTEM (Creates "Weather" Feel)
+
+```json
+{
+  "audio_layers": {
+    "distant_ambient": {
+      "description": "Always present - fighting in other sectors",
+      "distance": "500-2000m",
+      "audio": "Faint pops, indistinct cracks, rumble",
+      "purpose": "Create sense that 'Battle of Verdun is everywhere'",
+      "volume": "5-10% (background)",
+      "psychological": "War is larger than your sector, no escape",
+      "habituation": "Players tune this out after 10-15 minutes"
+    },
+
+    "sector_background": {
+      "description": "Your immediate area - harassing fire",
+      "distance": "100-500m",
+      "audio": "Occasional rifle cracks, periodic MG bursts",
+      "purpose": "Maintain constant low-level threat",
+      "volume": "20-30%",
+      "psychological": "Never safe, but manageable",
+      "habituation": "Veterans learn to function despite this"
+    },
+
+    "close_threat": {
+      "description": "Danger zone - fire directed at or near player",
+      "distance": "0-100m",
+      "audio": {
+        "supersonic_crack": "SNAP overhead (bullet passing)",
+        "impact_near": "Dirt spray, sandbag thump, ricochet",
+        "muzzle_blast": "Sharp crack from firing position"
+      },
+      "purpose": "Trigger immediate player reaction",
+      "volume": "70-100%",
+      "psychological": "That one was FOR YOU",
+      "habituation": "NEVER - this always triggers adrenaline response"
+    },
+
+    "impact_sounds": {
+      "description": "Environmental feedback - where bullets hit",
+      "types": {
+        "dirt": "Thud, spray sound",
+        "wood": "Thwack, splinter crack",
+        "sandbag": "Whump, muffled",
+        "metal": "Ping, ricochet whine",
+        "stone": "Crack, chip spray",
+        "water": "Plip (crater puddle)",
+        "flesh": "Wet thump (NPC hit)"
+      },
+      "purpose": "Spatial awareness - player judges distance by impacts",
+      "gameplay_mechanic": "Impacts walking toward player = adjusting aim, move now"
+    }
+  }
+}
+```
+
+---
+
+#### PLAYER RECOGNITION & LEARNING SYSTEM
+
+```json
+{
+  "experience_progression": {
+    "novice": {
+      "player_status": "First 3-5 missions",
+      "recognition_ability": {
+        "fire_type": "Cannot distinguish rifle from MG",
+        "direction": "Poor - panics, looks wrong way",
+        "distance": "No sense of near vs. far",
+        "threat_level": "Everything seems equally dangerous"
+      },
+      "behavior": "Panics at all fire, freezes, wrong responses",
+      "survival_rate": "Low - makes mistakes",
+      "tutorial_hints": "UI prompts: 'That's a machine gun - stay down'",
+      "learning_curve": "Steep - dies often"
+    },
+
+    "experienced": {
+      "player_status": "10-15 hours gameplay, survived 10+ missions",
+      "recognition_ability": {
+        "fire_type": "Instantly knows rifle, MG, sniper",
+        "direction": "Can locate source within 45° arc",
+        "distance": "Judges near (<100m) vs. far accurately",
+        "threat_level": "Knows when fire is random vs. aimed at them"
+      },
+      "behavior": "Responds appropriately - duck for close, ignore distant",
+      "survival_rate": "Moderate - knows the rules",
+      "no_more_hints": "UI prompts fade out",
+      "learning_curve": "Can predict patterns, time movements"
+    },
+
+    "veteran": {
+      "player_status": "30+ hours, late campaign, survived 25+ missions",
+      "recognition_ability": {
+        "fire_type": "Instant recognition, automatic response",
+        "direction": "Pinpoint source within 15° arc",
+        "distance": "Exact - knows 50m vs. 200m by sound alone",
+        "threat_level": "Calculates risk instantly",
+        "patterns": "Memorizes specific MG positions and their sweep timings"
+      },
+      "behavior": {
+        "automatic": "Doesn't think, just reacts correctly",
+        "numb": "Tunes out non-threats completely",
+        "calculated_risks": "Knows exactly when to move",
+        "sector_knowledge": "MG #3 fires every 240 seconds, move at 230"
+      },
+      "survival_rate": "High - mastery of environment",
+      "psychological": "Emotionally numb, mechanical responses",
+      "historical_accuracy": "Matches real veteran behavior - robotic survival"
+    }
+  }
+}
+```
+
+---
+
+#### BEHAVIORAL PATTERNS (Parallel to Artillery Bombardment Patterns)
+
+```json
+{
+  "fire_patterns": {
+    "harassing_pattern": {
+      "description": "Random fire to prevent rest, movement, resupply",
+      "timing": "Unpredictable - every 30-90 seconds",
+      "targets": "Ration parties, wire repair, latrine use, sentry posts",
+      "intensity": "Low volume, high consistency",
+      "duration": "Hours to all night",
+      "player_learns": "Move fast, stay low, use dead ground",
+      "psychological": "Wears down morale, prevents sleep",
+      "historical_note": "This never stopped at Verdun - even 'quiet' sectors"
+    },
+
+    "sweep_pattern": {
+      "description": "Machine gun traverses predictable arc",
+      "timing": "Regular intervals - 2-5 minutes between sweeps",
+      "arc": "MG traverses 30-60° horizontally",
+      "duration": "5-10 second burst per sweep",
+      "player_learns": {
+        "novice": "Panics, doesn't see pattern",
+        "experienced": "Times sweep, moves in 1-2 min gap",
+        "veteran": "Knows MG #3 = 240 sec, MG #7 = 180 sec"
+      },
+      "gameplay_depth": "Mastery = learning specific gun patterns",
+      "historical_note": "German MG positions were catalogued by French observers"
+    },
+
+    "provoked_fire": {
+      "description": "Reactive - player action triggers response",
+      "triggers": {
+        "movement_above_parapet": "Immediate burst (1-2 sec delay)",
+        "night_detection": "Flare + concentrated fire",
+        "silhouette": "Sniper takes shot",
+        "sound": "Talking, metal clank = harassing fire",
+        "pattern": "Same path 3x = ambush prepared"
+      },
+      "player_learns": "Discipline, patience, stealth, vary behavior",
+      "gameplay_mechanic": "Player choices directly affect fire received",
+      "punishment": "Carelessness = death"
+    },
+
+    "mad_minute": {
+      "description": "All rifles fire maximum rate for 60 seconds",
+      "rate": "15 rounds/min × 200 men = 3000 rounds in 60 seconds",
+      "purpose": "Repel assault, demonstrate strength, intimidation",
+      "audio": "Continuous crackle, no gaps",
+      "player_experience": "Wall of sound, total suppression, cannot move",
+      "survival": "Must be in deep cover or 100% death chance",
+      "morale_effect": -15,
+      "historical_note": "British perfected this - devastating firepower"
+    },
+
+    "creeping_fire": {
+      "description": "Infantry advancing with small arms support",
+      "pattern": "Fire advances with infantry line, 50-100m ahead",
+      "purpose": "Suppress defenders during assault",
+      "player_experience": {
+        "defending": "Wall of bullets advancing toward you",
+        "attacking": "Fire support from behind, must keep pace"
+      },
+      "gameplay_mechanic": "Player must predict advance path, reposition"
+    },
+
+    "box_pattern": {
+      "description": "Crossfire from multiple angles to trap sector",
+      "configuration": "2-4 MG positions create overlapping fire",
+      "purpose": "Seal off sector, prevent reinforcement/retreat",
+      "player_experience": "Surrounded by fire, no safe direction",
+      "escape": "Wait for ammo exhaustion or risk low-probability dash",
+      "historical_note": "German interlocking MG networks were lethal"
+    }
+  }
+}
+```
+
+---
+
+#### SECTOR-SPECIFIC THREAT TOPOLOGY
+
+```json
+{
+  "threat_maps": {
+    "fort_douaumont_approaches": {
+      "small_arms_intensity": "Extreme",
+      "dominant_threat": "MG casemates in fort superstructure",
+      "characteristics": {
+        "interlocking_fire": "4-6 MG positions overlapping",
+        "enfilade_threat": "Flanking fire from fort wings",
+        "sniper_activity": "High - intact observation positions",
+        "dead_ground": "Minimal - glacis designed to expose attackers"
+      },
+      "player_strategy": "Advance only during creeping barrage, use shell craters",
+      "historical_accuracy": "Fort's MGs stopped multiple French assaults"
+    },
+
+    "bois_des_caures": {
+      "small_arms_intensity": "Moderate",
+      "dominant_threat": "Close-range rifle ambushes",
+      "characteristics": {
+        "visibility": "Poor - dense woods, undergrowth",
+        "mg_effectiveness": "Low - limited fields of fire",
+        "close_combat": "High - sudden encounters at 10-30m",
+        "grenade_use": "Frequent - woods fighting"
+      },
+      "player_strategy": "Slow, cautious, listen for movement",
+      "historical_accuracy": "Lt. Col. Driant's chasseurs fought here"
+    },
+
+    "mort_homme_slopes": {
+      "small_arms_intensity": "Extreme",
+      "dominant_threat": "Interlocking MG fields on open slopes",
+      "characteristics": {
+        "visibility": "Excellent - open ground",
+        "mg_coverage": "100% - no dead ground",
+        "grazing_fire": "Optimized - gentle slopes perfect for it",
+        "movement": "Suicidal in daylight"
+      },
+      "player_strategy": "Night movement only OR behind creeping barrage only",
+      "historical_accuracy": "One of the deadliest sectors - perfect MG terrain"
+    },
+
+    "ravine_sectors": {
+      "small_arms_intensity": "Low to Moderate",
+      "dominant_threat": "Enfilade fire if enemy controls heights",
+      "characteristics": {
+        "cover": "Good - ravine walls provide defilade",
+        "vulnerability": "High if enemy on ridges above",
+        "sniper_danger": "Moderate - limited angles",
+        "movement": "Relatively safe in ravine bottom"
+      },
+      "player_strategy": "Use ravines for approach, avoid if enemy controls heights"
+    },
+
+    "crater_fields": {
+      "small_arms_intensity": "Variable",
+      "dominant_threat": "Fire from crater to crater",
+      "characteristics": {
+        "cover": "Excellent - deep craters provide shelter",
+        "movement": "Short dashes between craters",
+        "grenade_danger": "High - easy to drop grenades into craters",
+        "disorientation": "High - all craters look alike"
+      },
+      "player_strategy": "Crater-hop, use smoke, avoid patterns"
+    }
+  }
+}
+```
+
+---
+
+#### MORALE & ALERTNESS EFFECTS
+
+```json
+{
+  "psychological_effects": {
+    "sector_quiet": {
+      "morale": -5,
+      "alertness": +10,
+      "note": "Silence is ominous, suspicious",
+      "player_experience": "Tension builds, waiting for violence",
+      "duration_effect": "After 10+ minutes, becomes unbearable"
+    },
+
+    "harassing_fire": {
+      "morale": -2,
+      "alertness": +5,
+      "note": "Constant wear, prevents rest",
+      "player_experience": "Exhausting, annoying, demoralizing",
+      "duration_effect": "Cumulative - after 2 hours, morale -10 total"
+    },
+
+    "suppressive_fire": {
+      "morale": -10,
+      "alertness": +20,
+      "note": "Pinned, helpless feeling",
+      "player_experience": "Trapped, vulnerable, waiting to die",
+      "duration_effect": "If sustained >10 minutes, shell shock risk"
+    },
+
+    "fire_storm": {
+      "morale": -20,
+      "alertness": 100,
+      "note": "Peak terror, survival mode",
+      "player_experience": "Primal fear, cannot think, animal survival",
+      "duration_effect": "After 30 minutes, many men break entirely"
+    },
+
+    "close_miss": {
+      "morale": -3,
+      "alertness": +10,
+      "note": "That one was close - personal threat",
+      "player_experience": "Spike of fear, adrenaline",
+      "habituation": "Veterans less affected, but never immune"
+    },
+
+    "comrade_hit": {
+      "morale": -15,
+      "alertness": 0,
+      "note": "Witnessing death, helplessness",
+      "player_experience": "Shock, horror, 'I'm next'",
+      "duration_effect": "Permanent trauma, affects rest of campaign"
+    }
+  }
+}
+```
+
+---
+
+#### COMBINED ARMS EFFECTS (Small Arms + Artillery)
+
+```json
+{
+  "combined_effects": {
+    "artillery_plus_small_arms": {
+      "description": "When both systems active simultaneously",
+      "historical_quote": "The shells and bullets together were unbearable",
+      "psychological_effect": "Multiplicative, not additive",
+      "calculation": "(Artillery_stress × Small_arms_stress) × 1.5",
+
+      "scenarios": {
+        "drumfire_plus_fire_storm": {
+          "morale_impact": -40,
+          "alertness": 100,
+          "shell_shock_chance": "60% per hour",
+          "player_experience": "Cannot move (small arms) + cannot hide (artillery) = peak terror",
+          "historical_accuracy": "Feb 21, 1916 - men found catatonic in dugouts"
+        },
+
+        "harassing_artillery_plus_mg_sweeps": {
+          "morale_impact": -12,
+          "gameplay": "Must time movement for BOTH threats - very difficult",
+          "player_learning": "Master timing: move between MG sweep AND shell impacts",
+          "skill_ceiling": "Highest mastery challenge in game"
+        },
+
+        "creeping_barrage_plus_advancing_infantry": {
+          "description": "Artillery moves forward, small arms follow",
+          "player_role": "Defender - must survive both",
+          "timing": "Artillery lifts, then 30-60 seconds until infantry arrive",
+          "critical_window": "Must recover from shell shock and man positions in <60 sec",
+          "failure": "Infantry overrun trenches if defenders still stunned"
+        }
+      }
+    },
+
+    "silence_after_fire_storm": {
+      "description": "Sudden cessation of fire",
+      "psychological": "MORE disturbing than the fire itself",
+      "player_experience": "Did they stop? Are they coming? Prepare for assault?",
+      "gameplay": "Deafened, disoriented, must check for assault",
+      "historical_note": "Often signaled imminent attack"
+    }
+  }
+}
+```
+
+---
+
+#### GAMEPLAY INTEGRATION
+
+```json
+{
+  "movement_system": {
+    "description": "Player must read small arms weather to navigate safely",
+    "mechanics": {
+      "threat_assessment": "Player evaluates current fire pattern before moving",
+      "timing": "Move between MG sweeps, during harassing fire gaps",
+      "posture": {
+        "standing": "Fast but visible - only in dead ground",
+        "crouching": "Moderate speed, lower profile",
+        "crawling": "Slow but safest - for open ground",
+        "sprinting": "Emergency only - high stamina cost, attracts fire"
+      },
+      "consequences": "Wrong timing = provoked fire = wounds/death"
+    }
+  },
+
+  "sector_learning": {
+    "description": "Player builds mental map of threat topology",
+    "veteran_knowledge": [
+      "MG #3 sweeps every 240 seconds",
+      "MG #7 has 60° arc covering trench approach",
+      "Sniper active 06:00-08:00 (dawn light)",
+      "Enfilade threat from captured sap in Sector 7",
+      "Dead ground behind ruined wall at map marker 14",
+      "Safe movement path: follow communication trench, not straight"
+    ],
+    "mastery": "Knowing the sector = survival",
+    "historical_accuracy": "Veterans memorized every MG position, safe path, firing pattern"
+  },
+
+  "difficulty_progression": {
+    "early_game": "Light harassing fire, predictable patterns",
+    "mid_game": "Increased intensity, more complex patterns",
+    "late_game": "Multiple overlapping threats, combined arms, minimal safe windows"
+  }
+}
+```
+
+---
+
+## [SMALL ARMS WEATHER ENGINE COMPLETE]
+
+---
+
+<a name="complete-munitions-catalog"></a>
+### COMPLETE MUNITIONS CATALOG: EVERY WEAPON SYSTEM AT VERDUN
+
+**Purpose**: This is the exhaustive, historically accurate catalog of EVERY weapon, munition, and delivery system used during the Battle of Verdun (Feb 21 - Dec 18, 1916). This includes small arms, grenades, mines, mortars, flamethrowers, tanks, gas systems, and aerial munitions.
+
+**Organization**: Categorized by weapon class, with full specifications for gameplay implementation.
+
+---
+
+#### RIFLES (Primary Infantry Weapon)
+
+```json
+{
+  "french_rifles": {
+    "lebel_model_1886_m93": {
+      "full_designation": "Fusil Lebel Modèle 1886 M93",
+      "type": "Bolt-action rifle",
+      "caliber": "8×50mm Lebel",
+      "capacity": 8,
+      "reload_time_seconds": 12,
+      "rate_of_fire_rpm": 15,
+      "muzzle_velocity_m_s": 700,
+      "effective_range_m": 400,
+      "maximum_range_m": 2000,
+      "weight_kg": 4.28,
+      "length_mm": 1303,
+
+      "characteristics": {
+        "loading_system": "Tubular magazine under barrel",
+        "sights": "Blade front, tangent rear (graduated to 2000m)",
+        "bayonet": "Cruciform spike bayonet (Épée-Baïonnette Modèle 1886)",
+        "reliability": "Very high - simple, robust design",
+        "quirks": "Cannot be topped off - must fully empty to reload"
+      },
+
+      "gameplay": {
+        "availability": "Primary French rifle - player uses 70% of campaign",
+        "accuracy_base": 75,
+        "recoil": "Moderate",
+        "damage": "One hit incapacitation (realistic)",
+        "audio": "Sharp crack, distinctive",
+        "animation_time": "Bolt cycle 0.8 sec, reload 12 sec"
+      },
+
+      "historical_context": {
+        "usage": "Primary French infantry rifle 1886-1920",
+        "verdict": "8×50mm Lebel caliber extremely effective",
+        "production": "3.5 million produced",
+        "note": "First smokeless powder military rifle adopted by any nation"
+      }
+    },
+
+    "berthier_model_1907_15": {
+      "full_designation": "Fusil Berthier Modèle 1907/15",
+      "type": "Bolt-action rifle",
+      "caliber": "8×50mm Lebel",
+      "capacity": 3,
+      "reload_time_seconds": 3,
+      "rate_of_fire_rpm": 20,
+      "muzzle_velocity_m_s": 700,
+      "effective_range_m": 400,
+      "weight_kg": 3.78,
+
+      "characteristics": {
+        "loading_system": "3-round Mannlicher-style clip",
+        "advantages": "Lighter than Lebel, faster to reload",
+        "disadvantages": "Only 3 rounds vs. Lebel's 8",
+        "reliability": "Excellent"
+      },
+
+      "gameplay": {
+        "availability": "Alternate rifle - some missions",
+        "advantage": "Fast reload (emergency situations)",
+        "disadvantage": "Low capacity - must reload more often"
+      },
+
+      "historical_context": {
+        "usage": "Supplemented Lebel, used by colonial troops and cavalry",
+        "production": "Increased during WWI to meet rifle shortages"
+      }
+    }
+  },
+
+  "german_rifles": {
+    "gewehr_98": {
+      "full_designation": "Gewehr 98",
+      "type": "Bolt-action rifle",
+      "caliber": "7.92×57mm Mauser",
+      "capacity": 5,
+      "reload_time_seconds": 5,
+      "rate_of_fire_rpm": 15,
+      "muzzle_velocity_m_s": 878,
+      "effective_range_m": 500,
+      "maximum_range_m": 2000,
+      "weight_kg": 4.09,
+      "length_mm": 1250,
+
+      "characteristics": {
+        "loading_system": "5-round internal magazine, stripper clip loading",
+        "sights": "Tangent rear sight graduated to 2000m",
+        "bayonet": "S98/05 knife bayonet",
+        "reliability": "Exceptional - regarded as finest bolt-action of WWI",
+        "accuracy": "Superior to most contemporary rifles"
+      },
+
+      "gameplay": {
+        "availability": "Player encounters as enemy weapon, rarely picks up",
+        "accuracy_base": 80,
+        "advantages": "Slightly better accuracy than Lebel",
+        "note": "If player picks up, has limited ammo (Germans use different caliber)"
+      },
+
+      "historical_context": {
+        "usage": "Standard German infantry rifle 1898-1935",
+        "verdict": "One of the most successful military rifles ever designed",
+        "production": "Millions produced",
+        "legacy": "Design influenced rifle development worldwide"
+      }
+    },
+
+    "kar_98az": {
+      "full_designation": "Karabiner 98 AZ (Alter Zeitlich)",
+      "type": "Carbine (shortened rifle)",
+      "caliber": "7.92×57mm Mauser",
+      "capacity": 5,
+      "length_mm": 1090,
+      "weight_kg": 3.7,
+
+      "characteristics": {
+        "role": "Assault troops, stormtroopers, specialists",
+        "advantages": "Shorter, lighter - better for trench fighting",
+        "disadvantages": "Slightly less range/accuracy than full Gewehr 98"
+      },
+
+      "historical_context": {
+        "usage": "Issued to assault troops and cavalry",
+        "note": "Predecessor to WWII Kar 98k"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### MACHINE GUNS (The Killing Machines)
+
+```json
+{
+  "french_machine_guns": {
+    "hotchkiss_m1914": {
+      "full_designation": "Hotchkiss M1914",
+      "type": "Medium machine gun (air-cooled)",
+      "caliber": "8×50mm Lebel",
+      "rate_of_fire_rpm": 450,
+      "feed_system": "24 or 30-round metallic strips",
+      "muzzle_velocity_m_s": 724,
+      "effective_range_m": 800,
+      "maximum_range_m": 3800,
+      "weight_kg": 23.6,
+      "crew": 3,
+
+      "characteristics": {
+        "cooling": "Air-cooled (finned barrel) - no water needed",
+        "reliability": "Excellent - gas-operated, robust",
+        "barrel_change": "Relatively quick",
+        "mount": "Tripod (defensive) or portable mount (offensive)",
+        "disadvantages": "Strip-feeding slower than belt"
+      },
+
+      "gameplay": {
+        "player_role": "Man Hotchkiss during defensive missions",
+        "operation": {
+          "sustained_fire": "Can fire continuously with barrel changes",
+          "overheating": "Barrel change after ~200 rounds",
+          "ammo_supply": "NPC loader feeds new strips",
+          "targeting": "Groups of advancing infantry, suppress positions"
+        },
+        "vulnerability": "MG position = high priority target for artillery and snipers",
+        "psychological": "Killing 20+ men in 30 seconds - morale cost",
+        "audio": "Distinctive cyclic rate - recognizable"
+      },
+
+      "historical_context": {
+        "usage": "Primary French MG throughout WWI",
+        "production": "Over 100,000 produced",
+        "verdict": "Reliable, effective, well-suited to French tactics",
+        "casualties_caused": "MGs caused ~30% of all WWI combat casualties"
+      }
+    },
+
+    "chauchat_m1915": {
+      "full_designation": "Chauchat Modèle 1915 (CSRG)",
+      "type": "Light machine gun / automatic rifle",
+      "caliber": "8×50mm Lebel",
+      "rate_of_fire_rpm": 240,
+      "feed_system": "20-round detachable semicircular magazine",
+      "weight_kg": 9,
+      "crew": 1,
+
+      "characteristics": {
+        "role": "Squad automatic weapon - mobile firepower",
+        "cooling": "Air-cooled",
+        "reliability": "Poor - jammed frequently (mud, dirt)",
+        "reputation": "Infamous as one of worst MGs of WWI",
+        "advantages": "Light, man-portable, gives squads automatic fire"
+      },
+
+      "gameplay": {
+        "player_use": "Limited - occasional missions",
+        "jam_mechanic": "15% chance per magazine to jam (realistic)",
+        "clearing_jam": "5-10 seconds, vulnerable during",
+        "tactical_use": "Suppress position while advancing, then switch to rifle"
+      },
+
+      "historical_context": {
+        "production": "262,000+ produced (most numerous automatic weapon of WWI)",
+        "verdict": "Necessary evil - filled critical role despite flaws",
+        "note": "Universally hated by soldiers, but provided mobile firepower"
+      }
+    },
+
+    "saint_etienne_m1907": {
+      "full_designation": "Mitrailleuse Mle 1907 T (Saint-Étienne)",
+      "type": "Medium machine gun (air-cooled)",
+      "caliber": "8×50mm Lebel",
+      "rate_of_fire_rpm": 400,
+      "weight_kg": 25.7,
+
+      "characteristics": {
+        "reliability": "Poor - complex gas system, jammed often",
+        "reputation": "Problematic design, withdrawn from front lines",
+        "note": "Replaced by Hotchkiss where possible"
+      },
+
+      "gameplay": {
+        "availability": "Rare - only early 1916 missions",
+        "jam_chance": "Higher than Hotchkiss",
+        "historical_accuracy": "Player may experience jam during critical moment"
+      }
+    }
+  },
+
+  "german_machine_guns": {
+    "mg_08": {
+      "full_designation": "Maschinengewehr 08 (MG 08)",
+      "type": "Heavy machine gun (water-cooled)",
+      "caliber": "7.92×57mm Mauser",
+      "rate_of_fire_rpm": 450,
+      "feed_system": "250-round fabric belt",
+      "muzzle_velocity_m_s": 900,
+      "effective_range_m": 2000,
+      "maximum_range_m": 3600,
+      "weight_kg": 26.4,
+      "crew": 4,
+
+      "characteristics": {
+        "cooling": "Water-cooled jacket - can sustain fire indefinitely",
+        "reliability": "Excellent - recoil-operated Maxim design",
+        "mount": "Heavy tripod (Schlitten 08)",
+        "belt_system": "Fabric belt, 250 rounds standard",
+        "advantage": "Can fire continuously for hours with water cooling"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "Primary threat from German positions",
+        "audio": "Slightly slower cyclic rate than Hotchkiss, distinct sound",
+        "threat_pattern": "Predictable sweeps, devastating in enfilade",
+        "player_interaction": "Must learn to time MG 08 firing patterns",
+        "vulnerability": "Crew exposed, emplacement visible"
+      },
+
+      "historical_context": {
+        "usage": "Primary German MG - 'Devil's Paintbrush'",
+        "effectiveness": "Responsible for majority of German defensive success",
+        "doctrine": "Germans emphasized MG defense more than French/British",
+        "casualties": "Single MG could stop entire company",
+        "verdict": "Most lethal weapon on Western Front per unit"
+      }
+    },
+
+    "mg_08_15": {
+      "full_designation": "MG 08/15",
+      "type": "Light machine gun",
+      "caliber": "7.92×57mm Mauser",
+      "rate_of_fire_rpm": 500,
+      "weight_kg": 18,
+      "crew": 2,
+
+      "characteristics": {
+        "role": "Lightened version of MG 08 for mobile warfare",
+        "cooling": "Water-cooled (small jacket) or air-cooled (late war)",
+        "shoulder_stock": "Added for portable fire",
+        "advantages": "Man-portable, still belt-fed",
+        "disadvantages": "Heavier than true LMGs, still needed water"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "German assault troops use this",
+        "threat": "Advancing Germans have automatic fire support",
+        "note": "Seen in German counterattacks"
+      },
+
+      "historical_context": {
+        "introduction": "1915 - response to need for mobile MG",
+        "production": "130,000+ produced",
+        "effectiveness": "Gave German stormtroopers massive firepower advantage"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### PISTOLS & SIDEARMS
+
+```json
+{
+  "french_pistols": {
+    "ruby_pistol": {
+      "full_designation": "Ruby Pistol (Spanish-made)",
+      "type": "Semi-automatic pistol",
+      "caliber": "7.65×17mm (.32 ACP)",
+      "capacity": 9,
+      "effective_range_m": 25,
+      "weight_kg": 0.68,
+
+      "characteristics": {
+        "origin": "Spanish production for France (domestic shortages)",
+        "reliability": "Variable - many manufacturers, inconsistent quality",
+        "usage": "Widely issued to French officers and NCOs"
+      },
+
+      "gameplay": {
+        "player_sidearm": "Standard sidearm for most missions",
+        "damage": "Moderate - less stopping power than .45",
+        "use_cases": "Self-defense, trench clearing, last resort",
+        "accuracy": "Low at >10m when fatigued"
+      }
+    },
+
+    "mle_1892_revolver": {
+      "full_designation": "Modèle 1892 Revolver (Lebel Revolver)",
+      "type": "Revolver",
+      "caliber": "8×27mm SR French Ordnance",
+      "capacity": 6,
+      "effective_range_m": 30,
+
+      "characteristics": {
+        "reliability": "Excellent - simple revolver mechanism",
+        "stopping_power": "Good",
+        "disadvantages": "Slow to reload, only 6 rounds"
+      },
+
+      "gameplay": {
+        "availability": "Some missions (officers, cavalry)",
+        "reliability": "Never jams (revolver)",
+        "tradeoff": "Reliable but slow"
+      }
+    }
+  },
+
+  "german_pistols": {
+    "luger_p08": {
+      "full_designation": "Pistole Parabellum 1908 (Luger P08)",
+      "type": "Semi-automatic pistol",
+      "caliber": "9×19mm Parabellum",
+      "capacity": 8,
+      "effective_range_m": 50,
+      "muzzle_velocity_m_s": 350,
+      "weight_kg": 0.87,
+
+      "characteristics": {
+        "reliability": "Good in clean conditions, sensitive to mud",
+        "accuracy": "Excellent for a pistol",
+        "reputation": "Iconic, prized trophy",
+        "distinctive": "Toggle-lock action, unique appearance"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "German officers carry",
+        "pickup": "Player can pick up from dead Germans",
+        "ammo_scarcity": "Limited 9mm ammo (not French caliber)",
+        "prestige": "Trophy weapon - morale boost if kept"
+      }
+    },
+
+    "mauser_c96": {
+      "full_designation": "Mauser C96 (Broomhandle Mauser)",
+      "type": "Semi-automatic pistol",
+      "caliber": "7.63×25mm Mauser",
+      "capacity": 10,
+      "effective_range_m": 150,
+
+      "characteristics": {
+        "unique": "Detachable shoulder stock, very long range for pistol",
+        "reliability": "Good",
+        "usage": "German officers, stormtrooper officers"
+      },
+
+      "gameplay": {
+        "rare_pickup": "Uncommon",
+        "advantage": "10-round capacity, shoulder stock for aimed fire",
+        "novelty": "Can engage at rifle ranges with stock"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### GRENADES (Hand Grenades)
+
+```json
+{
+  "french_grenades": {
+    "grenade_f1": {
+      "full_designation": "Grenade F1 (Grenade à Fragmentation F1)",
+      "type": "Defensive fragmentation grenade",
+      "fuse_time_seconds": 5,
+      "weight_kg": 0.6,
+      "explosive_weight_g": 60,
+      "blast_radius_lethal_m": 10,
+      "blast_radius_wound_m": 25,
+      "fragmentation_radius_m": 200,
+
+      "characteristics": {
+        "casing": "Cast iron segmented - designed for maximum fragmentation",
+        "safety": "Manual fuse lighting (match, lighter, or friction igniter)",
+        "reliability": "Good",
+        "shape": "Cylindrical with horizontal grooves",
+        "fuze": "Billant fuze system"
+      },
+
+      "gameplay": {
+        "primary_grenade": "Most common French grenade at Verdun",
+        "throw_range_m": "20-30 (stamina-dependent)",
+        "cook_mechanic": "Player can hold to reduce fuse time (risky)",
+        "physics": "Full physics - can bounce, roll, hit walls",
+        "friendly_fire": "Yes - can hit own soldiers",
+        "tactics": {
+          "trench_clearing": "Throw into enemy trench before assault",
+          "defensive": "Throw at advancing Germans from parapet",
+          "danger": "Can bounce back if hits wall - panic moment"
+        }
+      },
+
+      "historical_context": {
+        "introduction": "1915",
+        "production": "Millions produced - used into 1960s",
+        "verdict": "Effective, reliable, widely used",
+        "note": "Fragments dangerous out to 200m - thrower needs hard cover"
+      }
+    },
+
+    "grenade_citron_foug": {
+      "full_designation": "Grenade Citron Foug (Lemon Grenade)",
+      "type": "Offensive concussion grenade",
+      "fuse_time_seconds": 5,
+      "weight_kg": 0.52,
+      "explosive_weight_g": 90,
+      "blast_radius_m": 10,
+
+      "characteristics": {
+        "casing": "Thin sheet metal - minimal fragmentation",
+        "purpose": "Offensive use - safe for thrower in open",
+        "effect": "Concussion/overpressure, minimal shrapnel",
+        "shape": "Oval ('lemon shaped')"
+      },
+
+      "gameplay": {
+        "tactical_use": "Safe for player to throw when NOT behind cover",
+        "damage": "High vs unprotected, low vs entrenched",
+        "availability": "Assault missions"
+      }
+    },
+
+    "grenade_bouteille": {
+      "full_designation": "Grenade Bouteille (Bottle Grenade)",
+      "type": "Impact grenade (early war)",
+      "fuse_type": "Impact-detonated",
+      "weight_kg": 1.0,
+
+      "characteristics": {
+        "design": "Glass bottle filled with explosives, impact fuze",
+        "reliability": "Poor - often failed to detonate OR detonated prematurely",
+        "danger": "Hazardous to thrower"
+      },
+
+      "gameplay": {
+        "availability": "Early 1916 missions only",
+        "mechanic": "10% chance to fail, 5% chance to detonate in hand",
+        "historical_accuracy": "Shows progression of grenade technology"
+      },
+
+      "historical_context": {
+        "period": "1914-1915",
+        "verdict": "Quickly replaced by safer designs",
+        "note": "Desperate improvisation - no good grenades early war"
+      }
+    }
+  },
+
+  "german_grenades": {
+    "stielhandgranate_m1915": {
+      "full_designation": "Stielhandgranate Model 1915 (Stick Grenade)",
+      "type": "Offensive concussion grenade",
+      "fuse_time_seconds": 5.5,
+      "weight_kg": 0.75,
+      "explosive_weight_g": 165,
+      "blast_radius_lethal_m": 3,
+      "blast_radius_wound_m": 10,
+
+      "characteristics": {
+        "design": "Wooden handle + cylindrical head",
+        "advantage": "Handle allows longer throws (30-40m)",
+        "casing": "Thin steel - minimal fragmentation (offensive design)",
+        "activation": "Pull cord at base of handle ignites friction fuze",
+        "reliability": "Excellent"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "Germans throw at player",
+        "audio": "Distinctive wooden 'clunk' when hits ground",
+        "warning": "Player has ~5 seconds to react",
+        "pickup": "Player can pick up unexploded and throw back (risk)",
+        "tactics": "Germans throw in bundles (Geballte Ladung) for anti-bunker"
+      },
+
+      "historical_context": {
+        "nickname": "Potato Masher",
+        "effectiveness": "Excellent throwing range due to handle",
+        "production": "Millions produced - used through WWII",
+        "doctrine": "Germans used grenades more aggressively than Allies"
+      }
+    },
+
+    "stielhandgranate_m1917": {
+      "full_designation": "Stielhandgranate Model 1917",
+      "improvements": "Fragmentation sleeve available (defensive version)",
+      "note": "Could be converted from offensive to defensive by adding sleeve"
+    },
+
+    "discushandgranate": {
+      "full_designation": "Discushandgranate (Discus Hand Grenade)",
+      "type": "Fragmentation grenade",
+      "shape": "Disc-shaped",
+      "purpose": "Compact, flat - easier to carry",
+      "usage": "Less common than Stielhandgranate"
+    }
+  }
+}
+```
+
+---
+
+#### RIFLE GRENADES
+
+```json
+{
+  "french_rifle_grenades": {
+    "vb_grenade": {
+      "full_designation": "Grenade VB (Viven-Bessières)",
+      "type": "Rifle grenade launcher system",
+      "introduction": "1916 (used at Verdun)",
+      "caliber": "Launched from Lebel rifle via blank cartridge",
+      "range_m": "80-180",
+      "grenade_weight_kg": 0.5,
+
+      "characteristics": {
+        "operation": {
+          "1": "Attach cup launcher to rifle muzzle",
+          "2": "Load special blank cartridge (or live round with bullet trap)",
+          "3": "Drop grenade into cup",
+          "4": "Aim at 45° angle",
+          "5": "Fire - gas propels grenade"
+        },
+        "versatility": "Could launch fragmentation, smoke, or incendiary grenades",
+        "accuracy": "Moderate - practice required",
+        "rate_of_fire": "6-8 rounds per minute"
+      },
+
+      "gameplay": {
+        "player_use": "Special weapon - occasional missions",
+        "aiming": "Angle-based trajectory system (like mortar)",
+        "effectiveness": "Destroy MG nests, clear trenches beyond hand throw range",
+        "ammo_scarcity": "Limited grenades per mission",
+        "vulnerability": "Slow to reload, exposed while aiming"
+      },
+
+      "historical_context": {
+        "significance": "First truly effective rifle grenade system",
+        "production": "Millions of grenades launched",
+        "doctrine": "Every French squad had rifle grenadiers",
+        "legacy": "Influenced rifle grenade development through WWII"
+      }
+    }
+  },
+
+  "german_rifle_grenades": {
+    "gewehr_granate": {
+      "full_designation": "Gewehr-Granate (Rifle Grenade)",
+      "type": "Rod-type rifle grenade",
+      "operation": "Rod inserted into rifle barrel, fired with blank",
+      "range_m": "50-100",
+
+      "characteristics": {
+        "design": "Stick grenade with rod attachment",
+        "disadvantage": "Shorter range than French VB system",
+        "reliability": "Good"
+      },
+
+      "gameplay": {
+        "enemy_use": "Germans launch at player positions",
+        "audio": "Distinctive 'pop' of launch, then whistle"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### TRENCH MORTARS (Critical Support Weapons)
+
+```json
+{
+  "french_mortars": {
+    "crapouillot_58mm": {
+      "full_designation": "Mortier de 58mm Type T N°2 (Crapouillot)",
+      "type": "Light trench mortar",
+      "caliber_mm": 58,
+      "weight_kg": 45,
+      "crew": 3,
+      "rate_of_fire_rpm": 15,
+      "range_min_m": 85,
+      "range_max_m": 580,
+      "projectile_weight_kg": 2.5,
+
+      "characteristics": {
+        "mobility": "Man-portable - can be moved within trenches",
+        "operation": "Muzzle-loaded, trigger-fired",
+        "purpose": "Destroy enemy trenches, MG nests, wire",
+        "nickname": "Crapouillot (Little Toad)",
+        "accuracy": "Moderate - high angle makes precise aim difficult"
+      },
+
+      "gameplay": {
+        "player_operation": "Limited missions - player fires mortar",
+        "aiming": {
+          "elevation": "Player adjusts angle",
+          "bearing": "Traverse left/right",
+          "range": "Calculated by angle + charge",
+          "spotting": "Observer calls corrections"
+        },
+        "effectiveness": "Destroy German positions before assault",
+        "counter-fire": "Enemy mortars target French mortar position",
+        "casualties": "High - mortar crews had dangerous job"
+      },
+
+      "historical_context": {
+        "introduction": "1915",
+        "production": "Thousands deployed",
+        "effectiveness": "Essential for trench warfare - only weapon that could hit reverse slopes",
+        "note": "Mortars could fire over hills, into trenches - artillery couldn't"
+      }
+    },
+
+    "mortier_150mm_t": {
+      "full_designation": "Mortier de 150mm T",
+      "type": "Medium trench mortar",
+      "caliber_mm": 150,
+      "weight_kg": 230,
+      "crew": 6,
+      "range_max_m": 1000,
+      "projectile_weight_kg": 20,
+
+      "characteristics": {
+        "mobility": "Requires transport - not man-portable",
+        "power": "Devastating - destroys bunkers, shelters",
+        "rate_of_fire": "Slow - 2-3 rounds per minute"
+      },
+
+      "gameplay": {
+        "player_role": "Calls in mortar fire (not direct operation)",
+        "effectiveness": "Destroys fortified positions"
+      }
+    },
+
+    "stokes_mortar_81mm": {
+      "full_designation": "Stokes 81mm Mortar (British, limited French use)",
+      "type": "Medium trench mortar",
+      "caliber_mm": 81,
+      "rate_of_fire_rpm": 25,
+      "range_max_m": 800,
+
+      "characteristics": {
+        "innovation": "Drop-fire system - simple, fast",
+        "reliability": "Excellent",
+        "note": "British invention, some French use late 1916"
+      }
+    }
+  },
+
+  "german_mortars": {
+    "minenwerfer_76mm": {
+      "full_designation": "Leichter Minenwerfer 7.58cm (Light Mine Thrower)",
+      "type": "Light trench mortar",
+      "caliber_mm": 76,
+      "weight_kg": 147,
+      "crew": 3,
+      "rate_of_fire_rpm": 20,
+      "range_max_m": 1050,
+      "projectile_weight_kg": 4.5,
+
+      "characteristics": {
+        "design": "Rifled bore - better accuracy than smooth-bore French",
+        "reliability": "Excellent",
+        "mobility": "Man-portable with difficulty"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "Germans rain mortars on French trenches",
+        "audio": "Distinctive 'bloop' of launch, whistling descent",
+        "warning": "2-4 seconds flight time",
+        "player_response": "Take cover in dugout or shell hole"
+      },
+
+      "historical_context": {
+        "doctrine": "Germans pioneered trench mortar warfare",
+        "effectiveness": "Superior to early French designs",
+        "note": "Germans had more mortars and better training"
+      }
+    },
+
+    "minenwerfer_170mm": {
+      "full_designation": "Mittlerer Minenwerfer 17cm (Medium Mine Thrower)",
+      "type": "Medium trench mortar",
+      "caliber_mm": 170,
+      "weight_kg": 628,
+      "crew": 6,
+      "range_max_m": 900,
+      "projectile_weight_kg": 50,
+
+      "characteristics": {
+        "power": "Extremely destructive",
+        "purpose": "Destroy French bunkers, shelters, strong points",
+        "projectile": "Large HE round - massive blast"
+      },
+
+      "gameplay": {
+        "threat": "Can collapse dugouts, bury soldiers",
+        "audio": "Deep 'whoosh' and massive explosion",
+        "survival": "Only deep shelters safe"
+      }
+    },
+
+    "minenwerfer_250mm": {
+      "full_designation": "Schwerer Minenwerfer 25cm (Heavy Mine Thrower)",
+      "type": "Heavy trench mortar",
+      "caliber_mm": 250,
+      "weight_kg": 955,
+      "crew": 10,
+      "range_max_m": 550,
+      "projectile_weight_kg": 95,
+
+      "characteristics": {
+        "power": "Devastating - largest trench mortar",
+        "purpose": "Fortress and bunker destruction",
+        "projectile": "Massive mine - creates huge crater",
+        "rate_of_fire": "Slow - 1 round per 2-3 minutes"
+      },
+
+      "gameplay": {
+        "rare": "Only a few missions feature this",
+        "audio": "Massive whistling, earth-shaking explosion",
+        "effect": "Collapses entire trench sections",
+        "psychological": "Absolutely terrifying"
+      },
+
+      "historical_context": {
+        "nickname": "Ladungswerfer (Charge thrower)",
+        "usage": "Used at Verdun to destroy French forts",
+        "verdict": "Most powerful infantry-operated weapon of WWI"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### FLAMETHROWERS (Psychological Terror Weapons)
+
+```json
+{
+  "german_flamethrowers": {
+    "flammenwerfer_m1915_klein": {
+      "full_designation": "Kleinflammenwerfer Modell 1915 (Kleif)",
+      "type": "Portable flamethrower",
+      "weight_kg": 35.8,
+      "fuel_capacity_liters": 11.7,
+      "fuel_type": "Pressurized nitrogen + coal-tar/gasoline mix",
+      "range_m": 18,
+      "duration_seconds": 40,
+      "crew": 1,
+
+      "characteristics": {
+        "portability": "Backpack-mounted - one man can operate",
+        "ignition": "Hydrogen flame igniter at nozzle",
+        "pressure": "Nitrogen cylinder provides propellant pressure",
+        "flame_length": "15-18m jet of burning liquid",
+        "reliability": "Moderate - vulnerable to malfunction, leaks"
+      },
+
+      "gameplay": {
+        "enemy_weapon": "German stormtroopers use in trench assaults",
+        "effect_on_player": {
+          "direct_hit": "Instant death - immolation",
+          "near_miss": "Burns, panic, severe morale loss",
+          "sight_of_flame": "Terror effect - even if not hit"
+        },
+        "audio": "Roaring whoosh, screaming",
+        "visual": "Wall of flame advancing down trench",
+        "counter": "Shoot fuel tank (explodes), kill operator, retreat",
+        "psychological": "Most terrifying weapon - primal fear of fire"
+      },
+
+      "historical_context": {
+        "introduction": "First used February 1915 (before Verdun)",
+        "usage_verdun": "Specialized assault troops - clearing bunkers/trenches",
+        "effectiveness": "Psychological > actual casualties",
+        "range_limitation": "Short range = high casualties for operators",
+        "verdict": "Terror weapon - forced defenders out of positions"
+      }
+    },
+
+    "flammenwerfer_m1916_gross": {
+      "full_designation": "Grossflammenwerfer Modell 1916 (Grof)",
+      "type": "Heavy emplaced flamethrower",
+      "weight_kg": 950,
+      "fuel_capacity_liters": 180,
+      "range_m": 40,
+      "duration_seconds": 120,
+      "crew": 3,
+
+      "characteristics": {
+        "deployment": "Fixed emplacement - not portable",
+        "range": "Double that of portable version",
+        "capacity": "Can fire continuously for 2 minutes",
+        "usage": "Defensive - protect bunkers, strongpoints"
+      },
+
+      "gameplay": {
+        "rare_encounter": "1-2 missions may feature this",
+        "threat": "Blocks entire trench section with flame",
+        "tactics": "Player must find alternate route or destroy emplacement"
+      }
+    }
+  },
+
+  "french_flamethrowers": {
+    "lance_flammes_schilt": {
+      "full_designation": "Lance-flammes Schilt",
+      "type": "Portable flamethrower",
+      "introduction": "1916",
+      "range_m": 20,
+      "weight_kg": 32,
+
+      "characteristics": {
+        "development": "French response to German flammenwerfer",
+        "effectiveness": "Similar to German design",
+        "usage": "Limited - French used less than Germans"
+      },
+
+      "gameplay": {
+        "player_use": "Rare - 1-2 assault missions only",
+        "operation": "Hold trigger, spray flame into bunker/trench",
+        "vulnerability": "Extremely vulnerable - priority target",
+        "morale_cost": "Burning men alive = massive morale penalty",
+        "historical_note": "French soldiers often refused to use them"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### MINES & EXPLOSIVE TRAPS
+
+```json
+{
+  "land_mines": {
+    "french_fougasse": {
+      "type": "Improvised explosive mine",
+      "composition": "Artillery shell buried nose-up, command-detonated",
+      "blast_radius_m": 20,
+      "usage": "Defend approaches, crater lines, key positions",
+
+      "gameplay": {
+        "enemy_trap": "Germans trigger French mines in no-man's-land",
+        "player_use": "Rare - engineer mission placing mines",
+        "detonation": "Command wire or tripwire",
+        "effect": "Massive blast, kills 3-10 men"
+      }
+    },
+
+    "trench_torpedo": {
+      "type": "Propelled explosive mine",
+      "design": "Explosive charge on wooden frame with propellant",
+      "range_m": 50,
+      "blast_radius_m": 15,
+
+      "characteristics": {
+        "operation": "Fired from trench mortar or tube",
+        "accuracy": "Poor - often missed target",
+        "power": "Large explosive charge - devastating if hits",
+        "unreliability": "Frequently failed or misfired"
+      },
+
+      "gameplay": {
+        "rare": "Occasional mission features these",
+        "audio": "Slow tumbling whoosh - visible in flight",
+        "player_response": "Dodge if seen early enough"
+      }
+    }
+  },
+
+  "underground_mines": {
+    "sapping_charges": {
+      "type": "Underground mine warfare",
+      "method": "Dig tunnel under enemy position, pack with explosives",
+      "charge_size_kg": "500-5000kg of explosive",
+      "crater_diameter_m": "30-60m",
+
+      "historical_context": {
+        "usage_verdun": "Limited compared to other sectors (rock terrain difficult)",
+        "process": "Weeks/months to dig, then massive explosion",
+        "danger": "Counter-mining - enemy digs toward your tunnel",
+        "casualties": "Hundreds could die in single blast"
+      },
+
+      "gameplay": {
+        "scripted_events": "1-2 missions feature mine explosions",
+        "warning": "Listening posts detect enemy digging (rumbling sound)",
+        "experience": "Massive ground shake, entire position collapses",
+        "survival": "If near epicenter - buried alive or killed"
+      }
+    },
+
+    "camouflet": {
+      "type": "Counter-mine charge",
+      "purpose": "Collapse enemy tunnel without creating surface crater",
+      "method": "Detonate charge in your tunnel to destroy theirs",
+
+      "gameplay": {
+        "underground_mission": "Player assists sappers in tunnel",
+        "tension": "Can hear Germans digging on other side",
+        "decision": "Blow camouflet now (might be too early) or wait (risk they blow first)"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### TANKS (Limited Use at Verdun)
+
+```json
+{
+  "french_tanks": {
+    "schneider_ca1": {
+      "full_designation": "Char d'Assaut Schneider CA1",
+      "introduction": "April 1917 (post-Verdun main phase)",
+      "note": "NOT used during primary Verdun battles (Feb-Dec 1916)",
+      "specifications": {
+        "crew": 6,
+        "weight_kg": 13600,
+        "armor_mm": 11,
+        "speed_km_h": 6,
+        "armament": "1× 75mm gun, 2× 8mm Hotchkiss MGs"
+      },
+
+      "historical_note": {
+        "verdun_usage": "NONE - tanks not deployed until 1917",
+        "first_french_tank_action": "Berry-au-Bac, April 16, 1917"
+      },
+
+      "gameplay": {
+        "availability": "NOT IN GAME - anachronistic for 1916 Verdun",
+        "note": "Player does not encounter tanks at Verdun"
+      }
+    },
+
+    "renault_ft": {
+      "full_designation": "Renault FT-17",
+      "introduction": "1918",
+      "note": "WAY after Verdun - not used",
+
+      "gameplay": {
+        "availability": "NOT IN GAME"
+      }
+    }
+  },
+
+  "note_on_tanks": "Tanks did NOT fight at Verdun during the 1916 battle. The first tank action was British at Flers-Courcelette (Somme), September 15, 1916—after the peak of Verdun. French tanks appeared in 1917. Therefore, NO TANKS IN GAME."
+}
+```
+
+---
+
+#### GAS DELIVERY SYSTEMS (Beyond Shell-Fired Gas)
+
+```json
+{
+  "gas_projectors": {
+    "livens_projector": {
+      "type": "Gas drum projector",
+      "introduction": "1916 (British)",
+      "usage_verdun": "None - British weapon",
+      "note": "Not used at Verdun"
+    },
+
+    "french_gas_projector": {
+      "type": "Pneumatic gas drum launcher",
+      "introduction": "Late 1916",
+      "usage": "Minimal at Verdun - shell-fired gas preferred",
+      "operation": "Launch gas drum that ruptures on impact"
+    }
+  },
+
+  "gas_cylinders": {
+    "cylinder_gas_release": {
+      "type": "Cylinder-released gas cloud",
+      "method": "Open gas cylinders in trench, let wind carry cloud to enemy",
+      "usage_verdun": "RARE - unreliable (wind could shift)",
+
+      "historical_context": {
+        "first_use": "Ypres, April 22, 1915",
+        "danger": "Wind change = gas blows back on own troops",
+        "verdict": "Largely abandoned by 1916 in favor of shell-fired gas"
+      },
+
+      "gameplay": {
+        "availability": "Not in game - shell-fired gas only",
+        "reason": "Cylinder gas was obsolete by Verdun 1916"
+      }
+    }
+  },
+
+  "shell_fired_gas": {
+    "note": "Primary gas delivery at Verdun was ARTILLERY SHELLS (already covered in Artillery Systems section)",
+    "types": [
+      "Phosgene shells (75mm, 105mm, 155mm)",
+      "Mustard gas shells (introduced mid-1917, not at Verdun 1916)",
+      "Chlorine shells (less common)"
+    ]
+  }
+}
+```
+
+---
+
+#### AERIAL MUNITIONS & AIRCRAFT WEAPONS
+
+```json
+{
+  "aircraft_weapons": {
+    "machine_guns": {
+      "lewis_gun": {
+        "type": "Air-cooled machine gun",
+        "usage": "French aircraft (Nieuport, SPAD)",
+        "caliber": "7.7×56mm (.303 British) or 7.5mm French",
+        "rate_of_fire_rpm": 550,
+        "mount": "Wing-mounted or observer-operated"
+      },
+
+      "hotchkiss_m1909": {
+        "type": "Air-cooled MG variant",
+        "usage": "French aircraft",
+        "caliber": "8mm",
+        "note": "Lighter version of ground Hotchkiss"
+      },
+
+      "spandau_lmg_08_15": {
+        "type": "Aircraft machine gun",
+        "usage": "German aircraft",
+        "caliber": "7.92mm",
+        "rate_of_fire_rpm": 600,
+        "note": "Synchronized to fire through propeller"
+      }
+    },
+
+    "player_interaction": {
+      "ground_strafing": "Rare - player experiences aircraft MG strafing runs",
+      "warning": "Engine sound, then bullets hitting trench",
+      "danger": "Low - inaccurate from aircraft altitude/speed",
+      "morale_effect": -5
+    }
+  },
+
+  "aerial_bombs": {
+    "french_bombs": {
+      "obus_de_tranchee_aerien": {
+        "type": "Small aerial bomb",
+        "weight_kg": 10,
+        "usage": "Hand-dropped by observer from aircraft",
+        "accuracy": "Poor - ballistic drop, no guidance",
+        "effectiveness": "Low - rarely hit targets"
+      },
+
+      "120kg_bomb": {
+        "type": "Medium aerial bomb",
+        "weight_kg": 120,
+        "usage": "Bomber aircraft",
+        "blast_radius_m": 30,
+        "accuracy": "Poor"
+      }
+    },
+
+    "german_bombs": {
+      "10kg_bomb": {
+        "type": "Light aerial bomb",
+        "weight_kg": 10,
+        "usage": "Dropped by hand or light bomber"
+      },
+
+      "50kg_bomb": {
+        "type": "Medium aerial bomb",
+        "weight_kg": 50,
+        "usage": "Bomber aircraft"
+      },
+
+      "carbonit_bomb": {
+        "type": "Incendiary bomb",
+        "composition": "Thermite/phosphorus",
+        "usage": "Start fires in trenches, supply depots"
+      }
+    },
+
+    "gameplay": {
+      "availability": "Rare - 1-2 missions with aerial bombing",
+      "audio": "Aircraft engine overhead, whistle of falling bomb",
+      "accuracy": "Very poor - mostly random",
+      "effect": "If hits near player - same as artillery shell",
+      "historical_note": "Aerial bombing in 1916 was primitive and ineffective compared to artillery"
+    }
+  },
+
+  "flechettes": {
+    "type": "Steel darts",
+    "design": "Pointed steel darts, 15cm long, fins for stability",
+    "usage": "Dropped in bundles from aircraft over trenches",
+    "effect": "Penetrate helmets, flesh - lethal to exposed troops",
+
+    "gameplay": {
+      "rare_encounter": "1 mission may feature this",
+      "audio": "Whistling swarm sound",
+      "visual": "Rain of metal darts",
+      "danger": "Lethal if above ground, safe in dugout",
+      "historical_note": "Largely abandoned by 1916 - ineffective compared to bombs/shells"
+    }
+  }
+}
+```
+
+---
+
+#### EXPLOSIVE CHARGES & BREACHING EQUIPMENT
+
+```json
+{
+  "bangalore_torpedo": {
+    "type": "Breaching explosive",
+    "design": "Metal tubes filled with explosive, screwed together end-to-end",
+    "length_m": "1.5m per section, extended to 5-10m total",
+    "explosive_weight_kg": "8-10 per section",
+    "usage": "Push under barbed wire, detonate to clear path",
+
+    "gameplay": {
+      "player_use": "Assault missions - clear wire before attack",
+      "operation": {
+        "1": "Assemble sections in trench",
+        "2": "Crawl into no-man's-land",
+        "3": "Push torpedo under wire entanglements",
+        "4": "Retreat, detonate",
+        "5": "Creates 1-2m wide path through wire"
+      },
+      "danger": "Extremely vulnerable while placing - sniper/MG target",
+      "failure": "If doesn't detonate - must go back and fix (often fatal)"
+    },
+
+    "historical_context": {
+      "effectiveness": "Essential for wire-clearing",
+      "casualties": "Bangalore teams had high death rates",
+      "note": "Named after Bangalore, India where invented"
+    }
+  },
+
+  "pétard": {
+    "type": "Satchel charge",
+    "design": "Canvas bag filled with 5-10kg explosive",
+    "usage": "Destroy bunkers, dugouts, strongpoints",
+
+    "gameplay": {
+      "player_use": "Assault missions - demolitions",
+      "operation": "Place against bunker entrance, light fuse, run",
+      "fuse_time_seconds": 10,
+      "danger": "Must get close to enemy position"
+    }
+  },
+
+  "pole_charge": {
+    "type": "Explosive on pole",
+    "design": "Explosive charge on end of long pole",
+    "usage": "Reach over parapet to place charge on enemy bunker",
+
+    "gameplay": {
+      "rare": "Specialized trench assault mission",
+      "operation": "Extend pole over parapet, drop charge on bunker roof",
+      "historical_note": "Desperate improvisation - rarely effective"
+    }
+  },
+
+  "geballte_ladung": {
+    "type": "Bundled stick grenades",
+    "design": "6-7 stick grenades tied together around a center grenade",
+    "explosive_weight_kg": 1.2,
+    "usage": "German bunker-busting charge",
+
+    "gameplay": {
+      "enemy_weapon": "Germans throw bundled charges at French bunkers",
+      "effect": "Destroys dugout entrances, collapses light shelters",
+      "audio": "Massive explosion - louder than single grenade"
+    }
+  }
+}
+```
+
+---
+
+## [COMPLETE MUNITIONS CATALOG COMPLETE]
 
 ---
 
