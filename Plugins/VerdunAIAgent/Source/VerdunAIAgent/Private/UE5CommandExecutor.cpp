@@ -13,6 +13,9 @@
 #include "Engine/Blueprint.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
+#include "TerrainSculptor.h"
+#include "LevelInspector.h"
+#include "VisionSystem.h"
 
 UUE5CommandExecutor::UUE5CommandExecutor()
 {
@@ -126,13 +129,12 @@ void UUE5CommandExecutor::ExecuteCreateActor(const FAgentTaskStep& Step, FOnComm
 
 void UUE5CommandExecutor::ExecuteModifyTerrain(const FAgentTaskStep& Step, FOnCommandExecuted OnComplete)
 {
-	// Terrain modification implementation
-	// This would use the Landscape API to sculpt terrain
-
-	FString Operation = Step.Parameters.FindRef(TEXT("operation")); // "raise", "lower", "flatten", "smooth"
+	// Parse parameters
+	FString Operation = Step.Parameters.FindRef(TEXT("operation")); // "raise", "lower", "flatten", "smooth", "crater", "trench"
 	FString LocationStr = Step.Parameters.FindRef(TEXT("location"));
 	FString RadiusStr = Step.Parameters.FindRef(TEXT("radius"));
 	FString StrengthStr = Step.Parameters.FindRef(TEXT("strength"));
+	FString TargetHeightStr = Step.Parameters.FindRef(TEXT("targetHeight"));
 
 	UWorld* World = GetEditorWorld();
 	if (!World)
@@ -141,24 +143,81 @@ void UUE5CommandExecutor::ExecuteModifyTerrain(const FAgentTaskStep& Step, FOnCo
 		return;
 	}
 
-	// Find landscape actor
-	ALandscape* Landscape = nullptr;
-	for (TActorIterator<ALandscape> It(World); It; ++It)
+	// Parse location
+	FVector Location = ParseVector(LocationStr);
+	float Radius = RadiusStr.IsEmpty() ? 500.0f : FCString::Atof(*RadiusStr);
+	float Strength = StrengthStr.IsEmpty() ? 1.0f : FCString::Atof(*StrengthStr);
+	float TargetHeight = TargetHeightStr.IsEmpty() ? 0.0f : FCString::Atof(*TargetHeightStr);
+
+	FString Result;
+	bool bSuccess = false;
+
+	// Execute terrain operation
+	if (Operation == TEXT("raise"))
 	{
-		Landscape = *It;
-		break;
+		bSuccess = UTerrainSculptor::RaiseTerrain(World, Location, Radius, Strength, Result);
+	}
+	else if (Operation == TEXT("lower"))
+	{
+		bSuccess = UTerrainSculptor::LowerTerrain(World, Location, Radius, Strength, Result);
+	}
+	else if (Operation == TEXT("flatten"))
+	{
+		bSuccess = UTerrainSculptor::FlattenTerrain(World, Location, Radius, TargetHeight, Result);
+	}
+	else if (Operation == TEXT("smooth"))
+	{
+		bSuccess = UTerrainSculptor::SmoothTerrain(World, Location, Radius, Strength, Result);
+	}
+	else if (Operation == TEXT("crater"))
+	{
+		// Create crater
+		FCraterParams CraterParams;
+		CraterParams.Location = Location;
+		CraterParams.Diameter = Radius * 2.0f;
+		CraterParams.Depth = Step.Parameters.FindRef(TEXT("depth")).IsEmpty() ? 150.0f : FCString::Atof(*Step.Parameters.FindRef(TEXT("depth")));
+
+		bSuccess = UTerrainSculptor::CreateCrater(World, CraterParams, Result);
+	}
+	else if (Operation == TEXT("trench"))
+	{
+		// Create trench excavation
+		// Parse path from parameters
+		FString PathStr = Step.Parameters.FindRef(TEXT("path"));
+		TArray<FVector> Path;
+
+		// Simple parsing - improve this
+		if (!PathStr.IsEmpty())
+		{
+			TArray<FString> PathPoints;
+			PathStr.ParseIntoArray(PathPoints, TEXT(";"));
+
+			for (const FString& PointStr : PathPoints)
+			{
+				Path.Add(ParseVector(PointStr));
+			}
+		}
+		else
+		{
+			// Default: straight line
+			Path.Add(Location);
+			Path.Add(Location + FVector(1000, 0, 0));
+		}
+
+		FTrenchExcavationParams TrenchParams;
+		TrenchParams.Path = Path;
+		TrenchParams.Width = Step.Parameters.FindRef(TEXT("width")).IsEmpty() ? 150.0f : FCString::Atof(*Step.Parameters.FindRef(TEXT("width")));
+		TrenchParams.Depth = Step.Parameters.FindRef(TEXT("depth")).IsEmpty() ? 200.0f : FCString::Atof(*Step.Parameters.FindRef(TEXT("depth")));
+
+		bSuccess = UTerrainSculptor::ExcavateTrench(World, TrenchParams, Result);
+	}
+	else
+	{
+		Result = FString::Printf(TEXT("Unknown terrain operation: %s"), *Operation);
+		bSuccess = false;
 	}
 
-	if (!Landscape)
-	{
-		OnComplete.ExecuteIfBound(false, TEXT("No landscape found in level"));
-		return;
-	}
-
-	// TODO: Implement actual landscape modification using FLandscapeEditDataInterface
-	// This requires more complex implementation with the landscape editing API
-
-	OnComplete.ExecuteIfBound(true, FString::Printf(TEXT("Terrain modified: %s"), *Operation));
+	OnComplete.ExecuteIfBound(bSuccess, Result);
 }
 
 void UUE5CommandExecutor::ExecuteCreateBlueprint(const FAgentTaskStep& Step, FOnCommandExecuted OnComplete)
