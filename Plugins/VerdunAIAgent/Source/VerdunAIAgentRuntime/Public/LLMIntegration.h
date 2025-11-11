@@ -7,8 +7,13 @@
 #include "Http.h"
 #include "LLMIntegration.generated.h"
 
+// Forward declarations
+struct FToolDefinition;
+struct FToolExecutionResult;
+
 DECLARE_DELEGATE_OneParam(FOnLLMResponseReceived, const FString& /* Response */);
 DECLARE_DELEGATE_OneParam(FOnLLMRequestFailed, const FString& /* ErrorMessage */);
+DECLARE_DELEGATE_TwoParams(FOnToolCallRequested, const FString& /* ToolName */, const TMap<FString, FString>& /* Parameters */);
 
 /**
  * Supported LLM Providers
@@ -49,6 +54,9 @@ struct FLLMRequestConfig
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Agent")
 	FString BaseURL; // For local models
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Agent")
+	bool bEnableToolUse = false; // Enable native function calling
 };
 
 /**
@@ -78,6 +86,46 @@ public:
 	);
 
 	/**
+	 * Send request with tool definitions (enables native function calling)
+	 * @param UserMessage - The user's message/prompt
+	 * @param Config - Configuration for the LLM request
+	 * @param ToolDefinitionsJSON - JSON array of tool definitions
+	 * @param OnSuccess - Callback when response is received
+	 * @param OnFailure - Callback when request fails
+	 */
+	UFUNCTION(BlueprintCallable, Category = "AI Agent|LLM")
+	void SendRequestWithTools(
+		const FString& UserMessage,
+		const FLLMRequestConfig& Config,
+		const FString& ToolDefinitionsJSON,
+		FOnLLMResponseReceived OnSuccess,
+		FOnLLMRequestFailed OnFailure
+	);
+
+	/**
+	 * Continue conversation after tool execution
+	 * @param ToolName - Name of the tool that was executed
+	 * @param ToolResult - Result from tool execution
+	 * @param Config - Configuration for the LLM request
+	 * @param OnSuccess - Callback when response is received
+	 * @param OnFailure - Callback when request fails
+	 */
+	UFUNCTION(BlueprintCallable, Category = "AI Agent|LLM")
+	void SendToolResult(
+		const FString& ToolName,
+		const FString& ToolResult,
+		const FLLMRequestConfig& Config,
+		FOnLLMResponseReceived OnSuccess,
+		FOnLLMRequestFailed OnFailure
+	);
+
+	/**
+	 * Check if the last response requested a tool call
+	 */
+	UFUNCTION(BlueprintCallable, Category = "AI Agent|LLM")
+	bool IsToolCallResponse(const FString& Response, FString& OutToolName, FString& OutToolInput) const;
+
+	/**
 	 * Send a streaming request (for real-time responses)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "AI Agent|LLM")
@@ -100,10 +148,18 @@ private:
 	void SendAnthropicRequest(const FString& UserMessage, const FLLMRequestConfig& Config);
 	void SendLocalRequest(const FString& UserMessage, const FLLMRequestConfig& Config);
 
+	// Tool use request handling
+	void SendAnthropicRequestWithTools(const FLLMRequestConfig& Config);
+	void SendOpenAIRequestWithTools(const FLLMRequestConfig& Config);
+
 	// Response handlers
 	void HandleOpenAIResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void HandleAnthropicResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void HandleLocalResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	// Tool use response handlers
+	void HandleAnthropicToolResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void HandleOpenAIToolResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	// Helper functions
 	FString BuildOpenAIPayload(const FString& UserMessage, const FLLMRequestConfig& Config);
@@ -120,6 +176,13 @@ private:
 	FOnLLMRequestFailed FailureCallback;
 	FLLMRequestConfig CurrentConfig;
 
-	// Conversation history
-	TArray<FString> ConversationHistory;
+	// Conversation history (for tool use multi-turn)
+	TArray<TSharedPtr<FJsonValue>> MessageHistory;
+
+	// Tool definitions
+	FString CurrentToolDefinitionsJSON;
+
+	// Last tool call tracking
+	FString LastToolCallID;
+	FString LastToolName;
 };

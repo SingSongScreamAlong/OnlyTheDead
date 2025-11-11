@@ -35,20 +35,46 @@ const FString UAIAgentCore::AgentSystemPrompt = TEXT(
 
 UAIAgentCore::UAIAgentCore()
 	: CurrentStepIndex(0)
+	, bUseToolCalling(true)
+	, bAutonomousMode(false)
+	, RetryCount(0)
+	, MaxRetries(3)
 {
 }
 
-void UAIAgentCore::Initialize(const FLLMRequestConfig& InConfig)
+void UAIAgentCore::Initialize(const FLLMRequestConfig& InConfig, UWorld* World)
 {
 	Config = InConfig;
-	Config.SystemPrompt = AgentSystemPrompt + TEXT("\nPROJECT CONTEXT:\n") + ProjectContext;
+	Config.bEnableToolUse = true; // Enable native tool calling
+	WorldContext = World;
 
+	// Create LLM integration
 	if (!LLMIntegration)
 	{
 		LLMIntegration = NewObject<ULLMIntegration>(this);
 	}
 
+	// Create and initialize ToolRegistry
+	if (!ToolRegistry)
+	{
+		ToolRegistry = NewObject<UToolRegistry>(this);
+		ToolRegistry->InitializeDefaultTools(World);
+	}
+
+	// Build system prompt
+	if (bUseToolCalling)
+	{
+		Config.SystemPrompt = BuildToolUseSystemPrompt();
+	}
+	else
+	{
+		Config.SystemPrompt = AgentSystemPrompt + TEXT("\nPROJECT CONTEXT:\n") + ProjectContext;
+	}
+
 	LogMessage(TEXT("AI Agent initialized with ") + UEnum::GetValueAsString(Config.Provider));
+	LogMessage(FString::Printf(TEXT("Tool Calling: %s | Autonomous Mode: %s"),
+		bUseToolCalling ? TEXT("Enabled") : TEXT("Disabled"),
+		bAutonomousMode ? TEXT("Enabled") : TEXT("Disabled")));
 }
 
 void UAIAgentCore::ExecuteCommand(const FString& Command)
@@ -66,8 +92,17 @@ void UAIAgentCore::ExecuteCommand(const FString& Command)
 	CurrentTask.UserRequest = Command;
 	CurrentTask.StartTime = FDateTime::Now();
 	CurrentStepIndex = 0;
+	RetryCount = 0;
 
-	StartPlanning(Command);
+	// Use tool calling if enabled, otherwise fall back to legacy JSON planning
+	if (bUseToolCalling)
+	{
+		StartToolCallingExecution(Command);
+	}
+	else
+	{
+		StartPlanning(Command);
+	}
 }
 
 void UAIAgentCore::StopExecution()
@@ -375,4 +410,259 @@ void UAIAgentCore::LogMessage(const FString& Message)
 {
 	UE_LOG(LogTemp, Log, TEXT("[AIAgent] %s"), *Message);
 	OnLog.Broadcast(Message);
+}
+
+// ============================================================================
+// TOOL CALLING EXECUTION (Phase 4)
+// ============================================================================
+
+void UAIAgentCore::StartToolCallingExecution(const FString& UserCommand)
+{
+	CurrentTask.Status = EAgentTaskStatus::Executing;
+	OnTaskStarted.Broadcast(UserCommand);
+
+	LogMessage(TEXT("Starting tool calling execution..."));
+	OnThinking.Broadcast(TEXT("Understanding your request and determining which tools to use..."), 0.1f);
+
+	if (!ToolRegistry)
+	{
+		LogMessage(TEXT("ERROR: ToolRegistry not initialized!"));
+		OnToolCallResponseFailed(TEXT("ToolRegistry not initialized"));
+		return;
+	}
+
+	// Get tool definitions as JSON
+	FString ToolDefinitionsJSON = ToolRegistry->GenerateToolSchemaJSON();
+
+	// Send request with tools
+	LLMIntegration->SendRequestWithTools(
+		UserCommand,
+		Config,
+		ToolDefinitionsJSON,
+		FOnLLMResponseReceived::CreateUObject(this, &UAIAgentCore::OnLLMResponseReceived),
+		FOnLLMRequestFailed::CreateUObject(this, &UAIAgentCore::OnToolCallResponseFailed)
+	);
+}
+
+void UAIAgentCore::OnLLMResponseReceived(const FString& Response)
+{
+	LogMessage(TEXT("Received LLM response"));
+
+	// Check if response contains a tool call
+	FString ToolName;
+	FString ToolInput;
+
+	if (LLMIntegration->IsToolCallResponse(Response, ToolName, ToolInput))
+	{
+		LogMessage(FString::Printf(TEXT("LLM requested tool: %s"), *ToolName));
+		OnThinking.Broadcast(FString::Printf(TEXT("Executing tool: %s"), *ToolName), 0.5f);
+
+		ProcessToolCall(ToolName, ToolInput);
+	}
+	else
+	{
+		// No tool call - this is the final response
+		LogMessage(TEXT("Task completed - no more tools needed"));
+		OnThinking.Broadcast(TEXT("Task completed successfully!"), 1.0f);
+
+		CurrentTask.Status = EAgentTaskStatus::Completed;
+		CurrentTask.EndTime = FDateTime::Now();
+		OnTaskCompleted.Broadcast(CurrentTask.UserRequest, true);
+	}
+}
+
+void UAIAgentCore::OnToolCallResponseFailed(const FString& Error)
+{
+	LogMessage(FString::Printf(TEXT("Tool call failed: %s"), *Error));
+
+	CurrentTask.Status = EAgentTaskStatus::Failed;
+	CurrentTask.EndTime = FDateTime::Now();
+	OnTaskCompleted.Broadcast(CurrentTask.UserRequest, false);
+}
+
+void UAIAgentCore::ProcessToolCall(const FString& ToolName, const FString& ToolInput)
+{
+	if (!ToolRegistry)
+	{
+		LogMessage(TEXT("ERROR: ToolRegistry not initialized!"));
+		OnToolExecutionComplete(ToolName, FToolExecutionResult());
+		return;
+	}
+
+	// Parse tool input JSON to parameters map
+	TMap<FString, FString> Parameters;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ToolInput);
+
+	if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+	{
+		for (const auto& Pair : JsonObject->Values)
+		{
+			FString Value;
+			if (Pair.Value->TryGetString(Value))
+			{
+				Parameters.Add(Pair.Key, Value);
+			}
+			else if (Pair.Value->Type == EJson::Number)
+			{
+				double NumValue = Pair.Value->AsNumber();
+				Parameters.Add(Pair.Key, FString::SanitizeFloat(NumValue));
+			}
+			else if (Pair.Value->Type == EJson::Boolean)
+			{
+				bool BoolValue = Pair.Value->AsBool();
+				Parameters.Add(Pair.Key, BoolValue ? TEXT("true") : TEXT("false"));
+			}
+		}
+	}
+
+	LogMessage(FString::Printf(TEXT("Executing tool '%s' with %d parameters"), *ToolName, Parameters.Num()));
+
+	// Execute the tool
+	FToolExecutionResult Result = ToolRegistry->ExecuteTool(ToolName, Parameters);
+
+	// Report back to agent
+	OnToolExecutionComplete(ToolName, Result);
+}
+
+void UAIAgentCore::OnToolExecutionComplete(const FString& ToolName, const FToolExecutionResult& Result)
+{
+	if (Result.bSuccess)
+	{
+		LogMessage(FString::Printf(TEXT("Tool '%s' executed successfully: %s"), *ToolName, *Result.Result));
+		OnThinking.Broadcast(FString::Printf(TEXT("Tool '%s' completed successfully"), *ToolName), 0.7f);
+
+		// Send result back to LLM to continue conversation
+		LLMIntegration->SendToolResult(
+			ToolName,
+			Result.Result,
+			Config,
+			FOnLLMResponseReceived::CreateUObject(this, &UAIAgentCore::OnLLMResponseReceived),
+			FOnLLMRequestFailed::CreateUObject(this, &UAIAgentCore::OnToolCallResponseFailed)
+		);
+	}
+	else
+	{
+		LogMessage(FString::Printf(TEXT("Tool '%s' failed: %s"), *ToolName, *Result.ErrorMessage));
+
+		if (bAutonomousMode && RetryCount < MaxRetries)
+		{
+			// Autonomous retry
+			RetryCount++;
+			LogMessage(FString::Printf(TEXT("Autonomous retry %d/%d..."), RetryCount, MaxRetries));
+			OnThinking.Broadcast(FString::Printf(TEXT("Retry attempt %d/%d..."), RetryCount, MaxRetries), 0.6f);
+
+			// Send error back to LLM so it can try a different approach
+			FString ErrorResult = FString::Printf(TEXT("Error: %s. Please try a different approach."), *Result.ErrorMessage);
+			LLMIntegration->SendToolResult(
+				ToolName,
+				ErrorResult,
+				Config,
+				FOnLLMResponseReceived::CreateUObject(this, &UAIAgentCore::OnLLMResponseReceived),
+				FOnLLMRequestFailed::CreateUObject(this, &UAIAgentCore::OnToolCallResponseFailed)
+			);
+		}
+		else
+		{
+			// Give up after max retries
+			LogMessage(TEXT("Max retries reached or autonomous mode disabled. Task failed."));
+			CurrentTask.Status = EAgentTaskStatus::Failed;
+			CurrentTask.EndTime = FDateTime::Now();
+			OnTaskCompleted.Broadcast(CurrentTask.UserRequest, false);
+		}
+	}
+}
+
+// ============================================================================
+// AUTONOMOUS ITERATION
+// ============================================================================
+
+void UAIAgentCore::StartAutonomousIteration()
+{
+	if (!bAutonomousMode)
+	{
+		return;
+	}
+
+	LogMessage(TEXT("Starting autonomous iteration..."));
+	OnThinking.Broadcast(TEXT("Reviewing work and checking if improvements are needed..."), 0.9f);
+
+	FString IterationPrompt = TEXT("Review what you just accomplished. ");
+	IterationPrompt += TEXT("Does it meet the user's requirements? ");
+	IterationPrompt += TEXT("If not, what tools should you use to improve it? ");
+	IterationPrompt += TEXT("If yes, respond without calling any more tools.");
+
+	LLMIntegration->SendRequest(
+		IterationPrompt,
+		Config,
+		FOnLLMResponseReceived::CreateUObject(this, &UAIAgentCore::OnIterationThinkingComplete),
+		FOnLLMRequestFailed::CreateUObject(this, &UAIAgentCore::OnToolCallResponseFailed)
+	);
+}
+
+void UAIAgentCore::OnIterationThinkingComplete(const FString& Response)
+{
+	FString ToolName;
+	FString ToolInput;
+
+	if (LLMIntegration->IsToolCallResponse(Response, ToolName, ToolInput))
+	{
+		// Agent wants to make improvements
+		LogMessage(TEXT("Agent is making improvements..."));
+		ProcessToolCall(ToolName, ToolInput);
+	}
+	else
+	{
+		// Agent is satisfied with the result
+		LogMessage(TEXT("Agent verified work is complete"));
+		CurrentTask.Status = EAgentTaskStatus::Completed;
+		CurrentTask.EndTime = FDateTime::Now();
+		OnTaskCompleted.Broadcast(CurrentTask.UserRequest, true);
+	}
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+FString UAIAgentCore::BuildToolUseSystemPrompt()
+{
+	FString Prompt = TEXT("You are an autonomous AI agent integrated into Unreal Engine 5.\n\n");
+
+	Prompt += TEXT("You have access to powerful tools that allow you to:\n");
+	Prompt += TEXT("- Modify terrain (create craters, excavate trenches, raise/lower ground)\n");
+	Prompt += TEXT("- Generate WWI battlefield content (trenches, barbed wire, fortifications)\n");
+	Prompt += TEXT("- Inspect the level (find actors, query scene state, get context)\n");
+	Prompt += TEXT("- Capture and analyze screenshots (visual verification)\n");
+	Prompt += TEXT("- Spawn and manipulate actors in the scene\n\n");
+
+	Prompt += TEXT("HOW TO USE TOOLS:\n");
+	Prompt += TEXT("When you receive a user request, use the appropriate tools to accomplish it.\n");
+	Prompt += TEXT("You can call multiple tools in sequence - each tool result will be sent back to you.\n");
+	Prompt += TEXT("When the task is complete, respond without calling any more tools.\n\n");
+
+	Prompt += TEXT("IMPORTANT GUIDELINES:\n");
+	Prompt += TEXT("- Always inspect the level first before modifying it\n");
+	Prompt += TEXT("- Use appropriate UE5 units (100 units = 1 meter)\n");
+	Prompt += TEXT("- Break complex tasks into multiple tool calls\n");
+	Prompt += TEXT("- Verify your work if possible (use vision tools)\n\n");
+
+	if (!ProjectContext.IsEmpty())
+	{
+		Prompt += TEXT("PROJECT CONTEXT:\n");
+		Prompt += ProjectContext + TEXT("\n\n");
+	}
+
+	if (!KnowledgeBase.IsEmpty())
+	{
+		Prompt += TEXT("KNOWLEDGE BASE:\n");
+		for (const FString& Knowledge : KnowledgeBase)
+		{
+			Prompt += TEXT("- ") + Knowledge + TEXT("\n");
+		}
+		Prompt += TEXT("\n");
+	}
+
+	return Prompt;
 }
