@@ -3316,6 +3316,1197 @@ Low Morale → Shell shock → Combat ineffective → Death in battle
 
 ---
 
+<a name="tutorial-missions"></a>
+### TUTORIAL MISSION: "ARRIVAL AT VERDUN"
+
+**MISSION DESIGNATION**: Tutorial / Opening Sequence
+**DATE**: February 18-21, 1916 (3.5 days)
+**LOCATION**: Verdun Front Line - Support Trench Sector
+**PLAYER STATUS**: New arrival, never seen combat
+**GAMEPLAY DURATION**: 3-4 hours real-time
+**VICTORY CONDITION**: Survive until Feb 21, 7:15 AM (then survive the bombardment)
+
+---
+
+#### DESIGN PHILOSOPHY
+
+**CRITICAL PRINCIPLES:**
+- ❌ **NO tutorial UI** ("Press X to..." pop-ups)
+- ❌ **NO tutorial narrator** explaining mechanics
+- ❌ **NO foreshadowing** of Feb 21 bombardment
+- ❌ **NO veteran warnings** about "something big coming"
+- ❌ **NO ominous music** or tension building
+- ✅ **Learn by DOING** routine trench tasks
+- ✅ **Organic discovery** of mechanics through observation
+- ✅ **Everything feels NORMAL** - just daily trench life
+- ✅ **Feb 21 is a complete surprise** - no telegraphing
+
+**TUTORIAL GOALS:**
+- Teach core mechanics through embedded gameplay (not explicit tutorial)
+- Establish normalcy and routine (makes Feb 21 more shocking)
+- Build attachment to squadmates (makes their deaths meaningful)
+- Create false sense of security (Verdun seems manageable)
+- Let player believe they understand what Verdun is
+- Feb 21 proves them catastrophically wrong
+
+**TONE PROGRESSION:**
+- **Feb 18**: Nervous arrival, first impressions, "This is scary but manageable"
+- **Feb 19**: Settling in, routine work, "I'm getting the hang of this"
+- **Feb 20**: Comfortable routine, small scare, "I understand how this works now"
+- **Feb 21 (7:00-7:14 AM)**: Normal morning, "Just another day"
+- **Feb 21 (7:15 AM)**: **"OH GOD OH GOD OH GOD"** - everything changes
+
+---
+
+#### MISSION STRUCTURE
+
+```json
+{
+  "tutorial_phases": {
+    "phase_1_arrival": {
+      "date": "Feb 18, 1916 (Afternoon)",
+      "duration": "2-3 hours",
+      "objectives": [
+        "Arrive at Verdun support trench",
+        "Get assigned bunk (save point established)",
+        "Meet squadmates",
+        "Complete first task (collect supplies)",
+        "Evening ration distribution",
+        "First night (optional sleep or explore)"
+      ],
+      "mechanics_taught": {
+        "navigation": "Via supply collection task",
+        "inventory": "Via picking up rations",
+        "consumption": "Via eating/drinking",
+        "rest": "Via sleeping on bunk",
+        "save_system": "Via bunk interaction (hidden autosave)"
+      },
+      "tutorial_style": "Organic - no UI prompts, learn by observing others",
+      "intensity": "LOW - safe environment, no combat",
+      "death_risk": "0%"
+    },
+
+    "phase_2_routine": {
+      "date": "Feb 19, 1916 (Full Day)",
+      "duration": "1-1.5 hours",
+      "objectives": [
+        "Morning stand-to (dawn alert ritual)",
+        "Work detail (sandbag filling)",
+        "Rifle range practice (first shooting)",
+        "Sentry duty (first night watch)",
+        "Routine trench maintenance"
+      ],
+      "mechanics_taught": {
+        "stamina_management": "Via physical labor",
+        "weapon_handling": "Via rifle practice",
+        "alertness": "Via sentry duty",
+        "work_tasks": "Via trench maintenance",
+        "time_passage": "Via day/night cycle"
+      },
+      "tutorial_style": "Tasks assigned by NPCs, player completes organically",
+      "intensity": "LOW - 1-2 distant shells (background danger only)",
+      "death_risk": "1% (extremely unlikely)"
+    },
+
+    "phase_3_normalcy": {
+      "date": "Feb 20, 1916 (Full Day)",
+      "duration": "1 hour",
+      "objectives": [
+        "Continued routine work",
+        "First taking cover (random shell closer)",
+        "Free time / squad interaction",
+        "Optional night patrol (more experienced)"
+      ],
+      "mechanics_taught": {
+        "taking_cover": "Via veteran shouting 'Down!' when shell lands",
+        "danger_awareness": "Via closer shell impact",
+        "squad_bonding": "Via conversations, shared meals",
+        "exploration": "Via free time to walk trenches"
+      },
+      "tutorial_style": "Minimal - player mostly self-directed by now",
+      "intensity": "LOW-MODERATE - 3-5 shells, one within 80m",
+      "death_risk": "2% (one close call scenario)"
+    },
+
+    "phase_4_calm_before_storm": {
+      "date": "Feb 21, 1916 (6:00 AM - 7:14 AM)",
+      "duration": "15-20 minutes",
+      "objectives": [
+        "Morning stand-to (same routine as Feb 19-20)",
+        "Breakfast ration",
+        "Free time until bombardment",
+        "Optional: talk to squadmates, check equipment, rest"
+      ],
+      "mechanics_taught": "NONE - player has learned everything",
+      "tutorial_style": "Complete player freedom",
+      "intensity": "ZERO - absolute calm, beautiful sunrise, birds",
+      "death_risk": "0%",
+      "critical_design_note": "This must feel EXACTLY like Feb 19-20 morning. NO differences. NO hints."
+    },
+
+    "phase_5_bombardment_begins": {
+      "date": "Feb 21, 1916 (7:15 AM onward)",
+      "duration": "Rest of campaign (303 days)",
+      "event": "MAIN GAME BEGINS - Tutorial ends here",
+      "intensity": "EXTREME - immediate maximum danger",
+      "death_risk": "60%+ in first 10 minutes",
+      "tutorial_safety_net": "REMOVED - permadeath/checkpoint rules now apply",
+      "player_realization": "Everything learned was insufficient for THIS"
+    }
+  }
+}
+```
+
+---
+
+#### DETAILED HOUR-BY-HOUR BREAKDOWN
+
+---
+
+### **FEB 18, 1916 - ARRIVAL DAY**
+
+---
+
+#### **16:00 - ARRIVAL AT VERDUN**
+
+**Location**: Support trench, rear sector
+**Weather**: Overcast, light rain, cold (5°C), mud everywhere
+
+**OPENING CUTSCENE** (In-Engine, Player Control During):
+```
+[Fade in: Player in back of military truck]
+[Five other soldiers sitting silently]
+[Rumble of distant artillery - background noise, unremarkable]
+[No one speaks - tension but not terror]
+[Rain patters on canvas cover]
+
+[Truck stops]
+
+Sergeant (gruff, 40s): "Alright, out! Welcome to Verdun."
+
+[Player steps down from truck into ankle-deep mud]
+[First view: Support trench stretching left/right]
+[Muddy walls, sandbags, duckboards over water]
+[Soldiers moving about - routine, not panicked]
+[Distant artillery rumble continues (ambient sound)]
+```
+
+**GAMEPLAY BEGINS** (No Tutorial UI):
+
+**Sergeant**: "Follow me. I'll show you where you bunk."
+
+**Player Task**: Follow sergeant through trench
+- No waypoint markers
+- No "Press W to move forward" prompt
+- Just: follow the NPC
+- If player stops, sergeant stops and waits: "Come on, this way."
+
+**Navigation** (Learning by Doing):
+- Trenches wind and turn (realistic layout)
+- Pass other soldiers (ambient life - talking, working, resting)
+- Step over duckboards (planks over mud/water)
+- Duck under low overhead cover
+- Takes ~2 minutes to reach dugout
+
+**Environmental Details** (Immersion):
+- Other soldiers nod as you pass
+- Someone cleaning rifle
+- Two soldiers sharing cigarette
+- Medic treating minor wound (bandaging foot - trench foot implied)
+- Smell of wet earth, unwashed men, latrine nearby (implied via dialogue)
+
+---
+
+#### **16:10 - ASSIGNED BUNK (SAVE POINT ESTABLISHED)**
+
+**Location**: Dugout (underground shelter)
+
+**Sergeant**: "This one's yours." [Points to empty bunk - wooden frame, dirty blanket]
+
+**Sergeant**: "Stow your pack. Rest if you need it. We'll call for evening rations around 18:00."
+
+**Sergeant**: "Don't wander off. Stick to support trenches - front line's that way [gestures]. You're not on duty yet."
+
+[Sergeant leaves]
+
+**SAVE SYSTEM ACTIVATED** (Hidden):
+- Approaching bunk triggers first autosave
+- No UI message
+- Just subtle audio cue (soft, peaceful - not jarring)
+- From now on: bunk = respawn point if player dies during tutorial
+
+**Player Options** (Free Exploration):
+- Can drop pack on bunk (inventory lightens)
+- Can sit/rest on bunk (stamina regenerates)
+- Can look at personal items in pack (photo of family, letter, etc.)
+- Can explore dugout (5-6 bunks, other soldiers' belongings)
+- Can leave and explore trenches (within limits)
+
+**Other Soldiers in Dugout**:
+- **Pierre** (20s, nervous): Sitting on bunk, writing letter
+- **Veteran** (30s, scarred face): Sleeping, snoring
+- **Young Recruit** (18, terrified eyes): Staring at wall, shaking slightly
+
+**If Player Approaches Young Recruit**:
+"You just arrive too? I got here two weeks ago. It's... it's not so bad. You get used to it. The shells are mostly far away. Mostly."
+
+---
+
+#### **16:30 - FIRST TASK: COLLECT SUPPLIES**
+
+**Trigger**: Pierre (squadmate) approaches player
+
+**Pierre**: "Hey, new guy. What's your name?"
+[Player can choose name from list OR auto-assigned based on character creation]
+
+**Pierre**: "I'm Pierre. Listen, we're low on rifle ammunition. Sergeant wants crates brought from supply depot. You mind helping? I'll show you where it is."
+
+**TASK: Collect Ammunition Crates**
+
+**Phase 1 - Navigate to Depot**:
+- Pierre leads, player follows
+- Walk through support trench system (~3-minute walk)
+- Pierre makes small talk:
+  - "You from Paris? I'm from Lyon. Miss it every day."
+  - "Sergeant's alright. Tough but fair. Some officers are bastards."
+  - "Just keep your head down, do your work, and you'll be fine."
+
+**Phase 2 - Supply Depot**:
+- NCO (supply officer) at depot: "Two crates of 8mm Lebel. Sign here." [Automatic - no UI]
+- Pierre picks up one crate, player automatically picks up other
+- **Weight Mechanic Introduced** (Organic):
+  - Movement speed slows (~40% slower)
+  - Stamina drains faster (shown via stamina meter appearing for first time)
+  - Player can see Pierre struggling too (animation - leaning under weight)
+
+**Phase 3 - Return Journey**:
+- Carry crate back to dugout area
+- Pierre: "Heavy, right? You get used to it. Everything's heavy here."
+- Takes ~5 minutes (slow movement)
+- **Stamina Meter Tutorial** (Contextual):
+  - If stamina gets low: "Need a break? Set it down for a minute."
+  - Can rest mid-journey (stamina regenerates)
+  - Pierre does same if player rests
+
+**Phase 4 - Delivery**:
+- Deliver crates to ammunition storage area
+- Sergeant: "Good work. You two get some rest before rations."
+
+**What Player Learned**:
+- ✅ Navigation through trenches
+- ✅ Following NPCs
+- ✅ Carrying/encumbrance mechanics
+- ✅ Stamina system
+- ✅ Resting to recover stamina
+- **All learned organically - no tutorial text**
+
+---
+
+#### **18:00 - EVENING RATIONS (FIRST EATING)**
+
+**Trigger**: Someone shouts "Ration queue!"
+
+**NPC Behavior** (Teaching by Example):
+- All soldiers in dugout stand up
+- Pierre: "Come on, food line. If you're late, you get the burnt shit."
+- Walk to field kitchen area
+
+**Ration Distribution**:
+- 15-20 soldiers in line
+- Player watches them:
+  1. Approach cook
+  2. Hold out mess tin (automatic)
+  3. Receive: bread (700g), canned meat, wine ration (250ml)
+  4. Walk away, sit, eat
+
+**Player's Turn**:
+- Player reaches front of line
+- Cook: "Tin." [Player automatically extends mess tin]
+- Receives rations (automatically added to inventory)
+- No UI prompt - just happens
+
+**Eating Mechanic** (Learn by Observation):
+- Pierre sits on sandbag, opens inventory, eats
+- Other soldiers doing same
+- **Hunger Meter Appears** (first time, subtle)
+- Shows ~80% (slightly hungry from day's activity)
+
+**If Player Opens Inventory**:
+- See rations in inventory
+- Can consume items
+- Hunger decreases
+- **No tutorial text** - just happens
+
+**If Player Doesn't Eat**:
+- Hunger slowly depletes over next hours
+- Pierre: "Not hungry? Eat anyway. You'll need energy tomorrow."
+
+**Squad Conversation** (Ambient Dialogue):
+- Pierre: "This meat tastes like ass."
+- Veteran: "Be grateful. Some sectors get half rations."
+- Young Recruit: "How long until we rotate out?"
+- Veteran: "Seven days. Same as always."
+- Someone: "Could be worse. Could be Mort-Homme."
+
+**What Player Learned**:
+- ✅ Inventory system
+- ✅ Consuming food
+- ✅ Hunger meter
+- ✅ Ration distribution routine
+
+---
+
+#### **20:00 - FIRST NIGHT (OPTIONAL EXPLORATION)**
+
+**Player Freedom**:
+- Can go to bunk and sleep (time skips to morning)
+- Can stay awake and explore
+- Can talk to squadmates
+- Can walk around trenches
+
+**If Player Explores**:
+
+**Sentry Positions**:
+- Two soldiers on watch duty
+- Standing at firing step, watching no-man's land
+- Rifles ready, tense but bored
+
+**Sentry Dialogue** (If Player Approaches):
+"First night? Can't sleep? Yeah, it's strange at first. All the sounds. You'll get used to it. Or you won't sleep for seven days." [Laughs darkly]
+
+**No-Man's Land View**:
+- Dark, cratered wasteland
+- Occasional flare lights up (German side)
+- Barbed wire silhouettes
+- Distant machine gun bursts (different sector - just sound)
+- Bodies visible between lines (ambient horror)
+
+**Environmental Sounds** (Atmospheric):
+- Rain pattering
+- Distant artillery (every 2-3 minutes, far away)
+- Soldiers coughing, talking quietly
+- Rats scurrying (squeaking sounds)
+- Water dripping in trenches
+
+**If Player Approaches Front Line**:
+Sentry: "You lost? This is front line. No reason to be here unless you're on duty. Sergeant will chew you out."
+[Player encouraged to go back]
+
+**If Player Returns to Dugout**:
+- Some soldiers sleeping (snoring)
+- Pierre writing letter by candlelight
+- Can sleep or rest
+
+**Sleep Mechanic**:
+- Interact with bunk
+- Screen fades to black
+- Time skips to 05:30 AM (Feb 19)
+- **Autosave triggers** (hidden)
+
+**What Player Learned**:
+- ✅ Day/night cycle
+- ✅ Trench layout
+- ✅ Sentry duty observation
+- ✅ Sleeping/time skip
+- ✅ Environmental awareness
+
+---
+
+### **FEB 19, 1916 - ROUTINE DAY**
+
+---
+
+#### **06:00 - MORNING STAND-TO**
+
+**Wake Up**:
+- Sergeant shouts: "STAND-TO! Everyone up! Now!"
+- All soldiers grab rifles, rush to firing positions
+- Pierre: "Come on! Grab your rifle!"
+
+**Stand-To Procedure** (Learning by Following):
+- Everyone lines up at firing step
+- Face no-man's land
+- Rifles ready
+- Watch for enemy attack
+- Tense silence for 15 minutes
+
+**Sergeant walks line, checks soldiers**:
+"Alert. Eyes open. This is when they attack. Dawn."
+
+**Nothing Happens**:
+- 15 minutes pass
+- Sun rises (beautiful sunrise - eerie calm)
+- Sergeant: "Stand down."
+
+**Veteran** (To player): "Same every morning. Germans could come at dawn, so we watch. They never do. But we watch anyway."
+
+**What This Teaches**:
+- ✅ Stand-to ritual (daily routine)
+- ✅ Combat readiness
+- ✅ False alarms / routine tension
+- ✅ Weapon handling (carry rifle)
+
+**Breakfast** (06:30):
+- Bread, coffee (if available)
+- Same ration routine as yesterday
+- Casual conversation
+
+---
+
+#### **09:00 - WORK DETAIL: SANDBAG FILLING**
+
+**Sergeant**: "Alright, work details. You three—sandbags. Get to it."
+
+**TASK: Fill and Stack Sandbags**
+
+**Location**: Trench wall repair area
+
+**Tools**: Shovel, empty sandbags, pile of dirt/sand
+
+**NPC shows player**:
+- Shovel dirt into sandbag
+- Tie off bag
+- Carry to wall
+- Stack
+- Repeat
+
+**Gameplay**:
+- Repetitive task (intentionally boring - shows routine)
+- Takes 30-45 minutes real-time
+- **Stamina Depletes Steadily**
+- Player must take breaks or exhaust themselves
+- Other soldiers take breaks, smoke, chat
+
+**Dialogue During Work**:
+- Pierre: "My back is killing me."
+- Veteran: "Better than getting killed by shells."
+- Someone: "How many more?"
+- Sergeant: "Until I say stop."
+
+**Random Shell** (Background Event - Far Away):
+- ~10:30 AM: Shell lands 300m away (rear area)
+- Big explosion, visible dust cloud
+- No one reacts much
+- Veteran: "Harassing fire. Just random. Keep working."
+
+**What Player Learned**:
+- ✅ Work drains stamina significantly
+- ✅ Need to rest periodically
+- ✅ Trench life = labor + boredom
+- ✅ Shells exist but are rare (false security)
+
+---
+
+#### **12:00 - RIFLE PRACTICE (FIRST SHOOTING)**
+
+**Sergeant**: "New arrivals - rifle range. Let's see if you can shoot straight."
+
+**Location**: Makeshift range in second trench line
+
+**Setup**:
+- Sandbag targets at 50m, 100m, 150m
+- Chalk outlines on sandbags (human silhouettes)
+
+**Instruction** (Minimal):
+Sergeant: "Aim down your sights. Squeeze trigger, don't pull. Ten rounds."
+
+**Gameplay**:
+- Player aims (ironsights)
+- Fires 10 rounds at targets
+- **No accuracy feedback** (not a scoring minigame)
+- Just: learn how rifle feels
+
+**Sergeant**: "Good enough. Don't waste ammunition in combat. Every bullet counts."
+
+**What Player Learned**:
+- ✅ Aiming mechanics
+- ✅ Firing weapon
+- ✅ Recoil feel
+- ✅ Ammunition is limited/precious
+
+**No further combat tutorial** - that's it. You know how to shoot now.
+
+---
+
+#### **14:00 - FREE TIME (AFTERNOON)**
+
+**Player Freedom**:
+- Can rest (stamina recovery)
+- Can explore trenches
+- Can talk to squadmates
+- Can eat rations
+- Can sleep
+
+**Squad Activities** (Ambient Life):
+- Card game (three soldiers playing)
+- Someone writing letter
+- Someone sleeping
+- Veteran cleaning rifle meticulously
+
+**Optional Dialogue**:
+
+**Pierre**: "You married? Got a girl back home? I do. Amélie. We were supposed to marry this spring. Now..." [Trails off]
+
+**Young Recruit**: "Is it always this boring? I thought war would be... I don't know. Different."
+
+**Veteran**: "Boring is good. Boring means alive."
+
+**Exploration Options**:
+- Medical station (see medic treating trench foot)
+- Latrine (functional - player can use if needed)
+- Supply depot
+- Observation post (look out at no-man's land)
+
+---
+
+#### **16:30 - RANDOM SHELL (CLOSER)**
+
+**Event**: Shell lands 200m away (closer than before)
+
+**Reaction**:
+- Loud explosion
+- Ground shakes
+- Dirt rains into trench
+- Some soldiers duck instinctively
+- Veteran doesn't even look up from card game
+
+**Pierre** (If near player): "Little closer than usual. Still fine."
+
+**What This Shows**:
+- Shells are random
+- Veteran soldiers barely react (normalcy)
+- Player learns this is "safe enough"
+
+---
+
+#### **20:00 - SENTRY DUTY (FIRST WATCH)**
+
+**Sergeant**: "Your turn. Sentry duty. Two hours. 20:00 to 22:00. Watch the wire."
+
+**TASK: Sentry Duty**
+
+**Location**: Firing step, front trench
+
+**Instructions** (Minimal):
+"Stand here. Watch no-man's land. If you see movement, alert me. Don't fall asleep or I'll have your ass."
+
+**Gameplay**:
+- Stand at position for 2 hours (can be time-accelerated or 10-15 min real-time)
+- **Alertness Meter Appears** (first time)
+- Slowly depletes (standing watch is exhausting)
+- Dark, cold, rain
+- Occasional flares (German side)
+- Nothing happens
+
+**Fellow Sentry** (Next position over, 10m away):
+"First time? It's boring as hell. But don't zone out. Snipers are active at night. You stand up too high, you lose your head."
+
+**Environmental Details**:
+- Rats running across no-man's land
+- Distant gunfire (different sector)
+- Flares illuminate corpses and wire
+- Wind howling
+- Water sloshing in trench bottom
+
+**End of Shift** (22:00):
+Relief soldier arrives: "I've got it. Go sleep."
+
+**What Player Learned**:
+- ✅ Sentry duty mechanics
+- ✅ Alertness depletion
+- ✅ Night atmosphere
+- ✅ Boredom + vigilance
+- ✅ Environmental awareness at night
+
+---
+
+### **FEB 20, 1916 - NORMALCY & FIRST SCARE**
+
+---
+
+#### **06:00 - MORNING STAND-TO (ROUTINE)**
+
+**Same as Feb 19**:
+- Wake up call
+- Rush to positions
+- Watch for 15 minutes
+- Nothing happens
+- Stand down
+- Breakfast
+
+**Familiarity Building**:
+- Player now knows routine
+- Feels comfortable
+- "This is manageable"
+
+---
+
+#### **09:00 - TRENCH MAINTENANCE**
+
+**Different work task**:
+- Drain water from trench bottom
+- Repair duckboards
+- Shovel mud from firing step
+
+**More random shells** (Background):
+- 10:15 AM: Shell lands 250m away
+- 11:40 AM: Two shells land 180m away
+- No one reacts - routine
+
+---
+
+#### **12:30 - TAKING COVER (FIRST CLOSE CALL)**
+
+**Event**: Random shell lands 80m away (MUCH closer)
+
+**Veteran shouts**: "DOWN!"
+
+**Everyone drops prone instantly**
+
+**Player must react** (or take minor damage from debris)
+
+**Shell explodes**:
+- Loud, ear-ringing
+- Dirt and debris shower down
+- Shrapnel whistles overhead
+- Few seconds of silence
+
+**Everyone gets up**:
+
+**Veteran**: "That was a little close." [Dusts off uniform] "Anyway, where were we?"
+
+**What Player Learned**:
+- ✅ Go prone when shell warning
+- ✅ Taking cover mechanic
+- ✅ Shells CAN be dangerous
+- ✅ But veterans treat it casually (false security maintained)
+
+---
+
+#### **14:00 - FREE TIME / SQUAD BONDING**
+
+**Quieter afternoon**:
+- Can rest, talk, explore
+- Build relationships with squad
+
+**Optional Conversation - Pierre**:
+"You doing okay? I was terrified my first days. You seem to be handling it better than I did. That shell earlier was close though. Reminded me... we're not really safe here. But what can you do? Just keep going."
+
+**Optional Conversation - Young Recruit**:
+"I want to go home. I just want to go home. Sorry. I know we all do. I just... every time I hear a shell, I think 'this is it.' Does it get easier?"
+
+**Player can choose response** (affects morale slightly):
+- "It gets easier." (+5 morale to recruit)
+- "I don't know." (Neutral)
+- "No, it doesn't." (-5 morale, but honest)
+
+---
+
+#### **18:00 - EVENING (CALM)**
+
+**Last evening before Feb 21**:
+- Ration distribution
+- Some soldiers singing (French songs - "La Madelon")
+- Harmonica playing
+- Card game
+- Relaxed atmosphere
+
+**Veteran tells story**:
+"I was at the Marne in '14. That was chaos. This? This is almost peaceful. Just sit tight, keep your head down, seven days will pass. Then rest area, hot food, real beds."
+
+**NO FORESHADOWING**:
+- ❌ No one mentions "big attack coming"
+- ❌ No unusual German activity
+- ❌ No ominous signs
+- ✅ Just normal evening
+
+**Player can**:
+- Sleep early (skip to morning)
+- Stay up (socialize, explore)
+
+---
+
+### **FEB 21, 1916 - THE MORNING**
+
+---
+
+#### **06:00 - MORNING STAND-TO (IDENTICAL TO FEB 19-20)**
+
+**Exactly the same routine**:
+- Wake up call
+- Rush to positions
+- Face no-man's land
+- 15 minutes of watching
+- Nothing happens
+- Stand down
+
+**Sun rises**:
+- Beautiful sunrise
+- Clear morning (rare for Verdun)
+- Birds chirping (actually)
+- Almost peaceful
+
+**Veteran**: "Quiet morning. Maybe today will be easy."
+
+---
+
+#### **06:30 - BREAKFAST (CALM)**
+
+**Normal ration distribution**:
+- Bread, coffee
+- Soldiers relaxed
+- Casual conversation
+
+**Pierre**: "Think we'll get mail today?"
+**Someone**: "Doubt it. We're too far forward."
+**Cynic**: "Mail? What's the point? By the time it arrives, we'll be dead."
+**Veteran**: "Shut up with that talk."
+
+---
+
+#### **07:00 - 07:14 - FREE TIME (THE CALM)**
+
+**Complete player freedom**:
+- Can eat remaining rations
+- Can rest on bunk (stamina recovery)
+- Can check equipment
+- Can talk to squadmates
+- Can walk around trenches
+
+**Atmosphere**:
+- ✅ Calm
+- ✅ Beautiful morning light
+- ✅ Soldiers relaxed
+- ✅ Some smoking
+- ✅ One cleaning rifle
+- ✅ Two playing cards
+- ✅ One writing letter
+- ✅ Birds chirping
+- ✅ Light breeze
+
+**NO TENSION**:
+- ❌ No ominous music
+- ❌ No distant rumbling
+- ❌ No warnings
+- ❌ No unusual activity
+
+**Everything is identical to Feb 19-20 morning**
+
+**Player should feel**: "Just another day. I know this routine now."
+
+---
+
+#### **07:14 - THE FINAL MINUTE**
+
+**Optional Scene** (If player near Veteran Sergeant):
+
+**Sergeant lighting cigarette**:
+[Offers one to player]
+"You're doing good, kid. You'll make it through this rotation just fine."
+
+[Takes a drag]
+
+[Looks north, pauses]
+
+"You hear that?"
+
+[Distant rumble]
+
+[Getting louder]
+
+---
+
+#### **07:15:00 - THE BOMBARDMENT BEGINS**
+
+```
+[Screen shakes]
+
+[MASSIVE EXPLOSION - 50m away]
+
+[Another - 30m]
+
+[TEN simultaneously]
+
+[HUNDREDS]
+
+[The world becomes fire and steel and death]
+```
+
+**NO UI**
+**NO PROMPTS**
+**NO "Press X to take cover"**
+**Just: SURVIVE**
+
+---
+
+**Immediate Chaos**:
+- Explosions everywhere
+- Ground shaking constantly
+- Deafening roar
+- Dirt, debris, shrapnel flying
+- Soldiers screaming
+- Some running
+- Some frozen in terror
+
+**Sergeant (barely audible over noise)**: "DUGOUT! GET TO THE—"
+
+[155mm shell lands 5m from Sergeant]
+
+[Direct hit]
+
+[He's gone - vaporized]
+
+**Blood on player's face**
+
+**Ears ringing (audio muffled)**
+
+**Vision shaking**
+
+**Survival instinct kicks in**
+
+---
+
+**PLAYER MUST**:
+1. Remember where dugout is (no waypoint)
+2. Navigate while shells fall randomly
+3. Avoid being hit (luck + skill)
+4. Reach shelter or die
+
+**50% of squad dies in first 2 minutes**
+
+**This is Verdun**
+
+**This is war**
+
+**The tutorial is over**
+
+**The game has begun**
+
+---
+
+#### TUTORIAL END / MAIN GAME TRANSITION
+
+**If Player Reaches Dugout**:
+- Huddled with survivors
+- Bombardment continues (hours)
+- Screen fades to title card:
+
+```
+ONLY THE DEAD
+
+Day 1 of 303
+
+February 21, 1916
+```
+
+[Main game continues]
+
+---
+
+**If Player Dies**:
+- Screen goes black
+- Death message: "FEBRUARY 21, 1916 - 7:16 AM - KILLED BY ARTILLERY"
+- Respawn options:
+  - **Tutorial Mode**: Respawn at bunk (forgiving for learning)
+  - **Normal/Hard**: Respawn at Feb 21, 7:00 AM (try again)
+  - **Permadeath**: Game over - new character or restart
+
+---
+
+#### MECHANICS TAUGHT SUMMARY
+
+**By End of Tutorial, Player Knows**:
+
+| Mechanic | Taught When | Method |
+|----------|------------|--------|
+| **Movement/Navigation** | Feb 18 - Supply run | Following NPCs, carrying crates |
+| **Inventory** | Feb 18 - Rations | Receiving items, opening inventory |
+| **Consumption (Food/Water)** | Feb 18-20 - Meals | Eating from inventory |
+| **Stamina** | Feb 18-19 - Work | Physical labor depletes, rest restores |
+| **Rest/Sleep** | Feb 18-20 - Bunk | Time skip, meter restoration |
+| **Alertness** | Feb 19 - Sentry | Night watch depletes alertness |
+| **Weapon Handling** | Feb 19 - Range | Aiming, firing rifle |
+| **Taking Cover** | Feb 20 - Close shell | Go prone when danger |
+| **Equipment** | Feb 18-20 - Daily | Helmet, rifle, pack, gas mask (passive) |
+| **Save System** | Feb 18 - Bunk | Autosave on sleep (hidden) |
+| **Survival Meters** | Feb 18-20 - All | Passive observation of all meters |
+| **Trench Layout** | Feb 18-20 - Exploration | Navigation, landmarks |
+| **Day/Night Cycle** | Feb 18-20 - All | Time passage, routines |
+| **NPC Interaction** | Feb 18-20 - Squad | Conversations, relationships |
+
+---
+
+**What Player Does NOT Know** (Must Learn Through Experience):
+- ❌ How to survive mass bombardment
+- ❌ Shell recognition by sound (75mm vs 155mm vs 210mm)
+- ❌ Where to find best shelter during drumfire
+- ❌ How to manage panic/morale in extreme stress
+- ❌ What to do when wounded
+- ❌ How to help dying squadmates
+- ❌ Medical treatment under fire
+- ❌ Combat against enemy soldiers
+- ❌ Gas attack survival
+- ❌ Night patrol in no-man's land
+- ❌ Prolonged artillery endurance (hours/days)
+
+**These are learned Feb 21 onward, or player dies trying**
+
+---
+
+#### TECHNICAL IMPLEMENTATION NOTES
+
+```json
+{
+  "tutorial_systems": {
+    "ui_prompts": {
+      "total_allowed": 3,
+      "only_show": [
+        "E - Pick Up" (first item interaction only),
+        "I - Inventory" (first inventory open only),
+        "CTRL - Prone" (first prone only)
+      ],
+      "display_style": "Small text, bottom-right corner, fades after 3 seconds",
+      "never_show_again": true
+    },
+
+    "npc_guidance": {
+      "method": "NPCs tell/show player what to do",
+      "examples": [
+        "Sergeant: 'Follow me'",
+        "Pierre: 'Grab that crate'",
+        "Veteran: 'Get down when you hear shells!'"
+      ],
+      "style": "Natural dialogue, not tutorial-speak"
+    },
+
+    "learning_by_observation": {
+      "enabled": true,
+      "examples": [
+        "Watch soldiers queue for rations → player learns to queue",
+        "Watch soldiers drop prone → player learns cover",
+        "Watch soldiers eat → player learns consumption"
+      ]
+    },
+
+    "failure_tolerance": {
+      "feb_18_20": {
+        "death_allowed": true,
+        "death_consequence": "Respawn at last autosave (bunk)",
+        "death_likelihood": "Very low (1-2%)",
+        "purpose": "Tutorial is forgiving, Feb 21 is not"
+      },
+      "feb_21_bombardment": {
+        "death_allowed": true,
+        "death_consequence": "Depends on difficulty mode",
+        "death_likelihood": "Very high (50-60% first attempt)",
+        "purpose": "Teach through death - permadeath consequence begins"
+      }
+    },
+
+    "autosave_triggers": {
+      "bunk_sleep": "Every time player sleeps",
+      "task_completion": "After major tasks (supply run, work detail)",
+      "time_based": "Every 15 minutes real-time",
+      "manual_save": "Not available (autosave only for tutorial)"
+    },
+
+    "difficulty_scaling": {
+      "recruit_mode": {
+        "feb_18_20_changes": "None - same experience",
+        "feb_21_changes": "Bombardment 70% intensity, more warning time"
+      },
+      "soldier_mode": {
+        "feb_18_20_changes": "None - intended experience",
+        "feb_21_changes": "Full intensity, historical accuracy"
+      },
+      "veteran_mode": {
+        "feb_18_20_changes": "None - same tutorial",
+        "feb_21_changes": "120% intensity, faster shells, more random deaths"
+      },
+      "ironman_mode": {
+        "feb_18_20_changes": "Deaths send to Feb 18 (harsh but fair)",
+        "feb_21_changes": "Death = permanent, restart entire game"
+      }
+    },
+
+    "feb_21_trigger": {
+      "exact_time": "07:15:00 AM game time",
+      "trigger_type": "Time-based (not location-based)",
+      "player_location": "Irrelevant - shells fall everywhere",
+      "cannot_be_prevented": true,
+      "cannot_be_skipped": true,
+      "must_experience": "Full impact, no cutaway"
+    }
+  }
+}
+```
+
+---
+
+#### SQUAD CHARACTERS (TUTORIAL NPCs)
+
+**Your Squad** (8 soldiers + player = 9 total):
+
+1. **Sergeant Moreau** (40s) - Leader
+   - Gruff but protective
+   - Survived since 1914
+   - Dies: Feb 21, 7:15 AM (first casualty player sees - vaporized)
+   - Purpose: Father figure, establishes false security
+
+2. **Pierre Dubois** (23) - Friend
+   - Nervous but friendly
+   - Helps player in tutorial
+   - Survives Feb 21 bombardment (if player lucky)
+   - Purpose: Main squadmate relationship
+
+3. **Veteran "Le Vieux"** (35) - Cynic
+   - Scarred, one eye
+   - Dark humor, fatalistic
+   - Survives Feb 21 (tough to kill)
+   - Purpose: Comic relief, wisdom
+
+4. **Young Recruit "Petit"** (18) - Scared Kid
+   - Terrified constantly
+   - Looks up to player
+   - Dies: Feb 21, 7:17 AM (killed trying to run)
+   - Purpose: Innocence lost, guilt trigger
+
+5. **Corporal Lefevre** (28) - By-the-book
+   - Follows orders exactly
+   - Competent, humorless
+   - Survives Feb 21 (takes command after Sergeant dies)
+   - Purpose: New leader, mission continuity
+
+6. **Marcel** (25) - Card Player
+   - Always gambling
+   - Owes everyone money
+   - Dies: Feb 21, 7:16 AM (direct hit in dugout entrance)
+   - Purpose: Random death, shows luck matters
+
+7. **Antoine** (30) - Religious
+   - Prays constantly
+   - Kind, helps others
+   - Survives Feb 21 (faith tested)
+   - Purpose: Moral compass
+
+8. **Jacques** (22) - Optimist
+   - Thinks war will end soon
+   - Talks about fiancée constantly
+   - Dies: Feb 21, 7:18 AM (shrapnel wound, bleeds out)
+   - Purpose: Hope dies, medical trauma
+
+**Survival Rate Feb 21 First Hour**: 4 survivors (44%) - historically accurate
+
+---
+
+#### ENVIRONMENTAL DETAILS
+
+**Support Trench Layout**:
+```
+[Communication Trench from Rear]
+         ↓
+    [Supply Depot]
+         ↓
+   [Medical Station]
+         ↓
+    [Dugout Area] ← Player bunks here
+         ↓
+   [Work Area / Sandbags]
+         ↓
+    [Firing Trench]
+         ↓
+    [No-Man's Land]
+```
+
+**Dugout Details**:
+- Underground shelter, 3m below surface
+- Wooden frame, sandbag roof
+- 6 bunks (2 tiers, 3 wide)
+- Small stove (sometimes lit)
+- Personal belongings on shelves
+- Rats everywhere
+- Damp, cold, smells of earth and sweat
+
+**Trench Conditions**:
+- Ankle-deep mud and water
+- Duckboards (wooden planks) over worst sections
+- Sandbag walls (irregular, need constant repair)
+- Firing step (raised platform to shoot from)
+- Funk holes (small shelters dug into wall)
+- Latrine pit (30m from living area)
+- Drained sumps (water collection pits)
+
+**Weather (Feb 18-21)**:
+- Overcast, light rain Feb 18-19
+- Clear evening Feb 20
+- Beautiful sunrise Feb 21 (ironic)
+- Cold throughout (5-8°C)
+
+---
+
+#### AUDIO DESIGN
+
+**Feb 18-20 Soundscape** (Calm):
+- Distant artillery (every 2-5 minutes, background)
+- Rain pattering
+- Soldiers talking quietly
+- Equipment rattling
+- Rats squeaking
+- Water dripping
+- Occasional flare (whoosh)
+- Distant machine guns (other sector)
+
+**Feb 21, 7:00-7:14 AM** (Peaceful):
+- Birds chirping
+- Light wind
+- Soldiers talking
+- Equipment sounds
+- Footsteps on duckboards
+- **NO artillery** (eerie silence)
+
+**Feb 21, 7:15 AM** (Hell):
+- **IMMEDIATE MAXIMUM VOLUME**
+- Hundreds of shells whistling (different pitches)
+- Explosions overlapping (continuous roar)
+- Ground shaking (low rumble)
+- Shrapnel whistling
+- Men screaming
+- Debris hitting ground
+- Ringing ears (player character - muffled audio)
+- **Does not stop** (continues for hours)
+
+---
+
+#### SUCCESS METRICS
+
+**Tutorial Considered Successful If**:
+- ✅ Player learns all core mechanics organically
+- ✅ Player feels comfortable and secure by Feb 20
+- ✅ Player does NOT expect Feb 21 bombardment
+- ✅ Feb 21 is shocking, terrifying, overwhelming
+- ✅ Player dies 1-3 times before surviving first hour
+- ✅ Player bonds with at least one squadmate
+- ✅ Player respects/fears artillery after experiencing it
+
+**Tutorial Fails If**:
+- ❌ Player confused about basic controls by Feb 21
+- ❌ Player expects bombardment (foreshadowing too obvious)
+- ❌ Feb 21 feels "tutorialized" or safe
+- ❌ Player survives Feb 21 first bombardment easily (too easy)
+- ❌ Player doesn't care about squad deaths (no attachment)
+
+---
+
+## [TUTORIAL MISSION SPECIFICATION COMPLETE]
+
+**STATUS**: Tutorial mission fully designed and specified
+
+**Next**: Day-in-the-Life mission examples follow below
+
+---
+
+---
+
 ### DAY-IN-THE-LIFE MISSION EXAMPLES
 
 **Purpose**: These examples show hour-by-hour gameplay during different rotation phases, demonstrating how survival systems, artillery mechanics, and mission structure combine into actual gameplay.
