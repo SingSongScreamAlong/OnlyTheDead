@@ -15,7 +15,7 @@ This is the **game design bible** for "Only The Dead" - a WWI survival game set 
 
 This Development Book works alongside the **Verdun Research Anthology**:
 
-- **Verdun Research Anthology** (`verdun_anthology/`) = Historical research, verified facts, primary sources
+- **Verdun Research Anthology** (`docs/verdun_anthology/`) = Historical research, verified facts, primary sources
   - Timelines with documented events
   - Verified coordinates and terrain data
   - Historical survival mechanics documentation

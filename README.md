@@ -20,7 +20,7 @@ This repository contains **TWO complementary documents**:
 ### 1️⃣ **VERDUN RESEARCH ANTHOLOGY** 📖
 **Historical research foundation** - verified facts, sources, educational content
 
-**Location**: `verdun_anthology/`
+**Location**: `docs/verdun_anthology/`
 
 **Contents**:
 - ✅ Complete 303-day timeline (verified events, dates, casualties)
@@ -35,7 +35,7 @@ This repository contains **TWO complementary documents**:
 ### 2️⃣ **ONLY THE DEAD DEVELOPMENT BOOK** 🎮
 **Game design bible** - mechanics, missions, narrative, specifications
 
-**Location**: `ONLY_THE_DEAD_DEVELOPMENT_BOOK.md`
+**Location**: `docs/development/ONLY_THE_DEAD_DEVELOPMENT_BOOK.md`
 
 **Contents** (in progress):
 - ✅ Core vision & design pillars
@@ -51,7 +51,7 @@ This repository contains **TWO complementary documents**:
 
 ### 🔀 **HOW THEY WORK TOGETHER**
 
-See: [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md)
+See: [`docs/verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](docs/verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md)
 
 **Quick Summary**:
 - **Research Anthology** = What actually happened (history)
@@ -64,21 +64,21 @@ See: [`verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md`](verdun_anthology/RE
 
 ### For Historians/Educators:
 ```bash
-cd verdun_anthology/
+cd docs/verdun_anthology/
 # Read timeline/, survival/, geographic_data/
 # Check HISTORICAL_ACCURACY_STATEMENT.md for sources
 ```
 
 ### For Game Developers:
 ```bash
-# Open ONLY_THE_DEAD_DEVELOPMENT_BOOK.md
+# Open docs/development/ONLY_THE_DEAD_DEVELOPMENT_BOOK.md
 # Reference verdun_anthology/ for historical accuracy
 # Implement systems, missions, narrative
 ```
 
 ### For Terrain/Level Designers:
 ```bash
-cd verdun_anthology/geographic_data/
+cd docs/verdun_anthology/geographic_data/
 python fetch_elevation_data.py      # Download real SRTM terrain
 python export_for_ue5.py            # For Unreal Engine 5
 # OR
@@ -186,9 +186,9 @@ python export_for_houdini.py        # For Houdini
 
 ### Root Level
 - **README.md** (this file) - Project overview
-- **ONLY_THE_DEAD_DEVELOPMENT_BOOK.md** - Game design bible
+- **docs/** - All written references (research, design, companion materials)
 
-### verdun_anthology/
+### docs/verdun_anthology/
 - **README_ANTHOLOGY_VS_DEVELOPMENT.md** - Explains two-document structure
 - **HISTORICAL_ACCURACY_STATEMENT.md** - Source verification system
 - **timeline/** - 303 days detailed (12 months)
@@ -197,6 +197,14 @@ python export_for_houdini.py        # For Houdini
 - **stories/** - Battle narratives
 - **letters/** - Soldier correspondence (composite)
 - **characters/** - Rosters and biographies
+
+### docs/development/
+- **ONLY_THE_DEAD_DEVELOPMENT_BOOK.md** - Full game design bible
+- **ROADMAP.md** - Phase-by-phase implementation tracker (current + upcoming)
+
+### docs/companion/
+- **COMPANION_BOOK_COMPLETE.md** - Combined research + design compendium
+- **COMPANION_BOOK_SUMMARY.txt** - Quick reference / executive summary
 
 ---
 
@@ -255,16 +263,15 @@ This project can be used for:
 
 ## 🔗 LINKS
 
-**Documentation**:
-- [Verdun Research Anthology](verdun_anthology/)
-- [Development Book](ONLY_THE_DEAD_DEVELOPMENT_BOOK.md)
-- [Anthology vs. Development Explanation](verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md)
-- [Historical Accuracy Statement](verdun_anthology/HISTORICAL_ACCURACY_STATEMENT.md)
+- [Verdun Research Anthology](docs/verdun_anthology/)
+- [Development Book](docs/development/ONLY_THE_DEAD_DEVELOPMENT_BOOK.md)
+- [Anthology vs. Development Explanation](docs/verdun_anthology/README_ANTHOLOGY_VS_DEVELOPMENT.md)
+- [Historical Accuracy Statement](docs/verdun_anthology/HISTORICAL_ACCURACY_STATEMENT.md)
 
 **Geographic Tools**:
-- [Geographic Data Package](verdun_anthology/geographic_data/)
-- [UE5 Import Guide](verdun_anthology/geographic_data/UE5_Import/)
-- [Houdini Import Guide](verdun_anthology/geographic_data/Houdini_Import/)
+- [Geographic Data Package](docs/verdun_anthology/geographic_data/)
+- [UE5 Import Guide](docs/verdun_anthology/geographic_data/UE5_Import/)
+- [Houdini Import Guide](docs/verdun_anthology/geographic_data/Houdini_Import/)
 
 ---
 

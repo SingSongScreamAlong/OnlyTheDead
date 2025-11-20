@@ -1,0 +1,37 @@
+//// BEGIN NEW CODE
+# Unreal Engine build artifacts
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# Platform-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local config overrides
+Config/DefaultEditorPerProjectUserSettings.ini
+Config/DefaultEditor.ini
+
+# Generated project files
+*.xcodeproj
+*.xcworkspace
+CMakeLists.txt
+
+# Python cache
+__pycache__/
+*.pyc
+//// END NEW CODE

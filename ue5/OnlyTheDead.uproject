@@ -1,0 +1,23 @@
+{
+    "FileVersion": 3,
+    "EngineAssociation": "5.7",
+    "Category": "",
+    "Description": "Only The Dead - Verdun runner survival experience.",
+    "Modules": [
+        {
+            "Name": "OnlyTheDead",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "OnlyTheDeadEditor",
+            "Type": "Editor",
+            "LoadingPhase": "Default"
+        }
+    ],
+    "TargetPlatforms": [
+        "Mac",
+        "Win64",
+        "Linux"
+    ]
+}
