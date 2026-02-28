@@ -64,6 +64,7 @@ NUM_EXISTING_CRATERS = 8
 BP_TRENCH_SEGMENT    = "/Game/POC_TrenchArtillery/Blueprints/BP_TrenchSegment"
 BP_ARTILLERY_SHELL   = "/Game/POC_TrenchArtillery/Blueprints/BP_ArtilleryShell"
 BP_ARTILLERY_MANAGER = "/Game/POC_TrenchArtillery/Blueprints/BP_ArtilleryManager"
+BP_BARRAGE_DIRECTOR  = "/Game/POC_TrenchArtillery/Blueprints/BP_BarrageDirector"
 BP_CRATER            = "/Game/POC_TrenchArtillery/Blueprints/BP_ShellCrater"
 BP_DEFORMABLE_TERRAIN = "/Game/POC_TrenchArtillery/Blueprints/BP_DeformableTerrain"
 
@@ -450,6 +451,63 @@ def place_artillery_manager(world):
 
 
 # ---------------------------------------------------------------------------
+# Barrage Director
+# ---------------------------------------------------------------------------
+
+def place_barrage_director(world):
+    """
+    Spawn ABarrageDirector — the orchestrator of all incoming fire.
+
+    Positioned off-map behind German lines. In editor, the director does nothing
+    until Play is pressed; in-game it can be triggered via:
+      - AutoStartOnBeginPlay property (set in Blueprint)
+      - BP event graph calling StartVerdunOpeningSequence()
+      - External trigger from a game manager
+
+    The Verdun Opening Sequence escalates over ~5 minutes:
+      Phase 1:  Registration fire (3 shells/min, 30s)
+      Phase 2:  Harassing fire   (8 shells/min, 60s)
+      Phase 3:  Mixed calibres   (22 shells/min, 90s)
+      Phase 4:  Saturation       (60 shells/min, 90s)
+      Phase 5:  Drumfire         (120 shells/min, continuous)
+    """
+    log("Placing ABarrageDirector...")
+
+    director_class = get_actor_class(BP_BARRAGE_DIRECTOR)
+
+    # Place off-map, behind German lines — shells appear to come from this direction
+    director_origin = unreal.Vector(30000.0, 5000.0, 500.0)
+
+    if director_class:
+        director = unreal.EditorLevelLibrary.spawn_actor_from_class(
+            director_class, director_origin, unreal.Rotator(0, 180, 0))
+    else:
+        log_warning(
+            "BP_BarrageDirector not found. "
+            "Create it in Content/POC_TrenchArtillery/Blueprints/ with parent ABarrageDirector."
+        )
+        director = unreal.EditorLevelLibrary.spawn_actor_from_class(
+            unreal.Actor, director_origin, unreal.Rotator(0, 180, 0))
+
+    if director:
+        director.set_actor_label("BarrageDirector_GermanArtillery")
+        try:
+            director.set_editor_property(
+                "trench_center_location", ARTILLERY_TARGET_CENTER)
+            director.set_editor_property(
+                "default_gun_origin", director_origin)
+        except Exception as e:
+            log_warning(f"Could not set BarrageDirector properties: {e}")
+            log_warning(
+                "Set TrenchCenterLocation and DefaultGunOrigin in Details panel.\n"
+                "Assign DefaultShellClass and HeavyShellClass."
+            )
+
+    log("BarrageDirector placed. Call StartVerdunOpeningSequence() in BeginPlay or via Blueprint event.")
+    return director
+
+
+# ---------------------------------------------------------------------------
 # Player Start
 # ---------------------------------------------------------------------------
 
@@ -537,6 +595,7 @@ def generate_poc_level():
         segments = place_trench_segments(world)
         place_existing_craters(world)
         place_artillery_manager(world)
+        place_barrage_director(world)
         place_player_start(world)
         draw_debug_annotations(world)
         configure_world_settings(world)
@@ -553,17 +612,33 @@ def generate_poc_level():
     unreal.log("     - BP_DeformableTerrain (parent: ADeformableTerrain)")
     unreal.log("     - BP_TrenchSegment     (parent: ATrenchSegment)")
     unreal.log("     - BP_ArtilleryShell    (parent: AArtilleryShell)")
-    unreal.log("     - BP_ArtilleryManager  (parent: AArtilleryManager)")
+    unreal.log("     - BP_BarrageDirector   (parent: ABarrageDirector)")
     unreal.log("     - BP_ShellCrater       (simple static mesh actor)")
     unreal.log("     - BP_VerdunSoldier     (parent: AVerdunSoldier)")
-    unreal.log("  2. Create M_DeformableTerrain material:")
-    unreal.log("     - Sample terrain textures (ground, mud, churned earth)")
-    unreal.log("     - Lerp between them using VertexColor.R as alpha")
+    unreal.log("     - BP_SoilDebris        (Chaos Geometry Collection BP)")
+    unreal.log("  2. Create Niagara systems in Content/POC_TrenchArtillery/FX/:")
+    unreal.log("     - NS_SoilGeyser    (GPU sim, upward dirt burst, ImpactScale param)")
+    unreal.log("     - NS_SmokeColumn   (persistent rising column, SmokeScale param)")
+    unreal.log("     - NS_Shrapnel      (metal fragment ribbons, secondary ground hits)")
+    unreal.log("  3. Create M_DeformableTerrain material:")
+    unreal.log("     - Lerp undisturbed/churned textures using VertexColor.R")
     unreal.log("     - Assign to BP_DeformableTerrain.TerrainMaterial")
-    unreal.log("  3. Assign meshes, sounds, and VFX in remaining Blueprints.")
-    unreal.log("  4. Set ShellClass in ArtilleryManager to BP_ArtilleryShell.")
-    unreal.log("  5. Press Play In Editor and wait 5 seconds.")
-    unreal.log("     Ground will permanently deform with each shell impact.")
+    unreal.log("  4. In BP_ArtilleryShell, assign:")
+    unreal.log("     - SoilGeyserNiagara, SmokeColumnNiagara, ShrapnelNiagara")
+    unreal.log("     - SoilDebrisActorClass = BP_SoilDebris")
+    unreal.log("     - WhistleSound, ImpactSound")
+    unreal.log("  5. In BP_BarrageDirector, assign:")
+    unreal.log("     - DefaultShellClass = BP_ArtilleryShell (75mm)")
+    unreal.log("     - HeavyShellClass   = BP_ArtilleryShell_155mm")
+    unreal.log("     - TrenchCenterLocation = (0, 0, 0)")
+    unreal.log("  6. In BP_VerdunSoldier, add UConcussionComponent.")
+    unreal.log("     Bind OnShellShockStateChanged to drive post-process effects:")
+    unreal.log("     - Shaken:      +0.3 vignette")
+    unreal.log("     - Distressed:  +lens blur, audio muffle mix")
+    unreal.log("     - ShellShocked: desaturation, severe vignette, hand tremor")
+    unreal.log("     - Catatonic:   full screen darkening, freeze player input")
+    unreal.log("  7. Press Play and call BarrageDirector.StartVerdunOpeningSequence()")
+    unreal.log("     Watch the land disappear over ~5 minutes of escalating fire.")
     unreal.log("=" * 60)
 
 
