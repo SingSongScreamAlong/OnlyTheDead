@@ -1,0 +1,43 @@
+{
+    "FileVersion": 3,
+    "EngineAssociation": "5.3",
+    "Category": "Game",
+    "Description": "Only The Dead - WWI Survival Horror set at the Battle of Verdun (1916)",
+    "Modules": [
+        {
+            "Name": "OnlyTheDead",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "AdditionalDependencies": [
+                "Engine",
+                "CoreUObject"
+            ]
+        }
+    ],
+    "Plugins": [
+        {
+            "Name": "GeometryCollectionPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "ChaosDestructionPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "PythonScriptPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "EditorScriptingUtilities",
+            "Enabled": true
+        },
+        {
+            "Name": "EnhancedInput",
+            "Enabled": true
+        },
+        {
+            "Name": "Niagara",
+            "Enabled": true
+        }
+    ]
+}
