@@ -4,10 +4,10 @@
 #include "GameFramework/Actor.h"
 #include "DeformableTerrain.generated.h"
 
-class UProceduralMeshComponent;
+class UDynamicMeshComponent;
 
 /**
- * ADeformableTerrain
+ * ADeformableTerrain  (UE 5.7 — UDynamicMeshComponent)
  *
  * A flat procedural mesh ground plane whose vertices are displaced at runtime
  * by shell impacts. Every deformation is persistent and accumulates — repeated
@@ -22,19 +22,30 @@ class UProceduralMeshComponent;
  *  ___/      (depth)       \___
  *
  *   - Center depressed by CraterDepth
- *   - Rim raised by RimHeight at RimRadius (1.4x CraterRadius)
- *   - Smooth falloff beyond rim back to original terrain
- *   - Vertex colors track cumulative deformation intensity (0=undisturbed,
- *     1=fully churned) — drives material mud/dirt blending
+ *   - Rim raised by RimHeight at RimRadius (1.25x CraterRadius)
+ *   - Smooth Gaussian falloff beyond rim back to original terrain
+ *   - Vertex colors track cumulative deformation (R: 0=undisturbed, 1=churned)
+ *     → drives Substrate material blend between intact ground and churned mud
  *
- * Collision updates automatically after every deformation so the player
- * physically walks down into craters rather than floating above them.
+ * UE 5.7 migration notes (from UProceduralMeshComponent):
+ *   - UDynamicMeshComponent uses FDynamicMesh3 internally.
+ *   - ApplyExplosionDeformation() calls SetVertex() only on vertices inside the
+ *     blast footprint, then NotifyMeshUpdated() — GPU upload is proportional to
+ *     crater footprint, not total terrain size. This matters during heavy barrages
+ *     (30+ simultaneous craters during Drumfire phase).
+ *   - Normals are computed automatically by the component (TangentsType =
+ *     AutoCalculated) — RecalculateNormals() is gone.
+ *   - Collision uses CTF_UseComplexAsSimple so the player walks into craters.
+ *     SetDeferredCollisionUpdates(true) keeps collision cooking off the game thread.
  *
- * Performance:
- *   - Grid resolution is configurable; 100cm default gives good crater
- *     fidelity for 75mm shells (200cm crater radius = 4 vertices across)
- *   - Only vertices within the blast footprint are processed per impact
- *   - Async cooking recommended for large terrain (see bCookAsync)
+ * Substrate material integration (UE 5.7):
+ *   - Assign a Substrate material to TerrainMaterial.
+ *   - In the Substrate slab, blend two BSDF layers:
+ *       Layer A (undisturbed): chalky limestone, dry, high albedo
+ *       Layer B (churned mud):  wet clay, dark, low albedo, SSS approximation
+ *     Mix weight = VertexColor.R (0 = A, 1 = B)
+ *   - Substrate's multi-lobe BRDF handles the wet/dry specular difference
+ *     correctly without manual roughness blending hacks.
  */
 UCLASS()
 class ONLYTHEDEAD_API ADeformableTerrain : public AActor
@@ -63,9 +74,9 @@ public:
 
     // ---- Material ----
 
-    // Assign a material that reads VertexColor.R as deformation intensity
-    // (0 = undisturbed soil, 1 = fully churned/crater).
-    // Blend between intact ground texture and churned mud based on this value.
+    // Assign a Substrate material (UE 5.7) that reads VertexColor.R as the
+    // undisturbed → churned blend weight.
+    // Legacy UMaterial also works: wire VertexColor.R → any blend parameter.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Material")
     UMaterialInterface* TerrainMaterial;
 
@@ -77,10 +88,13 @@ public:
      * Displaces terrain vertices around WorldImpactPoint to form a crater.
      * Safe to call many times — deformations accumulate additively.
      *
+     * Only vertices inside the blast footprint are touched. GPU upload is
+     * proportional to crater size, not total terrain vertex count.
+     *
      * @param WorldImpactPoint  World-space hit point on terrain surface
      * @param CraterRadius      Radius of the depression bowl (cm)
      * @param CraterDepth       Maximum depth at the crater centre (cm)
-     * @param RimHeightFraction Rim height as fraction of CraterDepth (0.25 = 25%)
+     * @param RimHeightFraction Rim height as fraction of CraterDepth (0.30 = 30%)
      */
     UFUNCTION(BlueprintCallable, Category = "Terrain")
     void ApplyExplosionDeformation(
@@ -94,11 +108,11 @@ public:
     UFUNCTION(BlueprintCallable, CallInEditor, Category = "Terrain")
     void ResetDeformation();
 
-    // Rebuild the mesh from scratch (call after changing grid settings in editor)
+    // Rebuild mesh from scratch (call after changing grid settings in editor)
     UFUNCTION(BlueprintCallable, CallInEditor, Category = "Terrain")
     void RegenerateMesh();
 
-    // Read the current displacement at a world XY position (for audio / VFX)
+    // Current Z displacement at a world XY position (for audio / stats)
     UFUNCTION(BlueprintPure, Category = "Terrain")
     float GetDisplacementAtLocation(FVector WorldLocation) const;
 
@@ -115,25 +129,24 @@ protected:
 private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components",
               meta = (AllowPrivateAccess = "true"))
-    UProceduralMeshComponent* TerrainMesh;
+    UDynamicMeshComponent* TerrainMesh;
 
-    // ---- Grid state ----
+    // ---- Shadow copies of per-vertex state ----
+    // VertexPositions and VertexColors are kept in sync with FDynamicMesh3
+    // so callers can read Z displacement and deformation intensity without
+    // going through the mesh data structure.
 
-    // Vertex positions in local space — Z is the accumulated displacement
+    // Local-space vertex positions — Z is the accumulated displacement
     TArray<FVector> VertexPositions;
 
-    // Vertex normals (recalculated after each deformation)
-    TArray<FVector> Normals;
-
-    // Vertex colors — R channel = cumulative deformation intensity (0-1)
-    // Used by terrain material to blend mud/dirt textures
+    // Per-vertex deformation intensity (R: 0=undisturbed, 1=fully churned)
+    // Written to FDynamicMesh3 vertex colors for material use.
     TArray<FColor> VertexColors;
 
-    // UV coordinates (static after mesh creation)
-    TArray<FVector2D> UVs;
-
-    // Triangle indices (static after mesh creation)
-    TArray<int32> Triangles;
+    // FDynamicMesh3 vertex IDs indexed by GridToIndex(Col, Row).
+    // For a freshly built mesh these equal the flat index, but storing them
+    // explicitly is safe against future mesh editing operations.
+    TArray<int32> VertexIDs;
 
     // Grid dimensions in vertex count
     int32 GridCols = 0;  // Along X
@@ -142,8 +155,6 @@ private:
     // ---- Build / update ----
 
     void BuildGridMesh();
-    void UpdateMeshSection();
-    void RecalculateNormals();
 
     // Convert world XY → grid column/row index
     bool WorldToGrid(FVector WorldPos, int32& OutCol, int32& OutRow) const;
@@ -151,10 +162,6 @@ private:
     // Convert grid col/row → flat vertex index
     int32 GridToIndex(int32 Col, int32 Row) const { return Row * GridCols + Col; }
 
-    // Crater displacement at distance r from centre, given crater params
-    // Returns signed Z displacement (negative = depression, positive = rim)
+    // Crater displacement at distance r from centre
     float CraterProfileZ(float r, float CraterRadius, float CraterDepth, float RimHeight) const;
-
-    // Terrain origin in world space (bottom-left corner of grid)
-    FVector GridOrigin() const;
 };

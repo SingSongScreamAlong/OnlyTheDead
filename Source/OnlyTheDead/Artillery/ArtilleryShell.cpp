@@ -181,6 +181,11 @@ void AArtilleryShell::SpawnExplosionFX(const FVector& Location, const FVector& N
     // 75mm=1.0, 155mm=2.4, 210mm=4.0, 305mm=7.0 — same formula as terrain depth
     const float FXScale = FMath::Clamp(FMath::Pow(ShellData.ShellWeightKg / 7.7f, 0.4f), 1.0f, 7.0f);
 
+    // UE 5.7: ENCPoolMethod::AutoRelease — Niagara components are returned to a
+    // pool when complete rather than being destroyed and reallocated. During a
+    // Drumfire barrage (120+ shells/min) this eliminates per-impact allocation
+    // overhead. Pool size is configured in the NiagaraSystem asset settings.
+
     // Soil geyser — instantaneous column of earth thrown upward
     // Blueprint sets NS_SoilGeyser to a GPU sim with upward velocity field
     if (SoilGeyserNiagara)
@@ -189,7 +194,9 @@ void AArtilleryShell::SpawnExplosionFX(const FVector& Location, const FVector& N
             GetWorld(), SoilGeyserNiagara,
             Location, Normal.Rotation(),
             FVector(FXScale),
-            true   // Auto-destroy when complete
+            true,                         // bAutoDestroy
+            true,                         // bAutoActivate
+            ENCPoolMethod::AutoRelease    // Pool for heavy barrages
         );
         if (Geyser)
         {
@@ -204,18 +211,22 @@ void AArtilleryShell::SpawnExplosionFX(const FVector& Location, const FVector& N
     // Persistent smoke column — rises for 30-60s depending on shell weight.
     // This is the cumulative smoke that historically reduced visibility to
     // near-zero during sustained bombardment.
+    // Note: smoke columns are long-lived so pool retention is more valuable here
+    // than for short-burst effects.
     if (SmokeColumnNiagara)
     {
         UNiagaraComponent* Smoke = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             GetWorld(), SmokeColumnNiagara,
             Location, FRotator::ZeroRotator,
             FVector(FXScale * 0.7f),
-            true
+            true,                         // bAutoDestroy
+            true,                         // bAutoActivate
+            ENCPoolMethod::AutoRelease
         );
         if (Smoke)
         {
-            Smoke->SetFloatParameter(TEXT("SmokeScale"),     FXScale);
-            Smoke->SetFloatParameter(TEXT("LifetimeScale"),  FXScale);  // Bigger shells → longer smoke
+            Smoke->SetFloatParameter(TEXT("SmokeScale"),    FXScale);
+            Smoke->SetFloatParameter(TEXT("LifetimeScale"), FXScale);  // Bigger shells → longer smoke
         }
     }
 
@@ -225,7 +236,8 @@ void AArtilleryShell::SpawnExplosionFX(const FVector& Location, const FVector& N
         UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             GetWorld(), ShrapnelNiagara,
             Location, Normal.Rotation(),
-            FVector(FXScale), true
+            FVector(FXScale),
+            true, true, ENCPoolMethod::AutoRelease
         );
     }
     else if (ExplosionNiagara)
@@ -234,7 +246,8 @@ void AArtilleryShell::SpawnExplosionFX(const FVector& Location, const FVector& N
         UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             GetWorld(), ExplosionNiagara,
             Location, Normal.Rotation(),
-            FVector(FXScale), true
+            FVector(FXScale),
+            true, true, ENCPoolMethod::AutoRelease
         );
     }
 

@@ -68,6 +68,29 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light|Residual")
     FLinearColor ResidualColor = FLinearColor(1.0f, 0.4f, 0.1f);  // Hot orange-red
 
+    // ---- UE 5.4+ physical light temperature ----
+    //
+    // When bUseTemperature = true, the engine maps Temperature (Kelvin) to RGB
+    // via the standard blackbody curve. This replaces the manual HSV lerp that
+    // was used in earlier versions to simulate ember cooling.
+    //
+    //   Flash phase:    6500K — xenon/near-daylight white (matches photographic
+    //                   records of artillery flashes at Verdun)
+    //   Residual start: 3500K — orange glow (burning propellant, hot earth)
+    //   Residual end:   ~800K — deep red, barely visible (cooling embers)
+    //
+    // LightColor is still applied as a tint multiplier on top of the temperature
+    // colour — set it to White to let temperature drive colour entirely.
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light|Temperature")
+    float FlashTemperatureK = 6500.0f;      // Xenon-white detonation
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light|Temperature")
+    float ResidualStartTemperatureK = 3500.0f;  // Hot orange ember
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light|Temperature")
+    float ResidualEndTemperatureK = 800.0f;     // Barely-visible cooling ember
+
     // ---- Static factory (spawns and auto-configures by shell weight) ----
 
     // Call this from ArtilleryShell::SpawnExplosionFX()

@@ -1,23 +1,33 @@
 #include "Terrain/DeformableTerrain.h"
 
-#include "ProceduralMeshComponent.h"
-#include "KismetProceduralMeshLibrary.h"
+// UE 5.7 — UDynamicMeshComponent replaces UProceduralMeshComponent.
+// FDynamicMesh3 lives in the UE::Geometry namespace since UE 5.5.
+#include "DynamicMeshComponent.h"
+#include "DynamicMesh/DynamicMesh3.h"
+#include "DynamicMesh/DynamicMeshAttributeSet.h"
+
+using namespace UE::Geometry;
 
 ADeformableTerrain::ADeformableTerrain()
 {
     PrimaryActorTick.bCanEverTick = false;
 
-    TerrainMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("TerrainMesh"));
+    TerrainMesh = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("TerrainMesh"));
     TerrainMesh->SetupAttachment(RootComponent);
 
-    // bUseAsyncCooking: rebuilds collision on a background thread after each
-    // deformation so the game thread doesn't stall. Set false if you hit
-    // issues with rapid back-to-back impacts during a heavy barrage.
-    TerrainMesh->bUseAsyncCooking = true;
-
-    // Allow CCD so the player capsule doesn't tunnel through thin rim edges
+    // Complex-as-simple collision: the player capsule walks down into craters
+    // because the full mesh is used for physics, not a simplified hull.
     TerrainMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     TerrainMesh->SetCollisionResponseToAllChannels(ECR_Block);
+    TerrainMesh->CollisionType = ECollisionTraceFlag::CTF_UseComplexAsSimple;
+
+    // Defer collision cooking to a background thread so the game thread
+    // doesn't stall between impacts during a heavy barrage.
+    TerrainMesh->SetDeferredCollisionUpdates(true);
+
+    // Auto-compute smooth vertex normals from mesh geometry.
+    // Removes the need for a manual RecalculateNormals() pass after each impact.
+    TerrainMesh->TangentsType = EDynamicMeshComponentTangentsMode::AutoCalculated;
 }
 
 void ADeformableTerrain::BeginPlay()
@@ -36,34 +46,53 @@ void ADeformableTerrain::BuildGridMesh()
     GridRows = FMath::RoundToInt(TerrainDepth  / GridResolutionCm) + 1;
 
     const int32 TotalVerts = GridCols * GridRows;
-    const int32 TotalTris  = (GridCols - 1) * (GridRows - 1) * 6;
 
     VertexPositions.SetNumUninitialized(TotalVerts);
-    Normals.Init(FVector::UpVector, TotalVerts);
-    VertexColors.Init(FColor::Black, TotalVerts);   // R=0: undisturbed
-    UVs.SetNumUninitialized(TotalVerts);
-    Triangles.SetNumUninitialized(TotalTris);
+    VertexColors.Init(FColor::Black, TotalVerts);  // R=0: undisturbed
+    VertexIDs.SetNumUninitialized(TotalVerts);
 
-    // Build vertices — flat grid in local XY, Z=0
+    FDynamicMesh3* DynMesh = TerrainMesh->GetMesh();
+    DynMesh->Clear();
+
+    // Enable per-vertex colours — R channel drives the Substrate mud/dirt blend.
+    DynMesh->EnableVertexColors(FVector3f::Zero());
+
+    // Enable UV and normal attribute overlays.
+    DynMesh->EnableAttributes();
+    DynMesh->Attributes()->SetNumUVLayers(1);
+
+    FDynamicMeshUVOverlay* UV0 = DynMesh->Attributes()->GetUVLayer(0);
+
+    // ---- Append vertices ----
+    // One UV element per vertex (no UV seams on a terrain grid).
+    TArray<int32> UVElemIDs;
+    UVElemIDs.SetNumUninitialized(TotalVerts);
+
     for (int32 Row = 0; Row < GridRows; ++Row)
     {
         for (int32 Col = 0; Col < GridCols; ++Col)
         {
             const int32 Idx = GridToIndex(Col, Row);
-            VertexPositions[Idx] = FVector(
+
+            const FVector3d Pos(
                 Col * GridResolutionCm,
                 Row * GridResolutionCm,
-                0.0f
+                0.0
             );
-            UVs[Idx] = FVector2D(
-                (float)Col / (GridCols - 1),
-                (float)Row / (GridRows - 1)
-            );
+            const int32 VID = DynMesh->AppendVertex(Pos);
+            VertexIDs[Idx]      = VID;
+            VertexPositions[Idx] = FVector(Pos.X, Pos.Y, Pos.Z);
+
+            DynMesh->SetVertexColor(VID, FVector3f::Zero());  // Undisturbed
+
+            // Normalized [0,1] UV matching the terrain XY extent
+            const float U = (float)Col / (GridCols - 1);
+            const float V = (float)Row / (GridRows - 1);
+            UVElemIDs[Idx] = UV0->AppendElement(FVector2f(U, V));
         }
     }
 
-    // Build triangle indices (two triangles per quad)
-    int32 TriIdx = 0;
+    // ---- Append triangles (two per grid quad) ----
     for (int32 Row = 0; Row < GridRows - 1; ++Row)
     {
         for (int32 Col = 0; Col < GridCols - 1; ++Col)
@@ -73,36 +102,20 @@ void ADeformableTerrain::BuildGridMesh()
             const int32 TL = GridToIndex(Col,     Row + 1);
             const int32 TR = GridToIndex(Col + 1, Row + 1);
 
-            // Triangle 1 (bottom-left)
-            Triangles[TriIdx++] = BL;
-            Triangles[TriIdx++] = TL;
-            Triangles[TriIdx++] = BR;
+            // Triangle 1
+            const int32 TID1 = DynMesh->AppendTriangle(
+                VertexIDs[BL], VertexIDs[TL], VertexIDs[BR]);
+            UV0->SetTriangle(TID1, FIndex3i(UVElemIDs[BL], UVElemIDs[TL], UVElemIDs[BR]));
 
-            // Triangle 2 (top-right)
-            Triangles[TriIdx++] = BR;
-            Triangles[TriIdx++] = TL;
-            Triangles[TriIdx++] = TR;
+            // Triangle 2
+            const int32 TID2 = DynMesh->AppendTriangle(
+                VertexIDs[BR], VertexIDs[TL], VertexIDs[TR]);
+            UV0->SetTriangle(TID2, FIndex3i(UVElemIDs[BR], UVElemIDs[TL], UVElemIDs[TR]));
         }
     }
 
-    // Create the mesh section (section 0)
-    TArray<FLinearColor> LinearColors;
-    LinearColors.Reserve(TotalVerts);
-    for (const FColor& C : VertexColors)
-    {
-        LinearColors.Add(FLinearColor(C));
-    }
-
-    TerrainMesh->CreateMeshSection_LinearColor(
-        0,                // Section index
-        VertexPositions,
-        Triangles,
-        Normals,
-        UVs,
-        LinearColors,
-        TArray<FProcMeshTangent>(),
-        true              // Create collision
-    );
+    // Push the built mesh to the render thread and cook initial collision.
+    TerrainMesh->NotifyMeshUpdated();
 
     if (TerrainMaterial)
     {
@@ -126,14 +139,11 @@ void ADeformableTerrain::ApplyExplosionDeformation(
 {
     if (VertexPositions.Num() == 0) return;
 
-    // Convert impact to local space
-    const FVector LocalImpact = GetActorTransform().InverseTransformPosition(WorldImpactPoint);
-
-    // Influence zone extends to the rim falloff region (1.8x crater radius)
+    const FVector LocalImpact   = GetActorTransform().InverseTransformPosition(WorldImpactPoint);
     const float InfluenceRadius = CraterRadius * 1.8f;
     const float RimHeight       = CraterDepth * RimHeightFraction;
 
-    // Determine the range of grid cells to process — avoid iterating all verts
+    // Narrow the iteration to the grid cells overlapping the blast footprint.
     const int32 ColMin = FMath::Clamp(
         FMath::FloorToInt((LocalImpact.X - InfluenceRadius) / GridResolutionCm), 0, GridCols - 1);
     const int32 ColMax = FMath::Clamp(
@@ -143,6 +153,7 @@ void ADeformableTerrain::ApplyExplosionDeformation(
     const int32 RowMax = FMath::Clamp(
         FMath::CeilToInt( (LocalImpact.Y + InfluenceRadius) / GridResolutionCm), 0, GridRows - 1);
 
+    FDynamicMesh3* DynMesh = TerrainMesh->GetMesh();
     bool bAnyVertexChanged = false;
 
     for (int32 Row = RowMin; Row <= RowMax; ++Row)
@@ -150,10 +161,10 @@ void ADeformableTerrain::ApplyExplosionDeformation(
         for (int32 Col = ColMin; Col <= ColMax; ++Col)
         {
             const int32 Idx = GridToIndex(Col, Row);
-            FVector& Vert = VertexPositions[Idx];
+            FVector& Vert   = VertexPositions[Idx];
 
-            const float DX = Vert.X - LocalImpact.X;
-            const float DY = Vert.Y - LocalImpact.Y;
+            const float DX   = Vert.X - LocalImpact.X;
+            const float DY   = Vert.Y - LocalImpact.Y;
             const float Dist = FMath::Sqrt(DX * DX + DY * DY);
 
             if (Dist > InfluenceRadius) continue;
@@ -161,12 +172,19 @@ void ADeformableTerrain::ApplyExplosionDeformation(
             const float DeltaZ = CraterProfileZ(Dist, CraterRadius, CraterDepth, RimHeight);
             Vert.Z += DeltaZ;
 
-            // Update vertex color: R = cumulative deformation intensity (0-1)
-            // Clamp so it never exceeds fully-churned (white)
+            // Update deformation intensity in vertex color (R channel).
             const float CurrentIntensity = VertexColors[Idx].R / 255.0f;
             const float AddedIntensity   = FMath::Abs(DeltaZ) / CraterDepth;
             const float NewIntensity     = FMath::Clamp(CurrentIntensity + AddedIntensity, 0.0f, 1.0f);
             VertexColors[Idx].R          = (uint8)(NewIntensity * 255.0f);
+
+            // Write directly into FDynamicMesh3 — only the changed vertices.
+            // This is the key perf improvement over UProceduralMeshComponent:
+            // SetVertex + SetVertexColor are O(1) per vertex; the GPU upload
+            // triggered by NotifyMeshUpdated() sends only the dirty range.
+            const int32 VID = VertexIDs[Idx];
+            DynMesh->SetVertex(VID, FVector3d(Vert.X, Vert.Y, Vert.Z));
+            DynMesh->SetVertexColor(VID, FVector3f(NewIntensity, 0.0f, 0.0f));
 
             bAnyVertexChanged = true;
         }
@@ -174,11 +192,12 @@ void ADeformableTerrain::ApplyExplosionDeformation(
 
     if (!bAnyVertexChanged) return;
 
-    RecalculateNormals();
-    UpdateMeshSection();
+    // Normals are recomputed automatically by the component (TangentsType =
+    // AutoCalculated) — no manual RecalculateNormals() needed.
+    TerrainMesh->NotifyMeshUpdated();
 
     UE_LOG(LogTemp, Verbose,
-        TEXT("DeformableTerrain: Crater at (%.0f, %.0f) r=%.0fcm depth=%.0fcm [verts %d-%d, %d-%d]"),
+        TEXT("DeformableTerrain: Crater at (%.0f, %.0f) r=%.0fcm depth=%.0fcm [cols %d-%d, rows %d-%d]"),
         WorldImpactPoint.X, WorldImpactPoint.Y, CraterRadius, CraterDepth,
         ColMin, ColMax, RowMin, RowMax);
 }
@@ -186,15 +205,10 @@ void ADeformableTerrain::ApplyExplosionDeformation(
 // ---------------------------------------------------------------------------
 // Crater profile function
 //
-// Defines the Z displacement at distance r from the crater centre.
-//
 // Three zones:
-//   [0, CraterRadius]              — depression bowl (negative Z)
-//   [CraterRadius, RimRadius]      — raised rim (positive Z), peaks at ~1.25x CraterRadius
+//   [0, CraterRadius]              — bowl (negative Z, cosine profile)
+//   [CraterRadius, RimRadius]      — raised rim (positive Z, Gaussian peak)
 //   [RimRadius, InfluenceRadius]   — smooth falloff back to 0
-//
-// The bowl shape uses a cosine curve so the centre is smooth (not a spike).
-// The rim uses a gaussian falloff so it blends cleanly into the surrounding terrain.
 // ---------------------------------------------------------------------------
 
 float ADeformableTerrain::CraterProfileZ(
@@ -208,83 +222,20 @@ float ADeformableTerrain::CraterProfileZ(
 
     if (r <= CraterRadius)
     {
-        // Bowl: cosine profile — deepest at centre, zero at edge
-        // cos(π/2 * r/R)² gives a smooth bowl that flattens near the rim
-        const float T = r / CraterRadius;
+        // Bowl: cosine² — smooth at centre, zero at rim edge
+        const float T      = r / CraterRadius;
         const float CosVal = FMath::Cos(T * PI * 0.5f);
         return -CraterDepth * (CosVal * CosVal);
     }
     else if (r <= RimFalloffRadius)
     {
-        // Rim and falloff: gaussian peak centred at RimPeakRadius
-        const float Spread     = (RimFalloffRadius - CraterRadius) * 0.4f;
-        const float FromPeak   = r - RimPeakRadius;
-        const float Gaussian   = FMath::Exp(-(FromPeak * FromPeak) / (2.0f * Spread * Spread));
-        return RimHeight * Gaussian;
+        // Rim: Gaussian centred at RimPeakRadius
+        const float Spread   = (RimFalloffRadius - CraterRadius) * 0.4f;
+        const float FromPeak = r - RimPeakRadius;
+        return RimHeight * FMath::Exp(-(FromPeak * FromPeak) / (2.0f * Spread * Spread));
     }
 
     return 0.0f;
-}
-
-// ---------------------------------------------------------------------------
-// Normal recalculation — cross-product of triangle edges per vertex
-// ---------------------------------------------------------------------------
-
-void ADeformableTerrain::RecalculateNormals()
-{
-    // Reset normals
-    for (FVector& N : Normals)
-    {
-        N = FVector::ZeroVector;
-    }
-
-    // Accumulate face normals into each vertex
-    for (int32 i = 0; i < Triangles.Num(); i += 3)
-    {
-        const int32 I0 = Triangles[i];
-        const int32 I1 = Triangles[i + 1];
-        const int32 I2 = Triangles[i + 2];
-
-        const FVector Edge1 = VertexPositions[I1] - VertexPositions[I0];
-        const FVector Edge2 = VertexPositions[I2] - VertexPositions[I0];
-        const FVector FaceNormal = FVector::CrossProduct(Edge1, Edge2).GetSafeNormal();
-
-        Normals[I0] += FaceNormal;
-        Normals[I1] += FaceNormal;
-        Normals[I2] += FaceNormal;
-    }
-
-    // Normalise
-    for (FVector& N : Normals)
-    {
-        N = N.GetSafeNormal();
-        if (N.IsNearlyZero()) N = FVector::UpVector;
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Push updated geometry to ProceduralMeshComponent
-// ---------------------------------------------------------------------------
-
-void ADeformableTerrain::UpdateMeshSection()
-{
-    TArray<FLinearColor> LinearColors;
-    LinearColors.Reserve(VertexColors.Num());
-    for (const FColor& C : VertexColors)
-    {
-        LinearColors.Add(FLinearColor(C));
-    }
-
-    // UpdateMeshSection_LinearColor is cheaper than recreating —
-    // it only uploads changed vertex buffers and re-cooks collision async
-    TerrainMesh->UpdateMeshSection_LinearColor(
-        0,
-        VertexPositions,
-        Normals,
-        UVs,
-        LinearColors,
-        TArray<FProcMeshTangent>()
-    );
 }
 
 // ---------------------------------------------------------------------------
@@ -309,34 +260,30 @@ bool ADeformableTerrain::WorldToGrid(FVector WorldPos, int32& OutCol, int32& Out
     return OutCol >= 0 && OutCol < GridCols && OutRow >= 0 && OutRow < GridRows;
 }
 
-FVector ADeformableTerrain::GridOrigin() const
-{
-    return GetActorLocation();
-}
-
 void ADeformableTerrain::ResetDeformation()
 {
-    for (FVector& V : VertexPositions)
+    FDynamicMesh3* DynMesh = TerrainMesh->GetMesh();
+
+    for (int32 Idx = 0; Idx < VertexPositions.Num(); ++Idx)
     {
-        V.Z = 0.0f;
+        VertexPositions[Idx].Z = 0.0f;
+        VertexColors[Idx]      = FColor::Black;
+
+        const int32 VID = VertexIDs[Idx];
+        const FVector3d OldPos = DynMesh->GetVertex(VID);
+        DynMesh->SetVertex(VID, FVector3d(OldPos.X, OldPos.Y, 0.0));
+        DynMesh->SetVertexColor(VID, FVector3f::Zero());
     }
-    for (FColor& C : VertexColors)
-    {
-        C = FColor::Black;
-    }
-    Normals.Init(FVector::UpVector, Normals.Num());
-    UpdateMeshSection();
+
+    TerrainMesh->NotifyMeshUpdated();
     UE_LOG(LogTemp, Log, TEXT("DeformableTerrain: Reset to flat ground."));
 }
 
 void ADeformableTerrain::RegenerateMesh()
 {
-    TerrainMesh->ClearAllMeshSections();
     VertexPositions.Empty();
-    Normals.Empty();
     VertexColors.Empty();
-    UVs.Empty();
-    Triangles.Empty();
+    VertexIDs.Empty();
     BuildGridMesh();
 }
 
@@ -357,12 +304,10 @@ void ADeformableTerrain::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
         RegenerateMesh();
     }
 
-    if (PropName == GET_MEMBER_NAME_CHECKED(ADeformableTerrain, TerrainMaterial))
+    if (PropName == GET_MEMBER_NAME_CHECKED(ADeformableTerrain, TerrainMaterial) &&
+        TerrainMaterial)
     {
-        if (TerrainMaterial)
-        {
-            TerrainMesh->SetMaterial(0, TerrainMaterial);
-        }
+        TerrainMesh->SetMaterial(0, TerrainMaterial);
     }
 }
 #endif

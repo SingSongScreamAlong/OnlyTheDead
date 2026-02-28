@@ -10,9 +10,12 @@ AExplosionLight::AExplosionLight()
     FlashLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("FlashLight"));
     FlashLight->SetIntensity(0.0f);
     FlashLight->SetAttenuationRadius(FlashRadius);
-    FlashLight->SetLightColor(FlashColor);
-    FlashLight->SetCastShadows(false);  // Flash is too brief for shadow cost
+    FlashLight->SetLightColor(FLinearColor::White);  // Temperature drives colour
+    FlashLight->SetCastShadows(false);               // Flash is too brief for shadow cost
     FlashLight->bUseInverseSquaredFalloff = true;
+    // UE 5.4+: physical blackbody temperature. 6500K = xenon/daylight white.
+    FlashLight->SetUseTemperature(true);
+    FlashLight->SetTemperature(FlashTemperatureK);
     RootComponent = FlashLight;
 
     // Residual glow — narrower, dimmer, cooler (embers/burning dirt)
@@ -20,9 +23,11 @@ AExplosionLight::AExplosionLight()
     ResidualLight->SetupAttachment(RootComponent);
     ResidualLight->SetIntensity(0.0f);
     ResidualLight->SetAttenuationRadius(ResidualRadius);
-    ResidualLight->SetLightColor(ResidualColor);
+    ResidualLight->SetLightColor(FLinearColor::White);
     ResidualLight->SetCastShadows(true);   // Residual is slow enough to shadow
     ResidualLight->bUseInverseSquaredFalloff = true;
+    ResidualLight->SetUseTemperature(true);
+    ResidualLight->SetTemperature(ResidualStartTemperatureK);
 
     // Auto-destroy when done
     InitialLifeSpan = 0.0f;  // We control lifetime manually via Tick
@@ -78,13 +83,17 @@ void AExplosionLight::UpdateLightIntensity(float DeltaTime)
         const float EaseOut = ResidualT * ResidualT;
         ResidualLight->SetIntensity(ResidualIntensityLux * EaseOut);
 
-        // Colour shifts redder as it cools (black-body cooling)
-        const FLinearColor CoolColor = FLinearColor::LerpUsingHSV(
-            FLinearColor(0.5f, 0.1f, 0.0f),   // dark ember red at t=0
-            FLinearColor(0.05f, 0.02f, 0.0f),  // barely visible at t=1
-            1.0f - EaseOut
+        // UE 5.4+: animate blackbody temperature instead of manual HSV lerp.
+        // The engine maps Kelvin → RGB via the standard Planckian curve, which
+        // is physically correct and matches historical ember/cooling photographs.
+        //   3500K → orange glow (burning propellant, freshly churned earth)
+        //    800K → barely-visible deep red (almost completely cooled embers)
+        const float CoolTemperature = FMath::Lerp(
+            ResidualEndTemperatureK,
+            ResidualStartTemperatureK,
+            EaseOut   // EaseOut=1 → hot, EaseOut=0 → cool
         );
-        ResidualLight->SetLightColor(CoolColor);
+        ResidualLight->SetTemperature(CoolTemperature);
     }
 }
 
