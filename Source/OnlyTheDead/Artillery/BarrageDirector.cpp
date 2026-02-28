@@ -14,6 +14,72 @@ ABarrageDirector::ABarrageDirector()
 void ABarrageDirector::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (!bAutoStartOnPlay) return;
+
+    // Optional persistent wide-area harassment — runs for the entire session.
+    // Starts immediately (no delay) so the first distant impact is audible
+    // while the player is still orienting. Low rate, wide scatter: occasional
+    // incoming that could land anywhere. "No safe ground."
+    if (bAutoWideAreaHarassment)
+    {
+        FBarrageWave Wide;
+        Wide.Type            = EBarrageType::Harassing;
+        Wide.TargetCenter    = TrenchCenterLocation;
+        Wide.AccuracyCEP     = WideAreaRadiusCm;
+        Wide.ShellsPerMinute = WideAreaShellsPerMinute;
+        Wide.DurationSeconds = -1.0f;    // Never stops
+        Wide.HeavyShellFraction = 0.15f; // 1 in 7 lands as a heavier calibre
+        Wide.HeavyShellClass = HeavyShellClass;
+        StartBarrage(Wide);
+    }
+
+    // Schedule the Verdun opening sequence after the initial silence.
+    // Phase 1 starts with slow registration shots — the player hears them
+    // land one by one, then the escalation begins.
+    FTimerHandle StartHandle;
+    GetWorldTimerManager().SetTimer(StartHandle, [this]()
+    {
+        StartVerdunOpeningSequence();
+    }, AutoStartDelaySec, false);
+
+    // Loop: restart the full sequence when it finishes (~5 min).
+    // Drumfire phase (Phase 5) runs until stopped, so in practice the loop
+    // only matters if the player somehow outlasts the Drumfire phase.
+    if (bLoopSequence)
+    {
+        // Sequence total duration: ~300s to reach Drumfire + buffer
+        const float SequenceDuration = 285.0f + 30.0f;  // 315s = ~5.25min
+        FTimerHandle LoopHandle;
+        GetWorldTimerManager().SetTimer(LoopHandle, [this]()
+        {
+            // Stop all barrage waves then replay from the beginning.
+            // The wide-area harassment started above is already infinite (Duration=-1)
+            // so we stop everything and let BeginPlay logic below restart it.
+            StopAllBarrages();
+
+            if (bAutoWideAreaHarassment)
+            {
+                FBarrageWave Wide;
+                Wide.Type            = EBarrageType::Harassing;
+                Wide.TargetCenter    = TrenchCenterLocation;
+                Wide.AccuracyCEP     = WideAreaRadiusCm;
+                Wide.ShellsPerMinute = WideAreaShellsPerMinute;
+                Wide.DurationSeconds = -1.0f;
+                Wide.HeavyShellFraction = 0.15f;
+                Wide.HeavyShellClass = HeavyShellClass;
+                StartBarrage(Wide);
+            }
+
+            StartVerdunOpeningSequence();
+        }, AutoStartDelaySec + SequenceDuration, true);  // Repeating every cycle
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("BarrageDirector: Auto-start scheduled in %.0fs. "
+        "Wide-area harassment: %s. Loop: %s."),
+        AutoStartDelaySec,
+        bAutoWideAreaHarassment ? TEXT("yes") : TEXT("no"),
+        bLoopSequence ? TEXT("yes") : TEXT("no"));
 }
 
 void ABarrageDirector::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -137,8 +203,7 @@ void ABarrageDirector::FireShellForWave(int32 WaveID)
     }
     if (!Wave) return;
 
-    const float Now = GetWorld()->GetTimeSeconds();
-    Wave->ElapsedTime = Now - Wave->StartTime;
+    // (elapsed time computed inline when needed — not stored on FActiveWave)
 
     // Advance creeping barrage target
     if (Wave->Config.Type == EBarrageType::Creeping)

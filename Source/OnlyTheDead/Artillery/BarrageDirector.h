@@ -207,7 +207,52 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Barrage|Presets")
     void StartBoxBarrage(FVector Center, FVector HalfExtent, float DurationSeconds = 90.0f);
 
-    // Query
+    // ---- Auto-start (observer / environmental horror mode) ----
+    //
+    // When enabled, the barrage begins automatically at BeginPlay.
+    // The player doesn't need to trigger anything — they just step into
+    // the trench and the world starts coming apart around them.
+
+    // Start the barrage automatically when Play is pressed.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto")
+    bool bAutoStartOnPlay = false;
+
+    // Seconds of silence before the first shell falls.
+    // Gives the player a moment to orient before the bombardment begins.
+    // Historically: the German guns on Feb 21 1916 opened at 07:15 with a
+    // single shot — then silence — then the full barrage.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto",
+              meta = (ClampMin = "0", ClampMax = "60", EditCondition = "bAutoStartOnPlay"))
+    float AutoStartDelaySec = 8.0f;
+
+    // In addition to the Verdun sequence, run a persistent wide-area
+    // harassing wave that covers the entire field.
+    // This ensures no position is permanently safe — shells land anywhere,
+    // not just on the main target zone. Essential for the "no safe ground"
+    // experience.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto",
+              meta = (EditCondition = "bAutoStartOnPlay"))
+    bool bAutoWideAreaHarassment = true;
+
+    // Radius (cm) of the wide-area harassment scatter around TrenchCenterLocation.
+    // Set to half the field width so shells fall across the whole terrain.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto",
+              meta = (ClampMin = "1000", EditCondition = "bAutoWideAreaHarassment"))
+    float WideAreaRadiusCm = 6000.0f;   // 60m — covers the whole test field
+
+    // Wide-area harassment rate. Low by design: 3-5 shells/min, random positions.
+    // The Verdun sequence adds volume on top of this baseline.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto",
+              meta = (ClampMin = "1", ClampMax = "20", EditCondition = "bAutoWideAreaHarassment"))
+    float WideAreaShellsPerMinute = 4.0f;
+
+    // Restart the Verdun sequence when it finishes (~5 min) for continuous sessions.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrage|Auto",
+              meta = (EditCondition = "bAutoStartOnPlay"))
+    bool bLoopSequence = true;
+
+    // ---- Query ----
+
     UFUNCTION(BlueprintPure, Category = "Barrage")
     int32 GetActiveWaveCount() const { return ActiveWaves.Num(); }
 
