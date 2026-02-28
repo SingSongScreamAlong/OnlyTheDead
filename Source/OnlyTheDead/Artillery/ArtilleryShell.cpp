@@ -1,6 +1,7 @@
 #include "Artillery/ArtilleryShell.h"
 #include "Artillery/ArtilleryTypes.h"
 #include "Player/SurvivalComponent.h"
+#include "Terrain/DeformableTerrain.h"
 
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -152,6 +153,7 @@ void AArtilleryShell::Detonate(const FVector& ImpactPoint, const FVector& Impact
     WhistleAudioComp->Stop();
 
     SpawnExplosionFX(ImpactPoint, ImpactNormal);
+    DeformTerrain(ImpactPoint);
     SpawnCrater(ImpactPoint, ImpactNormal);
     ApplyExplosionDamage(ImpactPoint);
     ApplyMoraleEffect(ImpactPoint);
@@ -262,6 +264,47 @@ void AArtilleryShell::ApplyMoraleEffect(const FVector& Location)
         const bool bNearMiss = Dist <= ShellData.LethalRadius * 2.0f;
         Survival->ApplyMoraleDamage(MoraleDmg, bNearMiss);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Terrain deformation
+// ---------------------------------------------------------------------------
+
+void AArtilleryShell::DeformTerrain(const FVector& ImpactPoint)
+{
+    // Find the ADeformableTerrain in the level.
+    // Cached on first call — assumes a single terrain actor (true for this POC).
+    static TWeakObjectPtr<ADeformableTerrain> CachedTerrain;
+
+    ADeformableTerrain* Terrain = CachedTerrain.Get();
+    if (!Terrain)
+    {
+        TArray<AActor*> Found;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADeformableTerrain::StaticClass(), Found);
+        if (Found.Num() == 0) return;
+        Terrain = Cast<ADeformableTerrain>(Found[0]);
+        CachedTerrain = Terrain;
+    }
+
+    if (!Terrain) return;
+
+    // Derive crater depth from shell weight — heavier shells dig deeper.
+    // Reference: 75mm (7.7 kg) → ~60 cm deep; 210mm (121 kg) → ~300 cm deep.
+    // Formula: depth = BaseDepth * (weight / referenceWeight) ^ 0.4
+    // (sub-linear because the ground absorbs energy less efficiently for big craters)
+    const float ReferenceWeightKg = 7.7f;
+    const float BaseDepthCm       = 60.0f;
+    const float CraterDepth = BaseDepthCm *
+        FMath::Pow(ShellData.ShellWeightKg / ReferenceWeightKg, 0.4f);
+
+    // CraterRadius from shell data — this is the terrain scar radius,
+    // not the lethal blast radius (terrain craters are smaller than blast radii)
+    const float CraterRadius = ShellData.CraterRadius;
+
+    // Rim height: historically ~20-35% of crater depth
+    const float RimFraction = 0.28f;
+
+    Terrain->ApplyExplosionDeformation(ImpactPoint, CraterRadius, CraterDepth, RimFraction);
 }
 
 // ---------------------------------------------------------------------------

@@ -72,27 +72,43 @@ Create these Blueprints in `Content/POC_TrenchArtillery/Blueprints/`:
 
 | Blueprint | Parent Class | Key Assets to Assign |
 |---|---|---|
+| `BP_DeformableTerrain` | `ADeformableTerrain` | TerrainMaterial (see below) |
 | `BP_TrenchSegment` | `ATrenchSegment` | IntactMesh, DamagedMesh, CollapsedMesh, CollapseSound |
 | `BP_ArtilleryShell` | `AArtilleryShell` | WhistleSound, ImpactSound, ExplosionNiagara |
 | `BP_ArtilleryManager` | `AArtilleryManager` | ShellClass = BP_ArtilleryShell |
 | `BP_VerdunSoldier` | `AVerdunSoldier` | DefaultMappingContext, MoveAction, LookAction, etc. |
 | `BP_ShellCrater` | `AStaticMeshActor` | CraterMesh (disc/decal actor) |
 
-### Step 3 — Assign Placeholder Assets
+### Step 3 — Create the Terrain Material
 
-While waiting for art assets, use UE5 starter content or free Fab assets:
+The terrain deformation system uses **vertex colors** to drive material blending.
+`VertexColor.R` = deformation intensity: `0` = undisturbed soil, `1` = fully churned crater.
 
-**Trench meshes** (placeholder):
+Create `M_DeformableTerrain`:
+1. Add a `VertexColor` node → break out **R** channel
+2. Use **R** as `Lerp Alpha` between:
+   - **A** = undisturbed ground texture (dry clay/chalk, ochre-grey — Verdun soil)
+   - **B** = churned mud texture (dark brown, wet, exposed subsoil)
+3. Also use **R** to modulate **Roughness** (churned earth is rougher) and
+   **Normal** (flat intact ground vs. rough churned surface)
+4. Assign to `BP_DeformableTerrain → TerrainMaterial`
+
+Placeholder (no art): use two solid colours — tan `(0.6, 0.5, 0.35)` for intact,
+dark brown `(0.15, 0.10, 0.08)` for churned.
+
+### Step 4 — Assign Other Placeholder Assets
+
+**Trench meshes**:
 - `IntactMesh` → SM_Cube scaled to (3m × 2m × 2m) with a dark grey material
 - `DamagedMesh` → Same cube with a cracked material or 50% opacity
 - `CollapsedMesh` → Flat SM_Cube (0.5m tall, spread wide) — represents rubble
 
-**Shell FX** (placeholder):
+**Shell FX**:
 - `ExplosionNiagara` → UE5 Starter Content `NS_Explosion` or Epic's free explosion VFX
 - `WhistleSound` → Any high-pitched sweep audio (temp)
 - `ImpactSound` → Any explosion audio (temp)
 
-### Step 4 — Generate the Level
+### Step 5 — Generate the Level
 
 1. Open the UE5 Editor Output Log (`Window > Output Log`)
 2. Switch to the **Python** tab
@@ -104,13 +120,14 @@ While waiting for art assets, use UE5 starter content or free Fab assets:
    OR use `File > Execute Python Script > Scripts/generate_poc_level.py`
 
 4. The script creates:
+   - **ADeformableTerrain** — 200m × 100m deformable ground (201×101 vertex grid)
    - 12 TrenchSegment actors in an L-shape
    - ArtilleryManager pointed at the trench
    - 8 pre-existing shell craters
    - WWI atmospheric lighting and fog
    - PlayerStart inside the trench
 
-### Step 5 — Configure Enhanced Input
+### Step 7 — Configure Enhanced Input
 
 In `BP_VerdunSoldier`:
 1. Create an `IMC_VerdunSoldier` (Input Mapping Context)
@@ -125,7 +142,7 @@ In `BP_VerdunSoldier`:
 
 3. Assign `DefaultMappingContext = IMC_VerdunSoldier` in the Blueprint defaults
 
-### Step 6 — Press Play
+### Step 8 — Press Play
 
 Press **Play In Editor**. Wait 5 seconds (BarrageStartDelaySeconds). Shells will begin landing.
 

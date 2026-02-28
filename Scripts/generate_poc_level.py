@@ -65,6 +65,7 @@ BP_TRENCH_SEGMENT    = "/Game/POC_TrenchArtillery/Blueprints/BP_TrenchSegment"
 BP_ARTILLERY_SHELL   = "/Game/POC_TrenchArtillery/Blueprints/BP_ArtilleryShell"
 BP_ARTILLERY_MANAGER = "/Game/POC_TrenchArtillery/Blueprints/BP_ArtilleryManager"
 BP_CRATER            = "/Game/POC_TrenchArtillery/Blueprints/BP_ShellCrater"
+BP_DEFORMABLE_TERRAIN = "/Game/POC_TrenchArtillery/Blueprints/BP_DeformableTerrain"
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -188,35 +189,65 @@ def setup_lighting(world):
 
 
 # ---------------------------------------------------------------------------
-# Terrain — flat muddy ground (landscape asset created manually in editor,
-# this creates a simple BSP plane as placeholder for POC)
+# Terrain — ADeformableTerrain (runtime vertex-deformable procedural mesh)
 # ---------------------------------------------------------------------------
 
-def create_ground_plane(world):
-    log("Creating ground plane (BSP placeholder — replace with Landscape for production)...")
+def create_deformable_terrain(world):
+    """
+    Spawn ADeformableTerrain — the ground that gets persistently churned up
+    by shell impacts. Every explosion displaces vertices into a crater bowl
+    with a raised rim. Collision updates automatically so the player walks
+    into craters rather than floating above them.
 
-    # Spawn a static mesh plane actor as ground
-    # In production: create a Landscape with the terrain from fetch_elevation_data.py
-    ground = unreal.EditorLevelLibrary.spawn_actor_from_class(
-        unreal.StaticMeshActor,
-        unreal.Vector(0, 0, -5),
-        unreal.Rotator(0, 0, 0)
-    )
-    if ground:
-        ground.set_actor_label("Ground_Plane")
-        ground.set_actor_scale3d(unreal.Vector(200, 100, 1))  # 200m x 100m
+    Grid: 200m x 100m at 100cm resolution = 201x101 = ~20,300 vertices.
+    Each vertex stores its accumulated Z displacement and deformation intensity
+    (vertex color R channel) which drives the material mud/soil blend.
+    """
+    log("Spawning ADeformableTerrain (200m x 100m, 100cm grid resolution)...")
 
-        sm_comp = ground.get_component_by_class(unreal.StaticMeshComponent)
-        if sm_comp:
-            # Use the engine's built-in 1m plane mesh
-            plane_mesh = unreal.load_asset("/Engine/BasicShapes/Plane")
-            if plane_mesh:
-                sm_comp.set_static_mesh(plane_mesh)
-                # Apply a muddy/dark material (assign M_Mud in editor)
-                sm_comp.set_editor_property("cast_shadow", True)
+    terrain_class = get_actor_class(BP_DEFORMABLE_TERRAIN)
 
-    log("Ground plane created.")
-    return ground
+    # Centre the terrain so the trench (which starts at origin) sits in the middle
+    terrain_origin = unreal.Vector(-2000.0, -5000.0, 0.0)
+
+    if terrain_class:
+        terrain = unreal.EditorLevelLibrary.spawn_actor_from_class(
+            terrain_class,
+            terrain_origin,
+            unreal.Rotator(0, 0, 0)
+        )
+    else:
+        log_warning(
+            "BP_DeformableTerrain not found. "
+            "Create it in Content/POC_TrenchArtillery/Blueprints/ with parent ADeformableTerrain."
+        )
+        # Fallback: plain static mesh plane so level still has a ground
+        terrain = unreal.EditorLevelLibrary.spawn_actor_from_class(
+            unreal.StaticMeshActor,
+            terrain_origin,
+            unreal.Rotator(0, 0, 0)
+        )
+        if terrain:
+            sm_comp = terrain.get_component_by_class(unreal.StaticMeshComponent)
+            if sm_comp:
+                plane_mesh = unreal.load_asset("/Engine/BasicShapes/Plane")
+                if plane_mesh:
+                    sm_comp.set_static_mesh(plane_mesh)
+            terrain.set_actor_scale3d(unreal.Vector(200, 100, 1))
+
+    if terrain:
+        terrain.set_actor_label("DeformableTerrain")
+        try:
+            terrain.set_editor_property("terrain_width",        20000.0)  # 200m
+            terrain.set_editor_property("terrain_depth",        10000.0)  # 100m
+            terrain.set_editor_property("grid_resolution_cm",   100.0)    # 1m grid
+        except Exception as e:
+            log_warning(f"Could not set DeformableTerrain properties: {e}")
+            log_warning("Set TerrainWidth=20000, TerrainDepth=10000, GridResolutionCm=100 in Details panel.")
+
+    log("DeformableTerrain placed. Assign M_DeformableTerrain material in Details panel.")
+    log("  Material must read VertexColor.R (0=undisturbed, 1=churned) to blend mud textures.")
+    return terrain
 
 
 # ---------------------------------------------------------------------------
@@ -502,7 +533,7 @@ def generate_poc_level():
 
     with unreal.ScopedEditorTransaction("Generate POC Trench Artillery Level") as transaction:
         setup_lighting(world)
-        create_ground_plane(world)
+        create_deformable_terrain(world)
         segments = place_trench_segments(world)
         place_existing_craters(world)
         place_artillery_manager(world)
@@ -519,14 +550,20 @@ def generate_poc_level():
     unreal.log("")
     unreal.log("  NEXT STEPS:")
     unreal.log("  1. Create Blueprints in Content/POC_TrenchArtillery/Blueprints/:")
-    unreal.log("     - BP_TrenchSegment  (parent: ATrenchSegment)")
-    unreal.log("     - BP_ArtilleryShell (parent: AArtilleryShell)")
-    unreal.log("     - BP_ArtilleryManager (parent: AArtilleryManager)")
-    unreal.log("     - BP_ShellCrater    (simple static mesh actor)")
-    unreal.log("     - BP_VerdunSoldier  (parent: AVerdunSoldier)")
-    unreal.log("  2. Assign meshes, sounds, and VFX in each Blueprint.")
-    unreal.log("  3. Set ShellClass in ArtilleryManager to BP_ArtilleryShell.")
-    unreal.log("  4. Press Play In Editor and wait 5 seconds.")
+    unreal.log("     - BP_DeformableTerrain (parent: ADeformableTerrain)")
+    unreal.log("     - BP_TrenchSegment     (parent: ATrenchSegment)")
+    unreal.log("     - BP_ArtilleryShell    (parent: AArtilleryShell)")
+    unreal.log("     - BP_ArtilleryManager  (parent: AArtilleryManager)")
+    unreal.log("     - BP_ShellCrater       (simple static mesh actor)")
+    unreal.log("     - BP_VerdunSoldier     (parent: AVerdunSoldier)")
+    unreal.log("  2. Create M_DeformableTerrain material:")
+    unreal.log("     - Sample terrain textures (ground, mud, churned earth)")
+    unreal.log("     - Lerp between them using VertexColor.R as alpha")
+    unreal.log("     - Assign to BP_DeformableTerrain.TerrainMaterial")
+    unreal.log("  3. Assign meshes, sounds, and VFX in remaining Blueprints.")
+    unreal.log("  4. Set ShellClass in ArtilleryManager to BP_ArtilleryShell.")
+    unreal.log("  5. Press Play In Editor and wait 5 seconds.")
+    unreal.log("     Ground will permanently deform with each shell impact.")
     unreal.log("=" * 60)
 
 

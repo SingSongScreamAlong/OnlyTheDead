@@ -16,7 +16,8 @@ public class OnlyTheDead : ModuleRules
             "GeometryCollectionEngine",  // Chaos Destruction
             "PhysicsCore",
             "Chaos",
-            "Niagara"                    // VFX system
+            "Niagara",                   // VFX system
+            "ProceduralMeshComponent"    // Runtime terrain deformation
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]

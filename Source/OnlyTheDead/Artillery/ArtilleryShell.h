@@ -102,6 +102,9 @@ private:
     void ApplyMoraleEffect(const FVector& Location);
     void SpawnCrater(const FVector& Location, const FVector& Normal);
 
+    // Displace terrain vertices at impact point — persistent, accumulative
+    void DeformTerrain(const FVector& ImpactPoint);
+
     // Pitch whistle up as shell descends (height-based modulation)
     void UpdateWhistlePitch();
 
